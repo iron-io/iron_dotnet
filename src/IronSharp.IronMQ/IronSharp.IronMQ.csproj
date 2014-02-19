@@ -50,6 +50,8 @@
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Alert.cs" />
+    <Compile Include="AlertCollection.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="IronMqCloudHosts.cs" />
     <Compile Include="IronMqRestClient.cs" />
