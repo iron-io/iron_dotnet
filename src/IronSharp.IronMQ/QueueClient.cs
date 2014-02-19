@@ -520,6 +520,34 @@ namespace IronSharp.IronMQ
 
         #endregion
 
+        #region Alerts
+
+        /// <summary>
+        /// Add alerts to a queue. This is for Pull Queues only.
+        /// </summary>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#add_alerts_to_a_queue
+        /// http://dev.iron.io/mq/reference/queue_alerts/
+        /// </remarks>
+        public QueueInfo AddAlerts(AlertCollection alertCollection)
+        {
+            return RestClient.Post<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+        }
+
+        /// <summary>
+        /// Update queue alerts. This is for Pull Queues only.
+        /// </summary>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#update_alerts_to_a_queue
+        /// http://dev.iron.io/mq/reference/queue_alerts/
+        /// </remarks>
+        public QueueInfo UpdateAlerts(AlertCollection alertCollection)
+        {
+            return RestClient.Put<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+        }
+
+        #endregion
+
         #region Subscribers
 
         /// <summary>
