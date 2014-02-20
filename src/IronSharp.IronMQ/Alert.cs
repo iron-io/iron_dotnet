@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace IronSharp.IronMQ
 {
     public class Alert
     {
-        public Alert() : this(null, null, null, null)
+        public Alert() : this(AlertType.Fixed, AlertDirection.Asc, null, null)
         {
         }
 
-        public Alert(string type, string direction, int? trigger, string queue)
+        public Alert(AlertType type, AlertDirection direction, int? trigger, string queue)
         {
             Type = type;
             Direction = direction;
@@ -30,11 +31,11 @@ namespace IronSharp.IronMQ
         [JsonProperty("trigger", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Trigger { get; set; }
 
-        [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Type { get; set; }
+        [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Include)]
+        public AlertType Type { get; set; }
 
-        [JsonProperty("direction", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Direction { get; set; }
+        [JsonProperty("direction", DefaultValueHandling = DefaultValueHandling.Include)]
+        public AlertDirection Direction { get; set; }
 
         [JsonProperty("status", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Status { get; set; }

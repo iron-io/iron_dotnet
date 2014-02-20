@@ -45,6 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
@@ -52,6 +53,8 @@
   <ItemGroup>
     <Compile Include="Alert.cs" />
     <Compile Include="AlertCollection.cs" />
+    <Compile Include="AlertType.cs" />
+    <Compile Include="AlertDirection.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="IronMqCloudHosts.cs" />
     <Compile Include="IronMqRestClient.cs" />
