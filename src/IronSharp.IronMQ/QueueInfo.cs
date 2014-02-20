@@ -81,7 +81,8 @@ namespace IronSharp.IronMQ
 
         public List<Alert> Alerts
         {
-            get { return _alerts; }
+            get { return LazyInitializer.EnsureInitialized(ref _alerts); }
+            set { _alerts = value; }
         }
     }
 }
