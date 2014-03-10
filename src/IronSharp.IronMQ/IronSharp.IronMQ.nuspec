@@ -8,7 +8,7 @@
     <owners>Iron.io</owners>
 	<licenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/iron-io/iron_dotnet</projectUrl>
-    <iconUrl>http://c577730.r99.cf2.rackcdn.com/images/FeSharp_Icon_128.png</iconUrl>
+    <iconUrl>https://raw.github.com/iron-io/iron_dotnet/master/images/net-iron-mq.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An easy-to-use highly available message queuing service. Built for distributed
         cloud applications with critical messaging needs. Provides on-demand message
