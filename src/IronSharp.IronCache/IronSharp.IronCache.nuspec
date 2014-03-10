@@ -1,20 +1,28 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
-    <projectUrl>http://grcodemonkey.github.io/iron_sharp/</projectUrl>
+    <id>Iron.IronCache</id>
+    <version>1.0.1</version>
+    <title>IronCache</title>
+    <authors>Jeremy Bell</authors>
+    <owners>Iron.io</owners>
+	<licenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/iron-io/iron_dotnet</projectUrl>
     <iconUrl>http://c577730.r99.cf2.rackcdn.com/images/FeSharp_Icon_128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>IronCache is an elastic and durable key/value store that’s perfect for applications
+that need to share state, pass data, and coordinate activity between processes and
+devices. Reduce database load by making use of a high-performance middle tier for 
+asynchronous processing and communication.</description>
     <releaseNotes></releaseNotes>
     <tags>iron.io,cache</tags>
     <dependencies>
-      <dependency id="IronSharp.Core" />
+      <dependency id="Iron.IronCore" />
       <dependency id="Newtonsoft.Json" />
     </dependencies>
   </metadata>
+  <files>
+	<file src="lib/IronSharp.IronCache.dll" target="lib" />
+	<file src="lib/IronSharp.IronCache.pdb" target="lib" />
+  </files>
 </package>
