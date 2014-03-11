@@ -520,6 +520,75 @@ namespace IronSharp.IronMQ
 
         #endregion
 
+        #region Alerts
+
+        /// <summary>
+        /// Add alerts to a queue. This is for Pull Queues only.
+        /// </summary>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#add_alerts_to_a_queue
+        /// http://dev.iron.io/mq/reference/queue_alerts/
+        /// </remarks>
+        public QueueInfo AddAlerts(AlertCollection alertCollection)
+        {
+            return RestClient.Post<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+        }
+
+        /// <summary>
+        /// Update queue alerts. This is for Pull Queues only.
+        /// </summary>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#update_alerts_to_a_queue
+        /// http://dev.iron.io/mq/reference/queue_alerts/
+        /// </remarks>
+        public QueueInfo UpdateAlerts(AlertCollection alertCollection)
+        {
+            return RestClient.Put<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+        }
+
+        /// <summary>
+        /// Removes an alert from the queue.
+        /// See http://dev.iron.io/mq/reference/queue_alerts/ for more information.
+        /// </summary>
+        /// <param name="alert"> Alert object to delete. </param>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#remove_alert_from_a_queue_by_id
+        /// </remarks>
+        public bool DeleteAlert(Alert alert)
+        {
+            if (alert == null)
+                return false;
+            return DeleteAlert(alert.Id);
+        }
+
+        /// <summary>
+        /// Removes an alert specified by id from the queue.
+        /// See http://dev.iron.io/mq/reference/queue_alerts/ for more information.
+        /// </summary>
+        /// <param name="alert"> Id of alert to delete. </param>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#remove_alert_from_a_queue_by_id
+        /// </remarks>
+        public bool DeleteAlert(string alertId)
+        {
+            if (String.IsNullOrEmpty(alertId))
+                return false;
+            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/alerts/{1}", EndPoint, alertId)).HasExpectedMessage("Deleted");
+        }
+
+        /// <summary>
+        /// Removes alerts from a queue. This is for Pull Queues only.
+        /// </summary>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#remove_alerts_from_a_queue
+        /// </remarks>
+        public QueueInfo RemoveAlerts(AlertCollection alertCollection)
+        {
+            return RestClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), payload: alertCollection);
+        }
+
+        #endregion
+
         #region Subscribers
 
         /// <summary>
