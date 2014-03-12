@@ -1,4 +1,5 @@
-![Fe#](http://c577730.r99.cf2.rackcdn.com/images/FeSharp.png)
+![Products#](https://raw.github.com/iron-io/iron_dotnet/master/images/products.png)
+
 ==========
 
 # IronSharp is a .NET client for [Iron.io](http://www.iron.io/)
@@ -14,7 +15,7 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 ## IronCache
 <http://dev.iron.io/cache/>
 
-```PM> Install-Package IronSharp.IronCache```
+```PM> Install-Package Iron.IronCache```
 
 ```C#
 // =========================================================
@@ -52,7 +53,7 @@ cache.Delete("complex_item");
 ## IronMQ
 <http://dev.iron.io/mq/>
 
-```PM> Install-Package IronSharp.IronMQ```
+```PM> Install-Package Iron.IronMQ```
 
 ```C#
 // =========================================================
@@ -114,7 +115,7 @@ while (queue.Read(out next))
 ## IronWorker
 <http://dev.iron.io/worker/>
 
-```PM> Install-Package IronSharp.IronWorker```
+```PM> Install-Package Iron.IronWorker```
 
 ```C#
 // =========================================================
