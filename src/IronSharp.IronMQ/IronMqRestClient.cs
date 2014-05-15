@@ -20,7 +20,7 @@ namespace IronSharp.IronMQ
 
             if (config.ApiVersion == default (int))
             {
-                config.ApiVersion = 1;
+                config.ApiVersion = 3;
             }
         }
 

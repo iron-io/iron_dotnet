@@ -204,7 +204,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Delete(string messageId)
         {
-            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId)).HasExpectedMessage("Deleted");
+            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, new object()).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
