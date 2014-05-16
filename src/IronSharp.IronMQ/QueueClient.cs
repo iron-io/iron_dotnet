@@ -500,7 +500,7 @@ namespace IronSharp.IronMQ
         {
             IRestClientRequest request = new RestClientRequest
             {
-                EndPoint = string.Format("{0}/messages/webhook", EndPoint),
+                EndPoint = string.Format("{0}/webhook", EndPoint),
                 AuthTokenLocation = AuthTokenLocation.Querystring
             };
             return RestClient.BuildRequestUri(_client.Config, request, token);
