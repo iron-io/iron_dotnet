@@ -65,6 +65,7 @@
     <Compile Include="PushStatus.cs" />
     <Compile Include="PushType.cs" />
     <Compile Include="QueueClient.cs" />
+    <Compile Include="QueuesInfo.cs" />
     <Compile Include="QueueInfo.cs" />
     <Compile Include="QueueMessage.cs" />
     <Compile Include="QueueMessageContext.cs" />

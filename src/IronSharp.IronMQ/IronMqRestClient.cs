@@ -54,7 +54,8 @@ namespace IronSharp.IronMQ
         /// <returns> </returns>
         public IEnumerable<QueueInfo> Queues(PagingFilter filter = null)
         {
-            return RestClient.Get<IEnumerable<QueueInfo>>(_config, EndPoint, filter).Result;
+            var queuesInfo = RestClient.Get<QueuesInfo>(_config, EndPoint, filter).Result;
+            return queuesInfo == null ? null : queuesInfo.Queues;
         }
     }
 }
