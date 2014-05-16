@@ -72,6 +72,22 @@ namespace IronSharp.IronMQ
             set { PushType = value.As<PushType>(); }
         }
 
+        /// <summary>
+        /// Time (in seconds), after which messages taken from this queue will be placed back onto queue.
+        /// You must delete the message from the queue to ensure it does not go back onto the queue.
+        /// Default is 60 seconds.
+        /// Minimum is 30 seconds, and maximum is 86,400 seconds (24 hours).
+        /// </summary>
+        [JsonProperty("timeout", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? Timeout { get; set; }
+
+        /// <summary>
+        /// Time (in seconds) after posting the message to the queue it will be deleted
+        /// Default is 604800 seconds (7 days).
+        /// </summary>
+        [JsonProperty("expire_time", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? ExpireTime { get; set; }
+
         [JsonIgnore]
         public List<Subscriber> Subscribers
         {
