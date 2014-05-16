@@ -102,6 +102,7 @@ namespace IronSharp.Core
             targetConfig.ProjectId = string.IsNullOrEmpty(overrideConfig.ProjectId) ? targetConfig.ProjectId : overrideConfig.ProjectId;
             targetConfig.Token = string.IsNullOrEmpty(overrideConfig.Token) ? targetConfig.Token : overrideConfig.Token;
             targetConfig.Host = string.IsNullOrEmpty(overrideConfig.Host) ? targetConfig.Host : overrideConfig.Host;
+            targetConfig.ApiVersion = overrideConfig.ApiVersion == default(int) ? targetConfig.ApiVersion : overrideConfig.ApiVersion;
         }
 
         private static string _appDirectory;
