@@ -61,6 +61,7 @@
     <Compile Include="MessageCollection.cs" />
     <Compile Include="MessageIdCollection.cs" />
     <Compile Include="MessageOptions.cs" />
+    <Compile Include="MqPagingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PushStatus.cs" />
     <Compile Include="PushType.cs" />

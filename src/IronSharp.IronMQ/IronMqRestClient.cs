@@ -52,7 +52,7 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="filter"> </param>
         /// <returns> </returns>
-        public IEnumerable<QueueInfo> Queues(PagingFilter filter = null)
+        public IEnumerable<QueueInfo> Queues(MqPagingFilter filter = null)
         {
             var queuesInfo = RestClient.Get<QueuesInfo>(_config, EndPoint, filter).Result;
             return queuesInfo == null ? null : queuesInfo.Queues;
