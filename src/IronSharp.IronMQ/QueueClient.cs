@@ -466,9 +466,9 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#release_a_message_on_a_queue
         /// </remarks>
-        public bool Release(string messageId, TimeSpan delay)
+        public bool Release(string messageId, string reservationId, TimeSpan delay)
         {
-            return Release(messageId, delay.Seconds);
+            return Release(messageId, reservationId, delay.Seconds);
         }
 
         /// <summary>
@@ -483,16 +483,10 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#release_a_message_on_a_queue
         /// </remarks>
-        public bool Release(string messageId, int? delay = null)
+        public bool Release(string messageId, string reservationId, int? delay = null)
         {
-            var query = new NameValueCollection();
-
-            if (delay.HasValue)
-            {
-                query.Add("delay", Convert.ToString(delay));
-            }
-
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), query).HasExpectedMessage("Released");
+            var payload = new MessageOptions {Delay = delay, ReservationId = reservationId};
+            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), payload).HasExpectedMessage("Released");
         }
 
         /// <summary>
