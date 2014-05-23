@@ -65,7 +65,7 @@ namespace IronSharp.IronMQ
         /// </summary>
         public bool Touch()
         {
-            return Client.Touch(Id);
+            return Client.Touch(Id, ReservationId);
         }
 
         #endregion

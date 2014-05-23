@@ -292,17 +292,17 @@ namespace IronSharp.IronMQ
         {
             var query = new NameValueCollection();
 
+            var payload = new Dictionary<string, object>();
             if (n.HasValue)
             {
-                query.Add("n", Convert.ToString(n));
+                payload.Add("n", n);
             }
-
             if (timeout.HasValue)
             {
-                query.Add("timeout", Convert.ToString(timeout));
+                payload.Add("timeout", timeout);
             }
 
-            RestResponse<MessageCollection> result = RestClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages", EndPoint), query);
+            RestResponse<MessageCollection> result = RestClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload, query);
 
             if (result.CanReadResult())
             {
@@ -334,6 +334,21 @@ namespace IronSharp.IronMQ
             return Get(1, timeout).Messages.FirstOrDefault();
         }
 
+        public QueueMessage Reserve()
+        {
+            return Get(1, 0).Messages.FirstOrDefault();
+        }
+
+        public MessageCollection Reserve(int? n = null, int? timeout = null)
+        {
+            return Get(n, timeout);
+        }
+
+        public MessageCollection Reserve(int? n = null, TimeSpan? timeout = null)
+        {
+            return Get(n, timeout);
+        }
+
         /// <summary>
         /// Peeking at a queue returns the next messages on the queue, but it does not reserve them.
         /// </summary>
@@ -350,7 +365,7 @@ namespace IronSharp.IronMQ
                 query.Add("n", Convert.ToString(n));
             }
 
-            RestResponse<MessageCollection> result = RestClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages/peek", EndPoint), query);
+            RestResponse<MessageCollection> result = RestClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages", EndPoint), query);
 
 
             if (result.CanReadResult())
@@ -487,9 +502,10 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#touch_a_message_on_a_queue
         /// </remarks>
-        public bool Touch(string messageId)
+        public bool Touch(string messageId, string reservationId = null)
         {
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId)).HasExpectedMessage("Touched");
+            var payload = new MessageOptions { ReservationId = reservationId };
+            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload).HasExpectedMessage("Touched");
         }
 
         /// <summary>
