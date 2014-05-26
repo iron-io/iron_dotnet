@@ -47,7 +47,7 @@ namespace IronSharp.IronMQ
         /// </summary>
         public bool Delete()
         {
-            return Client.Delete(Id);
+            return Client.DeleteMessage(Id, ReservationId);
         }
 
         /// <summary>
