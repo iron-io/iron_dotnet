@@ -60,6 +60,8 @@
     <Compile Include="IronMqRestClient.cs" />
     <Compile Include="MessageCollection.cs" />
     <Compile Include="MessageIdCollection.cs" />
+    <Compile Include="ReservedMessageIdCollection.cs" />
+    <Compile Include="MessageIdContainer.cs" />
     <Compile Include="MessageOptions.cs" />
     <Compile Include="MqPagingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
