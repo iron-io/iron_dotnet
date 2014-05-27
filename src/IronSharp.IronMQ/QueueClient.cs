@@ -153,7 +153,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Clear()
         {
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/clear", EndPoint)).HasExpectedMessage("Cleared.");
+            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), null, new object()).HasExpectedMessage("Cleared.");
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Delete(string messageId)
         {
-            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId)).HasExpectedMessage("Deleted");
+            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, new object()).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
@@ -217,7 +217,14 @@ namespace IronSharp.IronMQ
         public bool Delete(IEnumerable<string> messageIds)
         {
             return
-                RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new MessageIdCollection(messageIds)).HasExpectedMessage("Deleted");
+                RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messageIds)).HasExpectedMessage("Deleted");
+        }
+
+        public bool Delete(MessageCollection messages)
+        {
+            return RestClient
+                .Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messages))
+                .HasExpectedMessage("Deleted");            
         }
 
         /// <summary>
@@ -292,17 +299,17 @@ namespace IronSharp.IronMQ
         {
             var query = new NameValueCollection();
 
+            var payload = new Dictionary<string, object>();
             if (n.HasValue)
             {
-                query.Add("n", Convert.ToString(n));
+                payload.Add("n", n);
             }
-
             if (timeout.HasValue)
             {
-                query.Add("timeout", Convert.ToString(timeout));
+                payload.Add("timeout", timeout);
             }
 
-            RestResponse<MessageCollection> result = RestClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages", EndPoint), query);
+            RestResponse<MessageCollection> result = RestClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload, query);
 
             if (result.CanReadResult())
             {
@@ -334,6 +341,21 @@ namespace IronSharp.IronMQ
             return Get(1, timeout).Messages.FirstOrDefault();
         }
 
+        public QueueMessage Reserve()
+        {
+            return Get(1, 0).Messages.FirstOrDefault();
+        }
+
+        public MessageCollection Reserve(int? n = null, int? timeout = null)
+        {
+            return Get(n, timeout);
+        }
+
+        public MessageCollection Reserve(int? n = null, TimeSpan? timeout = null)
+        {
+            return Get(n, timeout);
+        }
+
         /// <summary>
         /// Peeking at a queue returns the next messages on the queue, but it does not reserve them.
         /// </summary>
@@ -350,7 +372,7 @@ namespace IronSharp.IronMQ
                 query.Add("n", Convert.ToString(n));
             }
 
-            RestResponse<MessageCollection> result = RestClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages/peek", EndPoint), query);
+            RestResponse<MessageCollection> result = RestClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages", EndPoint), query);
 
 
             if (result.CanReadResult())
@@ -451,9 +473,9 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#release_a_message_on_a_queue
         /// </remarks>
-        public bool Release(string messageId, TimeSpan delay)
+        public bool Release(string messageId, string reservationId, TimeSpan delay)
         {
-            return Release(messageId, delay.Seconds);
+            return Release(messageId, reservationId, delay.Seconds);
         }
 
         /// <summary>
@@ -468,16 +490,10 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#release_a_message_on_a_queue
         /// </remarks>
-        public bool Release(string messageId, int? delay = null)
+        public bool Release(string messageId, string reservationId, int? delay = null)
         {
-            var query = new NameValueCollection();
-
-            if (delay.HasValue)
-            {
-                query.Add("delay", Convert.ToString(delay));
-            }
-
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), query).HasExpectedMessage("Released");
+            var payload = new MessageOptions {Delay = delay, ReservationId = reservationId};
+            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), payload).HasExpectedMessage("Released");
         }
 
         /// <summary>
@@ -487,9 +503,10 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#touch_a_message_on_a_queue
         /// </remarks>
-        public bool Touch(string messageId)
+        public bool Touch(string messageId, string reservationId = null)
         {
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId)).HasExpectedMessage("Touched");
+            var payload = new MessageOptions { ReservationId = reservationId };
+            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload).HasExpectedMessage("Touched");
         }
 
         /// <summary>
@@ -500,7 +517,7 @@ namespace IronSharp.IronMQ
         {
             IRestClientRequest request = new RestClientRequest
             {
-                EndPoint = string.Format("{0}/messages/webhook", EndPoint),
+                EndPoint = string.Format("{0}/webhook", EndPoint),
                 AuthTokenLocation = AuthTokenLocation.Querystring
             };
             return RestClient.BuildRequestUri(_client.Config, request, token);

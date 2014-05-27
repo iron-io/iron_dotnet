@@ -60,11 +60,15 @@
     <Compile Include="IronMqRestClient.cs" />
     <Compile Include="MessageCollection.cs" />
     <Compile Include="MessageIdCollection.cs" />
+    <Compile Include="ReservedMessageIdCollection.cs" />
+    <Compile Include="MessageIdContainer.cs" />
     <Compile Include="MessageOptions.cs" />
+    <Compile Include="MqPagingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PushStatus.cs" />
     <Compile Include="PushType.cs" />
     <Compile Include="QueueClient.cs" />
+    <Compile Include="QueuesInfo.cs" />
     <Compile Include="QueueInfo.cs" />
     <Compile Include="QueueMessage.cs" />
     <Compile Include="QueueMessageContext.cs" />

@@ -20,7 +20,7 @@ namespace IronSharp.IronMQ
 
             if (config.ApiVersion == default (int))
             {
-                config.ApiVersion = 1;
+                config.ApiVersion = 3;
             }
         }
 
@@ -52,9 +52,10 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="filter"> </param>
         /// <returns> </returns>
-        public IEnumerable<QueueInfo> Queues(PagingFilter filter = null)
+        public IEnumerable<QueueInfo> Queues(MqPagingFilter filter = null)
         {
-            return RestClient.Get<IEnumerable<QueueInfo>>(_config, EndPoint, filter).Result;
+            var queuesInfo = RestClient.Get<QueuesInfo>(_config, EndPoint, filter).Result;
+            return queuesInfo == null ? null : queuesInfo.Queues;
         }
     }
 }

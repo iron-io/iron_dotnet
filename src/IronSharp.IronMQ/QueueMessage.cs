@@ -57,7 +57,7 @@ namespace IronSharp.IronMQ
         /// <returns> </returns>
         public bool Release(int? delay = null)
         {
-            return Client.Release(Id, delay);
+            return Client.Release(Id, ReservationId, delay);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace IronSharp.IronMQ
         /// </summary>
         public bool Touch()
         {
-            return Client.Touch(Id);
+            return Client.Touch(Id, ReservationId);
         }
 
         #endregion

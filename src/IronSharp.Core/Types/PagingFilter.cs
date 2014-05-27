@@ -27,7 +27,7 @@ namespace IronSharp.Core
         }
 
         [JsonProperty("page")]
-        public int Page { get; set; }
+        public virtual int Page { get; set; }
 
         [JsonProperty("per_page")]
         public int PerPage { get; set; }
