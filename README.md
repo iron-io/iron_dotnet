@@ -200,6 +200,48 @@ queue.Delete();
 
 --
 
+## Messages
+
+### Post Messages to a Queue
+
+**Single message:**
+
+```C#
+var id1 = queue.Post("message");
+// To control parameters like delay, pass `MessageOptions` instance.
+var id2 = queue.Post("message", new MessageOptions {Delay = 20});
+// or construct your own message
+var id3 = q.Post(new QueueMessage("message", new MessageOptions{Delay = 20}));
+```
+
+**Multiple messages:**
+
+You can also pass multiple messages in a single call.
+
+```C#
+queue.Post(new[] {"first", "second", "third"});
+queue.Post(new object[] {1, 2, 3});
+queue.Post(new MessageCollection(new[] { new QueueMessage("1"), new QueueMessage("2"), new QueueMessage("3") }));
+```
+
+To control parameters like delay, you can pass an instance of `MessageOptions` as a last parameter
+
+```C#
+queue.Post(new[] {"first", "second", "third"}, new MessageOptions{Delay = 20});
+queue.Post(new object[] {1, 2, 3}, new MessageOptions{Delay = 20});
+```
+
+**Parameters:**
+
+* `Timeout`: Timeout is not allowed since v3 for messages because it's not possible to set timeout when posting a message, only when reserving one.
+
+* `Delay`: The item will not be available on the queue until this many seconds have passed.
+Default is 0 seconds. Maximum is 604,800 seconds (7 days).
+
+--
+
+
+
 
 
 
