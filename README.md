@@ -12,7 +12,7 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 2. Create new project at http://hud.iron.io/dashboard
 3. Download the iron.json file from "Credentials" block of project
 
-## IronCache
+# IronCache
 <http://dev.iron.io/cache/>
 
 ```PM> Install-Package Iron.IronCache```
@@ -50,11 +50,11 @@ Console.WriteLine(cache.Get("complex_item").Value);
 cache.Delete("complex_item");
 ```
 
-## IronMQ
+# IronMQ
 
 <http://dev.iron.io/mq/>
 
-Note: You read documentation of Iron.MQ v3. There are some differences from the previous version. Check this list at [page should be published at HUD](#hud) <!-- TODO: add valid reference -->
+**Note:** You are reading documentation of Iron.MQ v3. There are some differences from the previous version. Check this list at [page should be published at HUD](#hud) <!-- TODO: add valid reference -->
 
 ```PM> Install-Package Iron.IronMQ``` <!-- TODO: add version -->
 
@@ -78,10 +78,132 @@ Also you need to pass authorization data to the client. There are several ways t
 3\. Create an IronMQ client object:
 
 ```C#
-IronSharp.IronMQ.Client.New();
+var iromMq = IronSharp.IronMQ.Client.New();
 ```
 
-## IronWorker
+## The Basics
+
+### Get Queues List
+
+```C#
+var queues = ironMq.Queues();
+foreach (var queueInfo in queues)
+    Console.WriteLine(queueInfo.Name);
+```
+
+--
+
+### Get a Queue Object
+
+You can have as many queues as you want, each with their own unique set of messages.
+
+```C#
+QueueClient queue = ironMq.Queue("my_queue");
+```
+
+Now you can use it.
+
+--
+
+### Post a Message on a Queue
+
+Messages are placed on the queue in a FIFO arrangement.
+If a queue does not exist, it will be created upon the first posting of a message.
+
+```C#
+QueueClient queue = ironMq.Queue("my_queue");
+string messageId = queue.Post("Hello World!");
+```
+
+--
+
+### Retrieve Queue Information
+
+```C#
+QueueInfo info = queue.Info();
+Console.WriteLine(info.Name);
+```
+
+--
+
+### Get a Message off a Queue
+
+```C#
+QueueMessage message = queue.Reserve();
+Console.WriteLine(message.Body);
+Console.WriteLine(message.ReservationId);
+```
+
+**Note:** since v3 you should reserve message if you want to process it.
+
+--
+
+### Delete a Message from a Queue
+
+```C#
+QueueMessage message = queue.Reserve();
+message.Delete();
+```
+
+Be sure to delete a message from the queue when you're done with it.
+
+--
+
+## Queues
+
+### Retrieve Queue Information
+
+```C#
+QueueInfo info = queue.Info();
+Console.WriteLine(info.Name);
+Console.WriteLine(info.Size);
+Console.WriteLine(info.TotalMessages);
+```
+
+QueueInfo consists of the following properties:
+
+```C#
+public class QueueInfo : IInspectable
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string ProjectId { get; set; }
+    public PushType PushType { get; set; }
+    public int? Retries { get; set; }
+    public int? RetriesDelay { get; set; }
+    public int? Size { get; set; }
+    public int? TotalMessages { get; set; }
+    public int? Timeout { get; set; }         // NEW!
+    public int? ExpireTime { get; set; }      // NEW!
+}
+```
+
+--
+
+### Clear a Message Queue
+
+Delete all messages from a queue without deleting a queue
+
+```C#
+queue.Clear();
+```
+
+--
+
+### Delete a Message Queue
+
+Delete a queue and all it's messages
+
+```C#
+queue.Delete();
+```
+
+--
+
+
+
+
+# IronWorker
 <http://dev.iron.io/worker/>
 
 ```PM> Install-Package Iron.IronWorker```
