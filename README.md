@@ -240,7 +240,52 @@ Default is 0 seconds. Maximum is 604,800 seconds (7 days).
 
 --
 
+### Get Messages from a Queue
 
+Since REST API changed in v3 all messages should be reserved to be processed. So, for backward compatibility method Get now reserves messages.
+
+```C#
+// All methods below reserve the message:
+QueueMessage msg;
+msg = q.Reserve();
+msg = q.Next();
+```
+
+When you pop/get a message from the queue, it is no longer on the queue but it still exists within the system.
+You have to explicitly delete the message or else it will go back onto the queue after the `timeout`.
+The default `timeout` is 60 seconds. Minimal `timeout` is 30 seconds.
+
+You also can get several messages at a time:
+
+```C#
+// reserve 5 messages
+MessageCollection messages;
+messages = queue.Reserve(5);
+messages = queue.Reserve(5, new TimeSpan(0, 0, 10));
+messages = queue.Get(5, new TimeSpan(0, 0, 10));
+```
+
+**Note:** You may not receive all n messages on every request, the more sparse the queue, the less likely you are to receive all n messages.
+
+--
+
+### Peek Messages from a Queue
+
+Peeking at a queue returns the next messages on the queue, but it does not reserve them.
+
+```C#
+var message = queue.PeekNext();
+
+// or
+
+var messages = q.Peek(13);
+```
+
+**Optional parameters:**
+
+* `n`: The maximum number of messages to peek. Default is 1. Maximum is 100. Note: You may not receive all n messages on every request, the more sparse the queue, the less likely you are to receive all n messages.
+
+--
 
 
 
