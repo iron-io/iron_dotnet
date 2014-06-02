@@ -233,7 +233,7 @@ queue.Post(new object[] {1, 2, 3}, new MessageOptions{Delay = 20});
 
 **Parameters:**
 
-* `Timeout`: Timeout is not allowed since v3 for messages because it's not possible to set timeout when posting a message, only when reserving one.
+* `Timeout`: **Deprecated**. Timeout is not allowed since v3 for messages because it's not possible to set timeout when posting a message, only when reserving one.
 
 * `Delay`: The item will not be available on the queue until this many seconds have passed.
 Default is 0 seconds. Maximum is 604,800 seconds (7 days).
@@ -287,7 +287,79 @@ var messages = q.Peek(13);
 
 --
 
+### Touch Message
 
+You can prolongate period of message reservation.
+
+```
+message = queue.Reserve();
+Thread.Sleep(10000);
+message.Touch();
+```
+
+This method is not applicable for messages which not been reserved.
+
+```C#
+message = queue.PeekNext();
+if (!message.Touch())
+    Console.WriteLine("Message couldn't be touched");
+```
+
+--
+
+### Release Message
+
+Message could be returned back to queue before the expiration of reservation.
+
+```
+message = queue.Reserve();
+Thread.Sleep(10000);
+message.Release();
+```
+
+This method is not applicable for messages which not been reserved.
+
+```C#
+message = queue.PeekNext();
+if (!message.Release())
+    Console.WriteLine("Message couldn't be released");
+```
+
+You can specify the time in seconds after which message will appear in queue:
+
+```C#
+message.Release(5); // message will appear in queue after 5 seconds
+```
+
+--
+
+### Delete Message
+
+```
+var message = queue.Reserve();
+message.Delete();
+```
+
+--
+
+### Delete Messages 
+
+Batch deleting of messages can be done via deleting MessageCollection
+
+```C#
+MessageCollection messages = q.Reserve(3);
+queue.Delete(messages);
+```
+
+Or via specifying ids of messages
+
+```C#
+var id1 = queue.Reserve();
+var id2 = queue.Reserve();
+q.Delete(new[]{id1, id2});
+```
+
+--
 
 
 # IronWorker
