@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.InteropServices;
 using IronSharp.Core;
 
 namespace IronSharp.IronMQ
@@ -205,6 +206,20 @@ namespace IronSharp.IronMQ
         public bool Delete(string messageId)
         {
             return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, new object()).HasExpectedMessage("Deleted");
+        }
+
+        /// <summary>
+        /// This call will delete the message. Be sure you call this after you’re done with a message or it will be placed back on the queue.
+        /// </summary>
+        /// <param name="messageId"> The id of the message to delete. </param>
+        /// <param name="reservationId"> Reservation id of the message to delete. </param>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#delete_a_message_from_a_queue
+        /// </remarks>
+        public bool DeleteMessage(string messageId, string reservationId)
+        {
+            var payload = new MessageIdContainer {ReservationId = reservationId};
+            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, payload).HasExpectedMessage("Deleted");
         }
 
         /// <summary>

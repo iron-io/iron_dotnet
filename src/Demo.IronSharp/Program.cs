@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using Common.Logging;
 using Common.Logging.Simple;
 using IronSharp.Core;
@@ -52,59 +53,54 @@ namespace Demo.IronSharpConsole
 
             IronMqRestClient ironMq = IronSharp.IronMQ.Client.New();
 
-            // Get a Queue object
-            QueueClient queue = ironMq.Queue("my_queue");
+            // For beta testing
+            // IronMqRestClient ironMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "project_id_on_beta_hosting", Token = "some_token", Host = "mq-v3-beta.iron.io", ApiVersion = 3});
 
-            QueueInfo info = queue.Info();
+            // Simple actions
 
-            Console.WriteLine(info.Inspect());
+            // Post message to a queue
+            TestPosting(ironMq);
 
-            // Put a message on the queue
-            string messageId = queue.Post("hello world!");
+            // Post message to a queue and reserve it
+            TestReservation(ironMq);
 
-            Console.WriteLine(messageId);
-
-            // Use a webhook to post message from a third party
-            Uri webhookUri = queue.WebhookUri();
+            // Post message, reserve it and delete
+            TestDeletingReservedMessage(ironMq);
             
-            Console.WriteLine(webhookUri);
+            // Actions on queue
 
-            // Get a message
-            QueueMessage msg = queue.Next();
+            // Clear all messages of queue
+            TestClearingQueue(ironMq);
 
-            Console.WriteLine(msg.Inspect());
+            // Delete queue and its messages
+            TestDeletingQueue(ironMq);
 
-            //# Delete the message
-            bool deleted = msg.Delete();
+            // Get list of all queus inside project
+            TestGettingListQueue(ironMq);
 
-            Console.WriteLine("Deleted = {0}", deleted);
+            // Actions on messages
 
-            var payload1 = new
-            {
-                message = "hello, my name is Iron.io 1"
-            };
+            //TestPosting(ironMq);
+            //TestReservation(ironMq);
+            //TestDeletingReservedMessage(ironMq);
 
-            var payload2 = new
-            {
-                message = "hello, my name is Iron.io 2"
-            };
+            // Get message by id without reservation
+            TestGettingMessageById(ironMq);
+            
+            // Get message without reserving it
+            TestPeekingMessage(ironMq);
 
-            var payload3 = new
-            {
-                message = "hello, my name is Iron.io 3"
-            };
+            // Delete unreserved message
+            TestDeletingMessage(ironMq);
+            
+            // Touch message to prolongate reservation
+            TestTouching(ironMq);
 
-            MessageIdCollection queuedUp = queue.Post(new[] {payload1, payload2, payload3});
+            // Release reserved message
+            TestReleasing(ironMq);
 
-            Console.WriteLine(queuedUp.Inspect());
-
-            QueueMessage next;
-
-            while (queue.Read(out next))
-            {
-                Console.WriteLine(next.Inspect());
-                Console.WriteLine(next.Delete());
-            }
+            // Delete a bunch of messages
+            TestDeletingMessages(ironMq);
 
             // =========================================================
             // Iron.io Worker
@@ -148,6 +144,178 @@ namespace Demo.IronSharpConsole
             Console.WriteLine("============= Done ==============");
             Console.Read();
         }
+
+        private static void TestPosting(IronMqRestClient ironMq)
+        {
+            QueueClient q = ironMq.Queue("my_queue");
+            string messageId = q.Post("some data");
+            Console.WriteLine("Posted message with id {0}", messageId);
+        }
+
+        private static void TestReservation(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_reservable_queue");
+            q.Post("1");
+            q.Post("2");
+            q.Post("3");
+            var msg = q.Reserve();
+            Console.WriteLine(msg.ReservationId);
+        }
+
+        private static void TestDeletingReservedMessage(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_msg_deletable_queue");
+            q.Clear();
+            q.Post("1");
+            q.Post("2");
+
+            var message = q.Reserve();
+            message.Delete();
+            Console.WriteLine("Size of Q should be eq to one: {0}", q.Info().Size);
+        }
+
+        private static void TestClearingQueue(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_clearable_queue");
+            q.Post("1");
+            q.Post("2");
+            q.Post("3");
+            Console.WriteLine(" >>> {0}", q.Info().Size);
+            q.Clear();
+            Console.WriteLine(" >>> {0}", q.Info().Size);
+
+        }
+        private static void TestDeletingQueue(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_deletable_queue");
+            q.Post("1");
+            var result = q.Delete();
+            var info = q.Info();
+            Console.WriteLine("Should return true: {0}", result);
+            Console.WriteLine("Should have null name: {0}", info.Name == null ? "null" : info.Name);
+        }
+
+        private static void TestGettingListQueue(IronMqRestClient ironMq)
+        {
+            var names = new[] { "a", "b", "c", "d", "e" };
+            foreach (var name in names)
+            {
+                var queue = ironMq.Queue(name);
+                queue.Post("1");
+            }
+
+            var queues = ironMq.Queues();
+            foreach (var queueInfo in queues)
+                Console.WriteLine(queueInfo.Name);
+
+            var pagedQueues = ironMq.Queues(new MqPagingFilter { PerPage = 4, Previous = "c" });
+            foreach (var queueInfo in pagedQueues)
+                Console.WriteLine(queueInfo.Name);
+        }
+
+        private static void TestGettingMessageById(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_test_queue");
+            q.Clear();
+            var text = "some text " + DateTime.Now.Millisecond;
+            var id = q.Post(text);
+            var message = q.Get(id);
+            Console.WriteLine("Text of mesage should be eq to \"{0}\": {1}", text, message.Body);
+        }
+
+        private static void TestPeekingMessage(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_peekable_queue");
+            q.Clear();
+            q.Post("1");
+            q.Post("2");
+
+            var m1 = q.PeekNext();
+            var m2 = q.PeekNext();
+            Console.WriteLine("Ids of messages should be equal: {0} == {1}", m1.Id, m2.Id);
+        }
+
+        private static void TestDeletingMessage(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_msg_deletable_queue");
+            q.Clear();
+            q.Post("1");
+            q.Post("2");
+
+            var message = q.PeekNext();
+            message.Delete();
+            Console.WriteLine("Size of Q should be equal to one: {0}", q.Info().Size);
+        }
+
+        private static void TestDeletingMessages(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_msg_deletable_queue");
+            q.Clear();
+            q.Post("1");
+            q.Post("2");
+            q.Post("3");
+
+            var ms = q.Reserve(3, 0);
+            // q.Delete(ms);
+            //     or
+            q.Delete(ms.Messages.ConvertAll(m => m.Id));
+            Console.WriteLine("Size of Q should be eq to zero: {0}", q.Info().Size);
+        }
+
+        private static void TestTouching(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_touchable_queue");
+            q.Post("1");
+            q.Post("2");
+            q.Post("3");
+            var msg = q.Reserve();
+            Console.WriteLine(msg.ReservationId);
+            Thread.Sleep(2000);
+            msg.Touch();
+        }
+
+        private static void TestReleasing(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_releasable_queue");
+            q.Post("1");
+            q.Post("2");
+            var msg = q.Reserve();
+            Console.WriteLine(msg.ReservationId);
+            var result = msg.Release();
+            Console.WriteLine(" >>> {0}Released", result ? "" : "Not ");
+        }
+
+        private static void ReservedUntilTest(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_reserved_until_queue");
+            q.Clear();
+            q.Post("1");
+            var msg = q.Reserve();
+            DateTime t1 = DateTime.Now;
+
+            QueueMessage msg2 = null;
+            while (msg2 == null)
+            {
+                Thread.Sleep(1000);
+                msg2 = q.Reserve();
+            }
+            DateTime t2 = DateTime.Now;
+            Console.WriteLine("Ids: {0} {1}", msg.Id, msg2.Id);
+            Console.WriteLine("Time: {0}", t2 - t1);
+        }
+        private static void TestTouchRelease(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_toasdf_queue");
+            q.Post("1");
+            var msg1 = q.Reserve();
+            msg1.Release();
+            Thread.Sleep(100);
+            var msg2 = q.Reserve();
+            msg2.Release();
+            Console.WriteLine("{0} {1}", msg1.Id, msg1.ReservationId);
+            Console.WriteLine("{0} {1}", msg2.Id, msg2.ReservationId);
+        }
+
     }
 
     public class SampleClass
