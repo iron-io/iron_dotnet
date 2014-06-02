@@ -8,9 +8,9 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 
 ## Getting Started
 
-1. Sign up at <https://hud.iron.io/users/new>
-2. Get your credentials from [https://hud.iron.io/dashboard](https://hud.iron.io/dashboard "Heads up")
-3. Check out the [wiki](https://github.com/grcodemonkey/iron_sharp/wiki "For those that like to read directions")
+1. Go to http://hud.iron.io/ and sign up.
+2. Create new project at http://hud.iron.io/dashboard
+3. Download the iron.json file from "Credentials" block of project
 
 ## IronCache
 <http://dev.iron.io/cache/>
@@ -51,65 +51,34 @@ cache.Delete("complex_item");
 ```
 
 ## IronMQ
+
 <http://dev.iron.io/mq/>
 
-```PM> Install-Package Iron.IronMQ```
+Note: You read documentation of Iron.MQ v3. There are some differences from the previous version. Check this list at [page should be published at HUD](#hud) <!-- TODO: add valid reference -->
+
+```PM> Install-Package Iron.IronMQ``` <!-- TODO: add version -->
+
+### Configuration
+
+1\. Reference the library
 
 ```C#
-// =========================================================
-// Iron.io MQ
-// =========================================================
+using IronSharp.Core;
+using IronSharp.IronMQ;
+```
 
-IronMqRestClient ironMq = IronSharp.IronMQ.Client.New();
+2\. [Setup your Iron.io credentials](http://dev.iron.io/mq/reference/configuration/)
 
-// Get a Queue object
-QueueClient queue = ironMq.Queue("my_queue");
+Also you need to pass authorization data to the client. There are several ways to do it:
 
-QueueInfo info = queue.Info();
+- place `.iron.json` file to home folder eg. `C:\Users\admin\.iron.json`
+- place `.iron.json` file near your executable
+- instantiate IronMqRestClient by passing project id and token: `IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "XXXXXXX", Token = "YYYYYYY"});`
 
-Console.WriteLine(info.Inspect());
+3\. Create an IronMQ client object:
 
-// Put a message on the queue
-string messageId = @queue.Post("hello world!");
-
-Console.WriteLine(messageId);
-
-// Get a message
-QueueMessage msg = queue.Next();
-
-Console.WriteLine(msg.Inspect());
-
-//# Delete the message
-bool deleted = msg.Delete();
-
-Console.WriteLine("Deleted = {0}", deleted);
-
-var payload1 = new
-{
-    message = "hello, my name is Iron.io 1"
-};
-
-var payload2 = new
-{
-    message = "hello, my name is Iron.io 2"
-};
-
-var payload3 = new
-{
-    message = "hello, my name is Iron.io 3"
-};
-
-MessageIdCollection queuedUp = queue.Post(new[] {payload1, payload2, payload3});
-
-Console.WriteLine(queuedUp.Inspect());
-
-QueueMessage next;
-
-while (queue.Read(out next))
-{
-    Console.WriteLine(next.Inspect());
-    Console.WriteLine(next.Delete());
-}
+```C#
+IronSharp.IronMQ.Client.New();
 ```
 
 ## IronWorker
