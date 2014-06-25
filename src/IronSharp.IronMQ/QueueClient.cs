@@ -399,7 +399,7 @@ namespace IronSharp.IronMQ
             return Get(n, timeout);
         }
 
-        public MessageCollection Reserve(int? n = null, TimeSpan? timeout = null)
+        public MessageCollection Reserve(int? n, TimeSpan? timeout)
         {
             return Get(n, timeout);
         }
