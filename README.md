@@ -8,11 +8,11 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 
 ## Getting Started
 
-1. Sign up at <https://hud.iron.io/users/new>
-2. Get your credentials from [https://hud.iron.io/dashboard](https://hud.iron.io/dashboard "Heads up")
-3. Check out the [wiki](https://github.com/grcodemonkey/iron_sharp/wiki "For those that like to read directions")
+1. Go to http://hud.iron.io/ and sign up.
+2. Create new project at http://hud.iron.io/dashboard
+3. Download the iron.json file from "Credentials" block of project
 
-## IronCache
+# IronCache
 <http://dev.iron.io/cache/>
 
 ```PM> Install-Package Iron.IronCache```
@@ -50,69 +50,319 @@ Console.WriteLine(cache.Get("complex_item").Value);
 cache.Delete("complex_item");
 ```
 
-## IronMQ
+# IronMQ
+
 <http://dev.iron.io/mq/>
 
-```PM> Install-Package Iron.IronMQ```
+**Note:** You are reading documentation of Iron.MQ v3. There are some differences from the previous version. Check this list at [page should be published at HUD](#hud) <!-- TODO: add valid reference -->
+
+```PM> Install-Package Iron.IronMQ``` <!-- TODO: add version -->
+
+### Configuration
+
+1\. Reference the library
 
 ```C#
-// =========================================================
-// Iron.io MQ
-// =========================================================
+using IronSharp.Core;
+using IronSharp.IronMQ;
+```
 
-IronMqRestClient ironMq = IronSharp.IronMQ.Client.New();
+2\. [Setup your Iron.io credentials](http://dev.iron.io/mq/reference/configuration/)
 
-// Get a Queue object
+Also you need to pass authorization data to the client. There are several ways to do it:
+
+- place `.iron.json` file to home folder eg. `C:\Users\admin\.iron.json`
+- place `.iron.json` file near your executable
+- instantiate IronMqRestClient by passing project id and token: `IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "XXXXXXX", Token = "YYYYYYY"});`
+
+3\. Create an IronMQ client object:
+
+```C#
+var iromMq = IronSharp.IronMQ.Client.New();
+```
+
+## The Basics
+
+### Get Queues List
+
+```C#
+var queues = ironMq.Queues();
+foreach (var queueInfo in queues)
+    Console.WriteLine(queueInfo.Name);
+```
+
+--
+
+### Get a Queue Object
+
+You can have as many queues as you want, each with their own unique set of messages.
+
+```C#
 QueueClient queue = ironMq.Queue("my_queue");
+```
 
+Now you can use it.
+
+--
+
+### Post a Message on a Queue
+
+Messages are placed on the queue in a FIFO arrangement.
+If a queue does not exist, it will be created upon the first posting of a message.
+
+```C#
+QueueClient queue = ironMq.Queue("my_queue");
+string messageId = queue.Post("Hello World!");
+```
+
+--
+
+### Retrieve Queue Information
+
+```C#
 QueueInfo info = queue.Info();
+Console.WriteLine(info.Name);
+```
 
-Console.WriteLine(info.Inspect());
+--
 
-// Put a message on the queue
-string messageId = @queue.Post("hello world!");
+### Get a Message off a Queue
 
-Console.WriteLine(messageId);
+```C#
+QueueMessage message = queue.Reserve();
+Console.WriteLine(message.Body);
+Console.WriteLine(message.ReservationId);
+```
 
-// Get a message
-QueueMessage msg = queue.Next();
+**Note:** since v3 you should reserve message if you want to process it.
 
-Console.WriteLine(msg.Inspect());
+--
 
-//# Delete the message
-bool deleted = msg.Delete();
+### Delete a Message from a Queue
 
-Console.WriteLine("Deleted = {0}", deleted);
+```C#
+QueueMessage message = queue.Reserve();
+message.Delete();
+```
 
-var payload1 = new
+Be sure to delete a message from the queue when you're done with it.
+
+--
+
+## Queues
+
+### Retrieve Queue Information
+
+```C#
+QueueInfo info = queue.Info();
+Console.WriteLine(info.Name);
+Console.WriteLine(info.Size);
+Console.WriteLine(info.TotalMessages);
+```
+
+QueueInfo consists of the following properties:
+
+```C#
+public class QueueInfo : IInspectable
 {
-    message = "hello, my name is Iron.io 1"
-};
-
-var payload2 = new
-{
-    message = "hello, my name is Iron.io 2"
-};
-
-var payload3 = new
-{
-    message = "hello, my name is Iron.io 3"
-};
-
-MessageIdCollection queuedUp = queue.Post(new[] {payload1, payload2, payload3});
-
-Console.WriteLine(queuedUp.Inspect());
-
-QueueMessage next;
-
-while (queue.Read(out next))
-{
-    Console.WriteLine(next.Inspect());
-    Console.WriteLine(next.Delete());
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string ProjectId { get; set; }
+    public PushType PushType { get; set; }
+    public int? Retries { get; set; }
+    public int? RetriesDelay { get; set; }
+    public int? Size { get; set; }
+    public int? TotalMessages { get; set; }
+    public int? Timeout { get; set; }         // NEW!
+    public int? ExpireTime { get; set; }      // NEW!
 }
 ```
 
-## IronWorker
+--
+
+### Clear a Message Queue
+
+Delete all messages from a queue without deleting a queue
+
+```C#
+queue.Clear();
+```
+
+--
+
+### Delete a Message Queue
+
+Delete a queue and all it's messages
+
+```C#
+queue.Delete();
+```
+
+--
+
+## Messages
+
+### Post Messages to a Queue
+
+**Single message:**
+
+```C#
+var id1 = queue.Post("message");
+// To control parameters like delay, pass `MessageOptions` instance.
+var id2 = queue.Post("message", new MessageOptions {Delay = 20});
+// or construct your own message
+var id3 = q.Post(new QueueMessage("message", new MessageOptions{Delay = 20}));
+```
+
+**Multiple messages:**
+
+You can also pass multiple messages in a single call.
+
+```C#
+queue.Post(new[] {"first", "second", "third"});
+queue.Post(new object[] {1, 2, 3});
+queue.Post(new MessageCollection(new[] { new QueueMessage("1"), new QueueMessage("2"), new QueueMessage("3") }));
+```
+
+To control parameters like delay, you can pass an instance of `MessageOptions` as a last parameter
+
+```C#
+queue.Post(new[] {"first", "second", "third"}, new MessageOptions{Delay = 20});
+queue.Post(new object[] {1, 2, 3}, new MessageOptions{Delay = 20});
+```
+
+**Parameters:**
+
+* `Timeout`: **Deprecated**. Timeout is not allowed since v3 for messages because it's not possible to set timeout when posting a message, only when reserving one.
+
+* `Delay`: The item will not be available on the queue until this many seconds have passed.
+Default is 0 seconds. Maximum is 604,800 seconds (7 days).
+
+--
+
+### Get Messages from a Queue
+
+Since REST API changed in v3 all messages should be reserved to be processed. So, for backward compatibility method Get now reserves messages.
+
+```C#
+// All methods below reserve the message:
+QueueMessage msg;
+msg = q.Reserve();
+msg = q.Next();
+```
+
+When you pop/get a message from the queue, it is no longer on the queue but it still exists within the system.
+You have to explicitly delete the message or else it will go back onto the queue after the `timeout`.
+The default `timeout` is 60 seconds. Minimal `timeout` is 30 seconds.
+
+You also can get several messages at a time:
+
+```C#
+// reserve 5 messages
+MessageCollection messages;
+messages = queue.Reserve(5);
+messages = queue.Reserve(5, new TimeSpan(0, 0, 10));
+messages = queue.Get(5, new TimeSpan(0, 0, 10));
+```
+
+**Note:** You may not receive all n messages on every request, the more sparse the queue, the less likely you are to receive all n messages.
+
+--
+
+### Peek Messages from a Queue
+
+Peeking at a queue returns the next messages on the queue, but it does not reserve them.
+
+```C#
+var message = queue.PeekNext();
+
+// or
+
+var messages = q.Peek(13);
+```
+
+**Optional parameters:**
+
+* `n`: The maximum number of messages to peek. Default is 1. Maximum is 100. Note: You may not receive all n messages on every request, the more sparse the queue, the less likely you are to receive all n messages.
+
+--
+
+### Touch Message
+
+You can prolongate period of message reservation.
+
+```
+message = queue.Reserve();
+Thread.Sleep(10000);
+message.Touch();
+```
+
+This method is not applicable for messages which not been reserved.
+
+```C#
+message = queue.PeekNext();
+if (!message.Touch())
+    Console.WriteLine("Message couldn't be touched");
+```
+
+--
+
+### Release Message
+
+Message could be returned back to queue before the expiration of reservation.
+
+```
+message = queue.Reserve();
+Thread.Sleep(10000);
+message.Release();
+```
+
+This method is not applicable for messages which not been reserved.
+
+```C#
+message = queue.PeekNext();
+if (!message.Release())
+    Console.WriteLine("Message couldn't be released");
+```
+
+You can specify the time in seconds after which message will appear in queue:
+
+```C#
+message.Release(5); // message will appear in queue after 5 seconds
+```
+
+--
+
+### Delete Message
+
+```
+var message = queue.Reserve();
+message.Delete();
+```
+
+--
+
+### Delete Messages 
+
+Batch deleting of messages can be done via deleting MessageCollection
+
+```C#
+MessageCollection messages = q.Reserve(3);
+queue.Delete(messages);
+```
+
+Or via specifying ids of messages
+
+```C#
+var id1 = queue.Reserve();
+var id2 = queue.Reserve();
+q.Delete(new[]{id1, id2});
+```
+
+--
+
+
+# IronWorker
 <http://dev.iron.io/worker/>
 
 ```PM> Install-Package Iron.IronWorker```

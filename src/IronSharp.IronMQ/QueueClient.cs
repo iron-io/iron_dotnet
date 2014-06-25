@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.InteropServices;
 using IronSharp.Core;
 
 namespace IronSharp.IronMQ
@@ -208,6 +209,20 @@ namespace IronSharp.IronMQ
         }
 
         /// <summary>
+        /// This call will delete the message. Be sure you call this after you’re done with a message or it will be placed back on the queue.
+        /// </summary>
+        /// <param name="messageId"> The id of the message to delete. </param>
+        /// <param name="reservationId"> Reservation id of the message to delete. </param>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#delete_a_message_from_a_queue
+        /// </remarks>
+        public bool DeleteMessage(string messageId, string reservationId)
+        {
+            var payload = new MessageIdContainer {ReservationId = reservationId};
+            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, payload).HasExpectedMessage("Deleted");
+        }
+
+        /// <summary>
         /// This call will delete multiple messages in one call.
         /// </summary>
         /// <param name="messageIds"> A list of message IDs to delete. </param>
@@ -295,7 +310,7 @@ namespace IronSharp.IronMQ
         /// http://dev.iron.io/mq/reference/api/#get_messages_from_a_queue
         /// https://github.com/iron-io/iron_mq_ruby#get-messages-from-a-queue
         /// </remarks>
-        public MessageCollection Get(int? n = null, int? timeout = null)
+        public MessageCollection Get(int? n, int? timeout, int? wait)
         {
             var query = new NameValueCollection();
 
@@ -309,6 +324,11 @@ namespace IronSharp.IronMQ
                 payload.Add("timeout", timeout);
             }
 
+            if (wait.HasValue)
+            {
+                query.Add("wait", Convert.ToString(wait));
+            }
+
             RestResponse<MessageCollection> result = RestClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload, query);
 
             if (result.CanReadResult())
@@ -317,6 +337,34 @@ namespace IronSharp.IronMQ
             }
 
             throw new RestResponseException("Unable to read MessageCollection response", result.ResponseMessage);
+        }
+
+        /// <summary>
+        /// This call gets/reserves messages from the queue.
+        /// The messages will not be deleted, but will be reserved until the timeout expires.
+        /// If the timeout expires before the messages are deleted, the messages will be placed back onto the queue.
+        /// As a result, be sure to delete the messages after you’re done with them.
+        /// </summary>
+        /// <param name="n">
+        /// The maximum number of messages to get.
+        /// Default is 1.
+        /// Maximum is 100.
+        /// </param>
+        /// <param name="timeout">
+        /// After timeout (in seconds), item will be placed back onto queue.
+        /// You must delete the message from the queue to ensure it does not go back onto the queue.
+        /// If not set, value from POST is used.
+        /// Default is 60 seconds.
+        /// Minimum is 30 seconds.
+        /// Maximum is 86,400 seconds (24 hours).
+        /// </param>
+        /// <remarks>
+        /// http://dev.iron.io/mq/reference/api/#get_messages_from_a_queue
+        /// https://github.com/iron-io/iron_mq_ruby#get-messages-from-a-queue
+        /// </remarks>
+        public MessageCollection Get(int? n = null, int? timeout = null)
+        {
+            return Get(n, timeout, null);
         }
 
         /// <summary>
@@ -351,9 +399,22 @@ namespace IronSharp.IronMQ
             return Get(n, timeout);
         }
 
-        public MessageCollection Reserve(int? n = null, TimeSpan? timeout = null)
+        public MessageCollection Reserve(int? n, TimeSpan? timeout)
         {
             return Get(n, timeout);
+        }
+
+        /// <summary>
+        /// This call gets/reserves the next messages from the queue.
+        /// This message will not be deleted, but will be reserved until the timeout expires.
+        /// If the timeout expires before the message is deleted, this message will be placed back onto the queue.
+        /// As a result, be sure to delete this message after you’re done with it.
+        /// </summary>
+        /// <param name="wait">Time in seconds to wait for a message to become available. 
+        /// This enables long polling. Default is 0 (does not wait), maximum is 30.</param>
+        public QueueMessage Next(int? timeout, int? wait)
+        {
+            return Get(1, timeout, wait).Messages.FirstOrDefault();
         }
 
         /// <summary>
