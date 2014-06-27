@@ -79,6 +79,14 @@ namespace Demo.IronSharpConsole
 
             Console.WriteLine("Deleted = {0}", deleted);
 
+            // Post several messages
+            queue.Post(new[] { "Hello", "world" });
+
+            MessageCollection messages = queue.Get(n: 2, timeout: 60, wait: 30);
+            // You can specify only parameters you need:
+            // MessageCollection messages = queue.Get(wait: 15);
+
+            // Post several messages
             var payload1 = new
             {
                 message = "hello, my name is Iron.io 1"
