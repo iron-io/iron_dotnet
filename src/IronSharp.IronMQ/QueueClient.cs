@@ -288,7 +288,7 @@ namespace IronSharp.IronMQ
         /// http://dev.iron.io/mq/reference/api/#get_messages_from_a_queue
         /// https://github.com/iron-io/iron_mq_ruby#get-messages-from-a-queue
         /// </remarks>
-        public MessageCollection Get(int? n, int? timeout, int? wait)
+        public MessageCollection Get(int? n = null, int? timeout = null, int? wait = null)
         {
             var query = new NameValueCollection();
 
