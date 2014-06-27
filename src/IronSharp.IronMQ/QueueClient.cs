@@ -394,9 +394,9 @@ namespace IronSharp.IronMQ
             return Get(1, 0).Messages.FirstOrDefault();
         }
 
-        public MessageCollection Reserve(int? n = null, int? timeout = null)
+        public MessageCollection Reserve(int? n, int? timeout = null, int? wait = null)
         {
-            return Get(n, timeout);
+            return Get(n, timeout, wait);
         }
 
         public MessageCollection Reserve(int? n, TimeSpan? timeout)
