@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Iron.IronCore</id>
-    <version>1.0.2</version>
+    <version>3.0.0</version>
     <title>IronCore</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
@@ -11,7 +11,7 @@
     <iconUrl>https://raw.github.com/iron-io/iron_dotnet/master/images/net-iron-core.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>IronCore is core for IronWorker, IronMq, IronCache packets</description>
-    <releaseNotes>Package now creates an iron.json file in application root</releaseNotes>
+    <releaseNotes>Beta version for MQ v3</releaseNotes>
     <tags>iron.io</tags>
     <dependencies>
       <dependency id="Common.Logging" />

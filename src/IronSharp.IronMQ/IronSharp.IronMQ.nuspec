@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Iron.IronMQ</id>
-    <version>1.0.2</version>
+    <version>3.0.0</version>
     <title>IronMQ</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
@@ -14,10 +14,10 @@
         cloud applications with critical messaging needs. Provides on-demand message
         queuing with HTTPS transport, one-time FIFO delivery, message persistence,
         and cloud-optimized performance.</description>
-    <releaseNotes>Added generate Webhook URI method, added TimeSpan overloads for time parameters</releaseNotes>
+    <releaseNotes>Beta version for MQ v3</releaseNotes>
     <tags>iron.io,message queue</tags>
     <dependencies>
-      <dependency id="Iron.IronCore" />
+      <dependency id="Iron.IronCore" version="3.0.0"/>
       <dependency id="Newtonsoft.Json" />
     </dependencies>
   </metadata>
