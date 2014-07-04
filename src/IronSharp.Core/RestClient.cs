@@ -202,11 +202,14 @@ namespace IronSharp.Core
                 queryString = httpValueCollection.ToString();
             }
 
-            var uriBuilder = new UriBuilder(Uri.UriSchemeHttps, config.Host)
+            var scheme = String.IsNullOrEmpty(config.Scheme) ? Uri.UriSchemeHttps : config.Scheme;
+            var uriBuilder = new UriBuilder(scheme, config.Host)
             {
                 Path = string.Format("{0}/{1}", config.ApiVersion, path.Replace("{Project ID}", config.ProjectId)),
                 Query = queryString
             };
+            if (config.Port.HasValue)
+                uriBuilder.Port = config.Port.Value;
 
             return uriBuilder.Uri;
         }

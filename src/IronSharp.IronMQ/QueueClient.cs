@@ -189,7 +189,8 @@ namespace IronSharp.IronMQ
         /// <returns> </returns>
         public QueueInfo Update(QueueInfo updates)
         {
-            return RestClient.Post<QueueInfo>(_client.Config, EndPoint, updates);
+            QueueContainer response = RestClient.Put<QueueContainer>(_client.Config, EndPoint, new QueueContainer(updates));
+            return response.Queue;
         }
 
         #endregion
@@ -394,7 +395,7 @@ namespace IronSharp.IronMQ
             return Get(1, 0).Messages.FirstOrDefault();
         }
 
-        public MessageCollection Reserve(int? n, int? timeout = null, int? wait = null)
+        public MessageCollection Reserve(int? n = null, int? timeout = null, int? wait = null)
         {
             return Get(n, timeout, wait);
         }
