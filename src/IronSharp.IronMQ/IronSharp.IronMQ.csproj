@@ -60,6 +60,7 @@
     <Compile Include="IronMqRestClient.cs" />
     <Compile Include="MessageCollection.cs" />
     <Compile Include="MessageIdCollection.cs" />
+    <Compile Include="QueueContainer.cs" />
     <Compile Include="ReservedMessageIdCollection.cs" />
     <Compile Include="MessageIdContainer.cs" />
     <Compile Include="MessageOptions.cs" />

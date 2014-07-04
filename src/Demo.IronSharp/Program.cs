@@ -51,10 +51,10 @@ namespace Demo.IronSharpConsole
             // Iron.io MQ
             // =========================================================
 
-            IronMqRestClient ironMq = IronSharp.IronMQ.Client.New();
+            //IronMqRestClient ironMq = IronSharp.IronMQ.Client.New();
 
             // For beta testing
-            // IronMqRestClient ironMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "project_id_on_beta_hosting", Token = "some_token", Host = "mq-v3-beta.iron.io", ApiVersion = 3});
+            IronMqRestClient ironMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "53a3b3bd5e8edd1245000005", Token = "O7KrMTwmw997iq0KzL7v", Host = "192.168.1.155", ApiVersion = 3, Port = 8080, Scheme = Uri.UriSchemeHttp });
 
             // Simple actions
 
@@ -68,6 +68,9 @@ namespace Demo.IronSharpConsole
             TestDeletingReservedMessage(ironMq);
             
             // Actions on queue
+
+            // Update queue info
+            TestUpdatingTheQueue(ironMq);
 
             // Clear all messages of queue
             TestClearingQueue(ironMq);
@@ -159,6 +162,11 @@ namespace Demo.IronSharpConsole
             q.Post("2");
             q.Post("3");
             var msg = q.Reserve();
+            var messages = q.Reserve(wait: 12);
+            foreach (var message in messages.Messages)
+            {
+                Console.WriteLine(message.ReservationId);
+            }
             Console.WriteLine(msg.ReservationId);
         }
 
@@ -314,6 +322,14 @@ namespace Demo.IronSharpConsole
             msg2.Release();
             Console.WriteLine("{0} {1}", msg1.Id, msg1.ReservationId);
             Console.WriteLine("{0} {1}", msg2.Id, msg2.ReservationId);
+        }
+
+        private static void TestUpdatingTheQueue(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_msg_updateable_queue");
+            q.Post("1");
+            var info = q.Update(new QueueInfo {PushType = PushType.Pull, MessageTimeout = 58, MessageExpiration = 603333});
+
         }
 
     }

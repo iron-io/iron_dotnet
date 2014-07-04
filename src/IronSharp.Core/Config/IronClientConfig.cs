@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace IronSharp.Core
@@ -18,6 +19,12 @@ namespace IronSharp.Core
 
         [JsonProperty("api_version")]
         public int ApiVersion { get; set; }
+
+        [JsonProperty("port")]
+        public int? Port { get; set; }
+
+        [JsonProperty("scheme")]
+        public String Scheme { get; set; }
 
         [JsonProperty("sharp_config")]
         public IronSharpConfig SharpConfig

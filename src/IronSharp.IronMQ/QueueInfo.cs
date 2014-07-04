@@ -52,7 +52,7 @@ namespace IronSharp.IronMQ
         [JsonProperty("total_messages", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? TotalMessages { get; set; }
 
-        [JsonProperty("push_type", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Ignore)]
         protected string PushTypeValue
         {
             get
@@ -60,7 +60,7 @@ namespace IronSharp.IronMQ
                 switch (PushType)
                 {
                     case PushType.Pull:
-                        return "push";
+                        return "pull";
                     case PushType.Multicast:
                         return "multicast";
                     case PushType.Unicast:
@@ -78,15 +78,15 @@ namespace IronSharp.IronMQ
         /// Default is 60 seconds.
         /// Minimum is 30 seconds, and maximum is 86,400 seconds (24 hours).
         /// </summary>
-        [JsonProperty("timeout", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? Timeout { get; set; }
+        [JsonProperty("message_timeout", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? MessageTimeout { get; set; }
 
         /// <summary>
         /// Time (in seconds) after posting the message to the queue it will be deleted
         /// Default is 604800 seconds (7 days).
         /// </summary>
-        [JsonProperty("expire_time", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? ExpireTime { get; set; }
+        [JsonProperty("message_expiration", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? MessageExpiration { get; set; }
 
         [JsonIgnore]
         public List<Subscriber> Subscribers
@@ -95,6 +95,7 @@ namespace IronSharp.IronMQ
             set { _subscribers = value; }
         }
 
+        [JsonIgnore]
         public List<Alert> Alerts
         {
             get { return LazyInitializer.EnsureInitialized(ref _alerts); }
