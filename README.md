@@ -83,6 +83,12 @@ Also you need to pass authorization data to the client. There are several ways t
 var iromMq = IronSharp.IronMQ.Client.New();
 ```
 
+You can specify host settings in iron.json or explicitly in code, for example:
+
+```C#
+var iromMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "XXXXXXX", Token = "YYYYYYY", Host = "localhost", Scheme = "http", Port = 8080});
+```
+
 ## The Basics
 
 ### Get Queues List
