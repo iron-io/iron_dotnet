@@ -50,13 +50,15 @@ Console.WriteLine(cache.Get("complex_item").Value);
 cache.Delete("complex_item");
 ```
 
-# IronMQ
+# IronMQ On-Premise
 
-<http://dev.iron.io/mq/>
+**Note:** You are reading documentation of Iron.MQ v3. There are some differences from the previous version of IronMQ. For more information please go to [Iron.io Dev Center](http://dev.iron.io/mq-onpremise/).
 
-**Note:** You are reading documentation of Iron.MQ v3. There are some differences from the previous version. Check this list at [page should be published at HUD](#hud) <!-- TODO: add valid reference -->
+This version is for **IronMq Version 3** and **On-Premise**. If you are using the public version please use [version 1.0.2](http://github.com/iron-io/iron_dotnet)
 
-```PM> Install-Package Iron.IronMQ``` <!-- TODO: add version -->
+### Installation
+
+```PM> Install-Package Iron.IronMQ -Pre```
 
 ### Configuration
 
