@@ -12,44 +12,6 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 2. Create new project at http://hud.iron.io/dashboard
 3. Download the iron.json file from "Credentials" block of project
 
-# IronCache
-<http://dev.iron.io/cache/>
-
-```PM> Install-Package Iron.IronCache```
-
-```C#
-// =========================================================
-// Iron.io Cache
-// =========================================================
-
-IronCacheRestClient ironCacheClient = IronSharp.IronCache.Client.New();
-
-// Get a Cache object
-CacheClient cache = ironCacheClient.Cache("my_cache");
-
-// Put value to cache by key
-cache.Put("number_item", 42);
-
-// Get value from cache by key
-Console.WriteLine(cache.Get("number_item").Value);
-
-// Get value from cache by key
-Console.WriteLine(cache.Get<int>("number_item"));
-
-// Numbers can be incremented
-cache.Increment("number_item", 10);
-
-// Immediately delete an item
-cache.Delete("number_item");
-
-cache.Put("complex_item", new {greeting = "Hello", target = "world"});
-
-// Get value from cache by key
-Console.WriteLine(cache.Get("complex_item").Value);
-
-cache.Delete("complex_item");
-```
-
 # IronMQ
 
 <http://dev.iron.io/mq/>
@@ -402,4 +364,42 @@ ScheduleIdCollection schedule = workerClient.Schedules.Create("Test", payload, o
 Console.WriteLine(schedule.Inspect());
 
 workerClient.Schedules.Cancel(schedule.Schedules.First().Id);
+```
+
+# IronCache
+<http://dev.iron.io/cache/>
+
+```PM> Install-Package Iron.IronCache```
+
+```C#
+// =========================================================
+// Iron.io Cache
+// =========================================================
+
+IronCacheRestClient ironCacheClient = IronSharp.IronCache.Client.New();
+
+// Get a Cache object
+CacheClient cache = ironCacheClient.Cache("my_cache");
+
+// Put value to cache by key
+cache.Put("number_item", 42);
+
+// Get value from cache by key
+Console.WriteLine(cache.Get("number_item").Value);
+
+// Get value from cache by key
+Console.WriteLine(cache.Get<int>("number_item"));
+
+// Numbers can be incremented
+cache.Increment("number_item", 10);
+
+// Immediately delete an item
+cache.Delete("number_item");
+
+cache.Put("complex_item", new {greeting = "Hello", target = "world"});
+
+// Get value from cache by key
+Console.WriteLine(cache.Get("complex_item").Value);
+
+cache.Delete("complex_item");
 ```
