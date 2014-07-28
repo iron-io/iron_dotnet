@@ -12,13 +12,16 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 2. Create new project at http://hud.iron.io/dashboard
 3. Download the iron.json file from "Credentials" block of project
 
-# IronMQ
 
-<http://dev.iron.io/mq/>
+# IronMQ On-Premise
 
-**Note:** You are reading documentation of Iron.MQ v3. There are some differences from the previous version. Check this list at [page should be published at HUD](#hud) <!-- TODO: add valid reference -->
+**Note:** You are reading documentation of Iron.MQ v3. There are some differences from the previous version of IronMQ. For more information please go to [Iron.io Dev Center](http://dev.iron.io/mq-onpremise/).
 
-```PM> Install-Package Iron.IronMQ``` <!-- TODO: add version -->
+This version is for **IronMq Version 3** and **On-Premise**. If you are using the public version please use [version 1.0.2](http://github.com/iron-io/iron_dotnet)
+
+### Installation
+
+```PM> Install-Package Iron.IronMQ -Pre```
 
 ### Configuration
 
@@ -41,6 +44,12 @@ Also you need to pass authorization data to the client. There are several ways t
 
 ```C#
 var iromMq = IronSharp.IronMQ.Client.New();
+```
+
+You can specify host settings in iron.json or explicitly in code, for example:
+
+```C#
+var iromMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "XXXXXXX", Token = "YYYYYYY", Host = "localhost", Scheme = "http", Port = 8080});
 ```
 
 ## The Basics
