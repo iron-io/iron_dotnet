@@ -329,6 +329,8 @@ q.Delete(new[]{id1, id2});
 
 ```PM> Install-Package Iron.IronWorker```
 
+## Overview
+
 ```C#
 // =========================================================
 // Iron.io Worker
@@ -365,6 +367,37 @@ Console.WriteLine(schedule.Inspect());
 
 workerClient.Schedules.Cancel(schedule.Schedules.First().Id);
 ```
+
+## Scheduling Options
+
+You can append to `ScheduleBuilder.Build()` (i.e. instance of ScheduleOptionsBuilder) the following methods:
+
+  - **WithFrequency**: The amount of time specified with timespan, between runs.  By default, the task will only run once. It will return a 400 error if it is set to less than 60. Original API parameter name is `run_every`.
+  - **StopAt**: The time tasks will stop being queued. Should be an instance of DateTime. Original API parameter name is `end_at`.
+  - **StopAfterNumberOfRuns**: The number of times a task will run. Original API parameter name is `run_times`
+  - **WithPriority**: The priority queue to run the job in. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0. Higher values means tasks spend less time in the queue once they come off the schedule. Original API parameter name is `priority`
+  - **StartingOn**: The time the scheduled task should first be run. Should be an instance of DateTime. Original API parameter name is `start_at`.
+  - **RunFor**: The amount of time specified with timespan scheduled task should be run for. The same as `StopAt(DateTime.Now + duration)`
+  - **Delay**: The amount of time execution should be delayed. The same as `StartingOn(DateTime.Now + delay)`
+  - **NeverStop**: Disables effects from previously called `StopAt` and `StopAfterNumberOfRuns`.
+
+## Queueing a Task
+
+```
+string taskId = workerClient.Tasks.Create("Test", payload, options);
+```
+
+Where `payload` could be any object:
+
+```
+var payload = new {environment = "development", names = new String[]{"Bob", "Alice"}};
+```
+
+There are following possible options:
+
+  - **Priority**: The priority queue to run the job in. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0.
+  - **Timeout**: The maximum runtime of your task in seconds. No task can exceed 3600 seconds (60 minutes). The default is 3600 but can be set to a shorter duration.
+  - **Delay**: The number of seconds to delay before actually queuing the task. Default is 0.
 
 # IronCache
 <http://dev.iron.io/cache/>
