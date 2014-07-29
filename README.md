@@ -127,7 +127,7 @@ Console.WriteLine(schedule.Inspect());
 workerClient.Schedules.Cancel(schedule.Schedules.First().Id);
 ```
 
-### Queueing a Task
+### Queuing a Task
 
 ```
 string taskId = workerClient.Tasks.Create("Test", payload, options);
@@ -139,9 +139,9 @@ Where `payload` could be any object:
 var payload = new {environment = "development", names = new String[]{"Bob", "Alice"}};
 ```
 
-There are following possible options:
+There are following possible Options:
 
-  - **Priority**: The priority queue to run the job in. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0.
+  - **Priority**: Setting the priority of your job. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0.
   - **Timeout**: The maximum runtime of your task in seconds. No task can exceed 3600 seconds (60 minutes). The default is 3600 but can be set to a shorter duration.
   - **Delay**: The number of seconds to delay before actually queuing the task. Default is 0.
 
