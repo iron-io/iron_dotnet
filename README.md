@@ -377,6 +377,24 @@ Console.WriteLine(schedule.Inspect());
 workerClient.Schedules.Cancel(schedule.Schedules.First().Id);
 ```
 
+## Queuing a Task
+
+```
+string taskId = workerClient.Tasks.Create("Test", payload, options);
+```
+
+Where `payload` could be any object:
+
+```
+var payload = new {environment = "development", names = new String[]{"Bob", "Alice"}};
+```
+
+There are following possible Options:
+
+  - **Priority**: Setting the priority of your job. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0.
+  - **Timeout**: The maximum runtime of your task in seconds. No task can exceed 3600 seconds (60 minutes). The default is 3600 but can be set to a shorter duration.
+  - **Delay**: The number of seconds to delay before actually queuing the task. Default is 0.
+
 ## Scheduling Options
 
 You can append to `ScheduleBuilder.Build()` (i.e. instance of ScheduleOptionsBuilder) the following methods:
@@ -390,23 +408,6 @@ You can append to `ScheduleBuilder.Build()` (i.e. instance of ScheduleOptionsBui
   - **Delay**: The amount of time execution should be delayed. The same as `StartingOn(DateTime.Now + delay)`
   - **NeverStop**: Disables effects from previously called `StopAt` and `StopAfterNumberOfRuns`.
 
-## Queueing a Task
-
-```
-string taskId = workerClient.Tasks.Create("Test", payload, options);
-```
-
-Where `payload` could be any object:
-
-```
-var payload = new {environment = "development", names = new String[]{"Bob", "Alice"}};
-```
-
-There are following possible options:
-
-  - **Priority**: The priority queue to run the job in. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0.
-  - **Timeout**: The maximum runtime of your task in seconds. No task can exceed 3600 seconds (60 minutes). The default is 3600 but can be set to a shorter duration.
-  - **Delay**: The number of seconds to delay before actually queuing the task. Default is 0.
 
 # IronCache
 <http://dev.iron.io/cache/>
