@@ -17,6 +17,37 @@ namespace Demo.IronSharpConsole
             LogManager.Adapter = new ConsoleOutLoggerFactoryAdapter();
 
             // =========================================================
+            // Iron.io Cache
+            // =========================================================
+
+            IronCacheRestClient ironCacheClient = IronSharp.IronCache.Client.New();
+
+            // Get a Cache object
+            CacheClient cache = ironCacheClient.Cache("my_cache");
+
+            // Put value to cache by key
+            cache.Put("number_item", 42);
+
+            // Get value from cache by key
+            Console.WriteLine(cache.Get("number_item").Value);
+
+            // Get value from cache by key
+            Console.WriteLine(cache.Get<int>("number_item"));
+
+            // Numbers can be incremented
+            cache.Increment("number_item", 10);
+
+            // Immediately delete an item
+            cache.Delete("number_item");
+
+            cache.Put("complex_item", new {greeting = "Hello", target = "world"});
+
+            // Get value from cache by key
+            Console.WriteLine(cache.Get("complex_item").Value);
+
+            cache.Delete("complex_item");
+
+            // =========================================================
             // Iron.io MQ
             // =========================================================
 
@@ -113,40 +144,8 @@ namespace Demo.IronSharpConsole
 
             workerClient.Schedules.Cancel(schedule.Schedules.First().Id);
 
-            // =========================================================
-            // Iron.io Cache
-            // =========================================================
-
-            IronCacheRestClient ironCacheClient = IronSharp.IronCache.Client.New();
-
-            // Get a Cache object
-            CacheClient cache = ironCacheClient.Cache("my_cache");
-
-            // Put value to cache by key
-            cache.Put("number_item", 42);
-
-            // Get value from cache by key
-            Console.WriteLine(cache.Get("number_item").Value);
-
-            // Get value from cache by key
-            Console.WriteLine(cache.Get<int>("number_item"));
-
-            // Numbers can be incremented
-            cache.Increment("number_item", 10);
-
-            // Immediately delete an item
-            cache.Delete("number_item");
-
-            cache.Put("complex_item", new { greeting = "Hello", target = "world" });
-
-            // Get value from cache by key
-            Console.WriteLine(cache.Get("complex_item").Value);
-
-            cache.Delete("complex_item");
-
             Console.WriteLine("============= Done ==============");
             Console.Read();
-
         }
 
         private static void TestPosting(IronMqRestClient ironMq)

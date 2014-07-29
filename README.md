@@ -12,6 +12,43 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 2. Create new project at http://hud.iron.io/dashboard
 3. Download the iron.json file from "Credentials" block of project
 
+# IronCache
+<http://dev.iron.io/cache/>
+
+```PM> Install-Package Iron.IronCache```
+
+```C#
+// =========================================================
+// Iron.io Cache
+// =========================================================
+
+IronCacheRestClient ironCacheClient = IronSharp.IronCache.Client.New();
+
+// Get a Cache object
+CacheClient cache = ironCacheClient.Cache("my_cache");
+
+// Put value to cache by key
+cache.Put("number_item", 42);
+
+// Get value from cache by key
+Console.WriteLine(cache.Get("number_item").Value);
+
+// Get value from cache by key
+Console.WriteLine(cache.Get<int>("number_item"));
+
+// Numbers can be incremented
+cache.Increment("number_item", 10);
+
+// Immediately delete an item
+cache.Delete("number_item");
+
+cache.Put("complex_item", new {greeting = "Hello", target = "world"});
+
+// Get value from cache by key
+Console.WriteLine(cache.Get("complex_item").Value);
+
+cache.Delete("complex_item");
+```
 
 # IronMQ On-Premise
 
@@ -338,8 +375,6 @@ q.Delete(new[]{id1, id2});
 
 ```PM> Install-Package Iron.IronWorker```
 
-## Overview
-
 ```C#
 // =========================================================
 // Iron.io Worker
@@ -375,73 +410,4 @@ ScheduleIdCollection schedule = workerClient.Schedules.Create("Test", payload, o
 Console.WriteLine(schedule.Inspect());
 
 workerClient.Schedules.Cancel(schedule.Schedules.First().Id);
-```
-
-## Scheduling Options
-
-You can append to `ScheduleBuilder.Build()` (i.e. instance of ScheduleOptionsBuilder) the following methods:
-
-  - **WithFrequency**: The amount of time specified with timespan, between runs.  By default, the task will only run once. It will return a 400 error if it is set to less than 60. Original API parameter name is `run_every`.
-  - **StopAt**: The time tasks will stop being queued. Should be an instance of DateTime. Original API parameter name is `end_at`.
-  - **StopAfterNumberOfRuns**: The number of times a task will run. Original API parameter name is `run_times`
-  - **WithPriority**: The priority queue to run the job in. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0. Higher values means tasks spend less time in the queue once they come off the schedule. Original API parameter name is `priority`
-  - **StartingOn**: The time the scheduled task should first be run. Should be an instance of DateTime. Original API parameter name is `start_at`.
-  - **RunFor**: The amount of time specified with timespan scheduled task should be run for. The same as `StopAt(DateTime.Now + duration)`
-  - **Delay**: The amount of time execution should be delayed. The same as `StartingOn(DateTime.Now + delay)`
-  - **NeverStop**: Disables effects from previously called `StopAt` and `StopAfterNumberOfRuns`.
-
-## Queueing a Task
-
-```
-string taskId = workerClient.Tasks.Create("Test", payload, options);
-```
-
-Where `payload` could be any object:
-
-```
-var payload = new {environment = "development", names = new String[]{"Bob", "Alice"}};
-```
-
-There are following possible options:
-
-  - **Priority**: The priority queue to run the job in. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0.
-  - **Timeout**: The maximum runtime of your task in seconds. No task can exceed 3600 seconds (60 minutes). The default is 3600 but can be set to a shorter duration.
-  - **Delay**: The number of seconds to delay before actually queuing the task. Default is 0.
-
-# IronCache
-<http://dev.iron.io/cache/>
-
-```PM> Install-Package Iron.IronCache```
-
-```C#
-// =========================================================
-// Iron.io Cache
-// =========================================================
-
-IronCacheRestClient ironCacheClient = IronSharp.IronCache.Client.New();
-
-// Get a Cache object
-CacheClient cache = ironCacheClient.Cache("my_cache");
-
-// Put value to cache by key
-cache.Put("number_item", 42);
-
-// Get value from cache by key
-Console.WriteLine(cache.Get("number_item").Value);
-
-// Get value from cache by key
-Console.WriteLine(cache.Get<int>("number_item"));
-
-// Numbers can be incremented
-cache.Increment("number_item", 10);
-
-// Immediately delete an item
-cache.Delete("number_item");
-
-cache.Put("complex_item", new {greeting = "Hello", target = "world"});
-
-// Get value from cache by key
-Console.WriteLine(cache.Get("complex_item").Value);
-
-cache.Delete("complex_item");
 ```
