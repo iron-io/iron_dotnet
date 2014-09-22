@@ -45,5 +45,6 @@ namespace IronSharp.IronMQ
 
             return new IronMqRestClient(hierarchyConfig);
         }
+
     }
 }
