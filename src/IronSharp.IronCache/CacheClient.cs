@@ -8,6 +8,7 @@ namespace IronSharp.IronCache
     {
         private readonly string _cacheName;
         private readonly IronCacheRestClient _client;
+        private readonly RestClient _restClient = new RestClient();
 
         public CacheClient(IronCacheRestClient client, string cacheName)
         {
@@ -32,12 +33,12 @@ namespace IronSharp.IronCache
         /// </remarks>
         public bool Clear()
         {
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/clear", CacheNameEndPoint())).HasExpectedMessage("Deleted.");
+            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/clear", CacheNameEndPoint())).HasExpectedMessage("Deleted.");
         }
 
         public bool Delete(string key)
         {
-            return RestClient.Delete<ResponseMsg>(_client.Config, CacheItemEndPoint(key)).HasExpectedMessage("Deleted.");
+            return _restClient.Delete<ResponseMsg>(_client.Config, CacheItemEndPoint(key)).HasExpectedMessage("Deleted.");
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public CacheItem Get(string key)
         {
-            RestResponse<CacheItem> response = RestClient.Get<CacheItem>(_client.Config, CacheItemEndPoint(key));
+            RestResponse<CacheItem> response = _restClient.Get<CacheItem>(_client.Config, CacheItemEndPoint(key));
 
             if (response.CanReadResult())
             {
@@ -111,7 +112,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public CacheIncrementResult Increment(string key, int amount = 1)
         {
-            return RestClient.Post<CacheIncrementResult>(_client.Config, string.Format("{0}/increment", CacheItemEndPoint(key)), new {amount});
+            return _restClient.Post<CacheIncrementResult>(_client.Config, string.Format("{0}/increment", CacheItemEndPoint(key)), new {amount});
         }
 
         /// <summary>
@@ -122,7 +123,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public CacheInfo Info()
         {
-            return RestClient.Get<CacheInfo>(_client.Config, CacheNameEndPoint());
+            return _restClient.Get<CacheInfo>(_client.Config, CacheNameEndPoint());
         }
 
         public bool Put(string key, object value, CacheItemOptions options = null)
@@ -150,7 +151,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public bool Put(string key, CacheItem item)
         {
-            return RestClient.Put<ResponseMsg>(_client.Config, CacheItemEndPoint(key), item).HasExpectedMessage("Stored.");
+            return _restClient.Put<ResponseMsg>(_client.Config, CacheItemEndPoint(key), item).HasExpectedMessage("Stored.");
         }
 
         private static bool IsDefaultValue(CacheItem item)
