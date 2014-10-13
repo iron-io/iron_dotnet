@@ -18,7 +18,7 @@ namespace IronSharp.IronMQ
              
             if (_config.Keystone != null)
             {
-                if (_config.ExistKeystoneKeys())
+                if (_config.KeystoneKeysExist())
                 {
                     TokenContainer = new KeystoneContainer(_config.Keystone);
                 }

@@ -36,10 +36,10 @@ namespace IronSharp.Core
             set { _sharpConfig = value; }
         }
 
-        public bool ExistKeystoneKeys() 
+        public bool KeystoneKeysExist() 
         {
-           return Keystone.Tenant != null && Keystone.Server != null && 
-            Keystone.Username != null && Keystone.Password != null;
+            return Keystone.Tenant != null && Keystone.Server != null && 
+                   Keystone.Username != null && Keystone.Password != null;
         }
 
         private static IronSharpConfig CreateDefaultIronSharpConfig()
