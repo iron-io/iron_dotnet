@@ -8,6 +8,7 @@ namespace IronSharp.IronCache
     public class IronCacheRestClient
     {
         private readonly IronClientConfig _config;
+        private readonly RestClient _restClient = new RestClient();
 
         internal IronCacheRestClient(IronClientConfig config)
         {
@@ -49,7 +50,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public bool Delete(string cacheName)
         {
-            return RestClient.Delete<ResponseMsg>(_config, string.Format("{0}/{1}", EndPoint, cacheName)).HasExpectedMessage("Deleted.");
+            return _restClient.Delete<ResponseMsg>(_config, string.Format("{0}/{1}", EndPoint, cacheName)).HasExpectedMessage("Deleted.");
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace IronSharp.IronCache
                 query.Add("page", Convert.ToString(page));
             }
 
-            return RestClient.Get<CacheInfo[]>(_config, EndPoint, query);
+            return _restClient.Get<CacheInfo[]>(_config, EndPoint, query);
         }
     }
 }
