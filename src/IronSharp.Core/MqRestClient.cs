@@ -36,8 +36,6 @@ namespace IronSharp.Core
             if (request.AuthTokenLocation == AuthTokenLocation.Header)
             {
                 String token = tokenContainer.getToken();
-                Console.WriteLine("header token");
-                Console.WriteLine(token);
                 headers.Authorization = new AuthenticationHeaderValue("OAuth", token);
             }
         }
