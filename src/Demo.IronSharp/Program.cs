@@ -267,7 +267,7 @@ namespace Demo.IronSharpConsole
             q.Delete(ms);
             //     or
             //q.Delete(ms.Messages.ConvertAll(m => m.Id));
-            Console.WriteLine(" >> Size of Q should be eq to zero: {0}", q.Info().Size);
+            Console.WriteLine("Size of Q should be eq to zero: {0}", q.Info().Size);
         }
 
         private static void TestTouching(IronMqRestClient ironMq)
