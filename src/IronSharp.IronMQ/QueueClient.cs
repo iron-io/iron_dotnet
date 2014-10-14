@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using IronSharp.Core;
 
@@ -178,7 +179,8 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueInfo Info()
         {
-            return _restClient.Get<QueueInfo>(_client.Config, EndPoint);
+            QueueContainer container = _restClient.Get<QueueContainer>(_client.Config, EndPoint);
+            return container.Queue;
         }
 
         /// <summary>
