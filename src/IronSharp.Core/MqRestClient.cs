@@ -26,12 +26,12 @@ namespace IronSharp.Core
             Keystone keystone = new Keystone(config.Tenant, config.Username, config.Password);
             HttpClient client = new HttpClient();
             HttpContent contentPost = new StringContent(JSON.Generate(keystone), Encoding.UTF8, "application/json");
-            String uri = config.Server + "tokens";
+            String uri = config.Server.TrimEnd('/') + "/tokens";
             HttpResponseMessage response = client.PostAsync(uri, contentPost).Result;
             return new RestResponse<T>(response);
         }
 
-        protected void SetOauthHeaderIfRequired(IronClientConfig config, IRestClientRequest request, HttpRequestHeaders headers)
+        protected override void SetOauthHeaderIfRequired(IronClientConfig config, IRestClientRequest request, HttpRequestHeaders headers)
         {
             if (request.AuthTokenLocation == AuthTokenLocation.Header)
             {

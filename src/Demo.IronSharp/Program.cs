@@ -200,8 +200,7 @@ namespace Demo.IronSharpConsole
             q.Post("1");
             var result = q.Delete();
             var info = q.Info();
-            Console.WriteLine("Should return true: {0}", result);
-            Console.WriteLine("Should have null name: {0}", info.Name == null ? "null" : info.Name);
+            Console.WriteLine("Should be null: {0}", info == null);
         }
 
         private static void TestGettingListQueue(IronMqRestClient ironMq)
@@ -265,10 +264,10 @@ namespace Demo.IronSharpConsole
             q.Post("3");
 
             var ms = q.Reserve(3, 0);
-            // q.Delete(ms);
+            q.Delete(ms);
             //     or
-            q.Delete(ms.Messages.ConvertAll(m => m.Id));
-            Console.WriteLine("Size of Q should be eq to zero: {0}", q.Info().Size);
+            //q.Delete(ms.Messages.ConvertAll(m => m.Id));
+            Console.WriteLine(" >> Size of Q should be eq to zero: {0}", q.Info().Size);
         }
 
         private static void TestTouching(IronMqRestClient ironMq)
