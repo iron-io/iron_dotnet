@@ -74,7 +74,8 @@ namespace IronSharp.Core
             {
                 ProjectId = config.ProjectId,
                 Token = config.Token,
-                Host = config.Host
+                Host = config.Host,
+                Keystone = config.Keystone
             };
 
             ApplyOverrides(settings, GetProductOverride(product, config));
@@ -105,6 +106,7 @@ namespace IronSharp.Core
             targetConfig.Scheme    = string.IsNullOrEmpty(overrideConfig.Scheme)    ? targetConfig.Scheme : overrideConfig.Scheme;
             targetConfig.ApiVersion = overrideConfig.ApiVersion == default(int) ? targetConfig.ApiVersion : overrideConfig.ApiVersion;
             targetConfig.Port = overrideConfig.Port.HasValue ? overrideConfig.Port : targetConfig.Port;
+            targetConfig.Keystone = overrideConfig.Keystone == null ? targetConfig.Keystone : overrideConfig.Keystone;
         }
 
         private static string _appDirectory;

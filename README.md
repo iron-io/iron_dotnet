@@ -52,6 +52,38 @@ You can specify host settings in iron.json or explicitly in code, for example:
 var iromMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "XXXXXXX", Token = "YYYYYYY", Host = "localhost", Scheme = "http", Port = 8080});
 ```
 
+### Keystone Authentication
+
+#### Via Configuration File
+
+Add `keystone` section to your iron.json file:
+
+```javascript
+{
+  "project_id": "57a7b7b35e8e331d45000001",
+  "keystone": {
+    "server": "http://your.keystone.host/v2.0/",
+    "tenant": "some-group",
+    "username": "name",
+    "password": "password"
+  }
+}
+```
+
+#### In Code
+
+```C#
+KeystoneClientConfig keystone = new KeystoneClientConfig 
+{ 
+   Tenant = "people",
+   Server = "http://your.keystone.host/v2.0/",
+   Username = "name",
+   Password = "password"
+};
+var ironMq = IronSharp.IronMQ.Client.New(new IronClientConfig {ProjectId = "XXXXXXX", Keystone = keystone});
+
+```
+
 ## The Basics
 
 ### Get Queues List

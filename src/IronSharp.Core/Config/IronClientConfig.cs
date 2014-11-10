@@ -26,11 +26,20 @@ namespace IronSharp.Core
         [JsonProperty("scheme")]
         public String Scheme { get; set; }
 
+        [JsonProperty("keystone")]
+        public KeystoneClientConfig Keystone { get; set; }
+
         [JsonProperty("sharp_config")]
         public IronSharpConfig SharpConfig
         {
             get { return LazyInitializer.EnsureInitialized(ref _sharpConfig, CreateDefaultIronSharpConfig); }
             set { _sharpConfig = value; }
+        }
+
+        public bool KeystoneKeysExist() 
+        {
+            return Keystone.Tenant != null && Keystone.Server != null && 
+                   Keystone.Username != null && Keystone.Password != null;
         }
 
         private static IronSharpConfig CreateDefaultIronSharpConfig()

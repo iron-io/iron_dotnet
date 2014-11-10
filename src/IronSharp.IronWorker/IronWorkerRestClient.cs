@@ -6,6 +6,7 @@ namespace IronSharp.IronWorker
     public class IronWorkerRestClient
     {
         private readonly IronClientConfig _config;
+        private readonly RestClient _restClient = new RestClient();
 
         internal IronWorkerRestClient(IronClientConfig config)
         {
@@ -57,7 +58,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public CodeInfoCollection Codes(PagingFilter filter = null)
         {
-            return RestClient.Get<CodeInfoCollection>(_config, string.Format("{0}/codes", EndPoint), filter).Result;
+            return _restClient.Get<CodeInfoCollection>(_config, string.Format("{0}/codes", EndPoint), filter).Result;
         }
 
         #endregion

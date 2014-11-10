@@ -7,6 +7,7 @@ namespace IronSharp.IronWorker
     public class ScheduleClient
     {
         private readonly IronWorkerRestClient _client;
+        private readonly RestClient _restClient = new RestClient(); 
 
         public ScheduleClient(IronWorkerRestClient client)
         {
@@ -28,7 +29,7 @@ namespace IronSharp.IronWorker
 
         public bool Cancel(string scheduleId)
         {
-            return RestClient.Post<ResponseMsg>(_client.Config, ScheduleEndPoint(scheduleId) + "/cancel").HasExpectedMessage("Cancelled");
+            return _restClient.Post<ResponseMsg>(_client.Config, ScheduleEndPoint(scheduleId) + "/cancel").HasExpectedMessage("Cancelled");
         }
 
         public ScheduleIdCollection Create(string codeName, object payload, ScheduleOptions options)
@@ -43,12 +44,12 @@ namespace IronSharp.IronWorker
 
         public ScheduleIdCollection Create(SchedulePayloadCollection collection)
         {
-            return RestClient.Post<ScheduleIdCollection>(_client.Config, EndPoint, collection);
+            return _restClient.Post<ScheduleIdCollection>(_client.Config, EndPoint, collection);
         }
 
         public ScheduleInfo Get(string scheduleId)
         {
-            return RestClient.Get<ScheduleInfo>(_client.Config, ScheduleEndPoint(scheduleId));
+            return _restClient.Get<ScheduleInfo>(_client.Config, ScheduleEndPoint(scheduleId));
         }
 
         /// <summary>
@@ -60,7 +61,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public ScheduleInfoCollection List(PagingFilter filter = null)
         {
-            return RestClient.Get<ScheduleInfoCollection>(_client.Config, EndPoint, filter);
+            return _restClient.Get<ScheduleInfoCollection>(_client.Config, EndPoint, filter);
         }
 
         public string ScheduleEndPoint(string scheduleId)

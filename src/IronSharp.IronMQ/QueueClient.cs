@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using IronSharp.Core;
 
@@ -127,11 +128,13 @@ namespace IronSharp.IronMQ
     {
         private readonly IronMqRestClient _client;
         private readonly string _name;
+        private MqRestClient _restClient;
 
         public QueueClient(IronMqRestClient client, string name)
         {
             _client = client;
             _name = name;
+            _restClient = new MqRestClient(_client.TokenContainer);
         }
 
         public string EndPoint
@@ -154,7 +157,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Clear()
         {
-            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), null, new object()).HasExpectedMessage("Cleared.");
+            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), null, new object()).HasExpectedMessage("Cleared.");
         }
 
         /// <summary>
@@ -165,7 +168,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Delete()
         {
-            return RestClient.Delete<ResponseMsg>(_client.Config, EndPoint).HasExpectedMessage("Deleted.");
+            return _restClient.Delete<ResponseMsg>(_client.Config, EndPoint).HasExpectedMessage("Deleted.");
         }
 
         /// <summary>
@@ -176,7 +179,8 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueInfo Info()
         {
-            return RestClient.Get<QueueInfo>(_client.Config, EndPoint);
+            QueueContainer container = _restClient.Get<QueueContainer>(_client.Config, EndPoint);
+            return container.Queue;
         }
 
         /// <summary>
@@ -189,7 +193,7 @@ namespace IronSharp.IronMQ
         /// <returns> </returns>
         public QueueInfo Update(QueueInfo updates)
         {
-            QueueContainer response = RestClient.Put<QueueContainer>(_client.Config, EndPoint, new QueueContainer(updates));
+            QueueContainer response = _restClient.Put<QueueContainer>(_client.Config, EndPoint, new QueueContainer(updates));
             return response.Queue;
         }
 
@@ -206,7 +210,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Delete(string messageId)
         {
-            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, new object()).HasExpectedMessage("Deleted");
+            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, new object()).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
@@ -220,7 +224,7 @@ namespace IronSharp.IronMQ
         public bool DeleteMessage(string messageId, string reservationId)
         {
             var payload = new MessageIdContainer {ReservationId = reservationId};
-            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, payload).HasExpectedMessage("Deleted");
+            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, payload).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
@@ -233,12 +237,12 @@ namespace IronSharp.IronMQ
         public bool Delete(IEnumerable<string> messageIds)
         {
             return
-                RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messageIds)).HasExpectedMessage("Deleted");
+                _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messageIds)).HasExpectedMessage("Deleted");
         }
 
         public bool Delete(MessageCollection messages)
         {
-            return RestClient
+            return _restClient
                 .Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messages))
                 .HasExpectedMessage("Deleted");            
         }
@@ -252,7 +256,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueMessage Get(string messageId)
         {
-            return RestClient.Get<QueueMessage>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId));
+            return _restClient.Get<QueueMessage>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId));
         }
 
         /// <summary>
@@ -330,7 +334,7 @@ namespace IronSharp.IronMQ
                 query.Add("wait", Convert.ToString(wait));
             }
 
-            RestResponse<MessageCollection> result = RestClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload, query);
+            RestResponse<MessageCollection> result = _restClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload, query);
 
             if (result.CanReadResult())
             {
@@ -434,7 +438,7 @@ namespace IronSharp.IronMQ
                 query.Add("n", Convert.ToString(n));
             }
 
-            RestResponse<MessageCollection> result = RestClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages", EndPoint), query);
+            RestResponse<MessageCollection> result = _restClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages", EndPoint), query);
 
 
             if (result.CanReadResult())
@@ -499,7 +503,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public MessageIdCollection Post(MessageCollection messageCollection)
         {
-            return RestClient.Post<MessageIdCollection>(_client.Config, string.Format("{0}/messages", EndPoint), messageCollection);
+            return _restClient.Post<MessageIdCollection>(_client.Config, string.Format("{0}/messages", EndPoint), messageCollection);
         }
 
         /// <summary>
@@ -555,7 +559,7 @@ namespace IronSharp.IronMQ
         public bool Release(string messageId, string reservationId, int? delay = null)
         {
             var payload = new MessageOptions {Delay = delay, ReservationId = reservationId};
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), payload).HasExpectedMessage("Released");
+            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), payload).HasExpectedMessage("Released");
         }
 
         /// <summary>
@@ -568,7 +572,7 @@ namespace IronSharp.IronMQ
         public bool Touch(string messageId, string reservationId = null)
         {
             var payload = new MessageOptions { ReservationId = reservationId };
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload).HasExpectedMessage("Touched");
+            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload).HasExpectedMessage("Touched");
         }
 
         /// <summary>
@@ -582,7 +586,7 @@ namespace IronSharp.IronMQ
                 EndPoint = string.Format("{0}/webhook", EndPoint),
                 AuthTokenLocation = AuthTokenLocation.Querystring
             };
-            return RestClient.BuildRequestUri(_client.Config, request, token);
+            return _restClient.BuildRequestUri(_client.Config, request, token);
         }
 
         private MessageCollection LinkMessageCollection(RestResponse<MessageCollection> response)
@@ -610,7 +614,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueInfo AddAlerts(AlertCollection alertCollection)
         {
-            return RestClient.Post<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+            return _restClient.Post<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
         }
 
         /// <summary>
@@ -622,7 +626,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueInfo UpdateAlerts(AlertCollection alertCollection)
         {
-            return RestClient.Put<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+            return _restClient.Put<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
         }
 
         /// <summary>
@@ -652,7 +656,7 @@ namespace IronSharp.IronMQ
         {
             if (String.IsNullOrEmpty(alertId))
                 return false;
-            return RestClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/alerts/{1}", EndPoint, alertId)).HasExpectedMessage("Deleted");
+            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/alerts/{1}", EndPoint, alertId)).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
@@ -663,7 +667,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueInfo RemoveAlerts(AlertCollection alertCollection)
         {
-            return RestClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), payload: alertCollection);
+            return _restClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), payload: alertCollection);
         }
 
         #endregion
@@ -679,7 +683,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueInfo AddSubscribers(SubscriberCollection subscriberCollection)
         {
-            return RestClient.Post<QueueInfo>(_client.Config, string.Format("{0}/subscribers", EndPoint), subscriberCollection);
+            return _restClient.Post<QueueInfo>(_client.Config, string.Format("{0}/subscribers", EndPoint), subscriberCollection);
         }
 
         /// <summary>
@@ -693,7 +697,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Delete(string messageId, string subscriberId)
         {
-            return RestClient.Get<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/subscribers/{2}", EndPoint, messageId, subscriberId)).HasExpectedMessage("Deleted");
+            return _restClient.Get<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/subscribers/{2}", EndPoint, messageId, subscriberId)).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
@@ -706,7 +710,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public SubscriberCollection PushStatus(string messageId)
         {
-            return RestClient.Get<SubscriberCollection>(_client.Config, string.Format("{0}/messages/{1}/subscribers", EndPoint, messageId));
+            return _restClient.Get<SubscriberCollection>(_client.Config, string.Format("{0}/messages/{1}/subscribers", EndPoint, messageId));
         }
 
         /// <summary>
@@ -717,7 +721,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public QueueInfo RemoveSubscribers(SubscriberCollection subscriberCollection)
         {
-            return RestClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/subscribers", EndPoint), payload: subscriberCollection);
+            return _restClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/subscribers", EndPoint), payload: subscriberCollection);
         }
 
         #endregion
