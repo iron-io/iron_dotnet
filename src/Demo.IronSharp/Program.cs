@@ -68,6 +68,9 @@ namespace Demo.IronSharpConsole
             // Touch message to prolongate reservation
             TestTouching(ironMq);
 
+            // Touch message to prolongate reservation
+            TestTouchingTwice(ironMq);
+
             // Release reserved message
             TestReleasing(ironMq);
 
@@ -279,6 +282,18 @@ namespace Demo.IronSharpConsole
             var msg = q.Reserve();
             Console.WriteLine(msg.ReservationId);
             Thread.Sleep(2000);
+            msg.Touch();
+        }
+
+        private static void TestTouchingTwice(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_touchable_queue");
+            q.Post("1");
+            var msg = q.Reserve();
+            Console.WriteLine(msg.ReservationId);
+            Thread.Sleep(2000);
+            msg.Touch();
+            Thread.Sleep(1000);
             msg.Touch();
         }
 

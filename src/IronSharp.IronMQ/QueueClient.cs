@@ -569,10 +569,10 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#touch_a_message_on_a_queue
         /// </remarks>
-        public bool Touch(string messageId, string reservationId = null)
+        public MessageOptions Touch(string messageId, string reservationId = null)
         {
             var payload = new MessageOptions { ReservationId = reservationId };
-            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload).HasExpectedMessage("Touched");
+            return _restClient.Post<MessageOptions>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload);
         }
 
         /// <summary>
