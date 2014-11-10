@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Iron.IronMQ</id>
-    <version>3.0.1</version>
+    <version>3.0.4-on-premise</version>
     <title>IronMQ</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
@@ -17,7 +17,7 @@
     <releaseNotes>Beta version for MQ v3</releaseNotes>
     <tags>iron.io,message queue</tags>
     <dependencies>
-      <dependency id="Iron.IronCore" version="3.0.1"/>
+      <dependency id="Iron.IronCore" version="3.0.2-on-premise"/>
       <dependency id="Newtonsoft.Json" />
     </dependencies>
   </metadata>

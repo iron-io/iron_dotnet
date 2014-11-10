@@ -63,9 +63,11 @@ namespace IronSharp.IronMQ
         /// <summary>
         /// Extends this message's timeout by the duration specified when the message was created, which is 60 seconds by default.
         /// </summary>
-        public bool Touch()
+        public MessageOptions Touch()
         {
-            return Client.Touch(Id, ReservationId);
+            var options = Client.Touch(Id, ReservationId);
+            this.ReservationId = options.ReservationId;
+            return options;
         }
 
         #endregion
