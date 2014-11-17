@@ -42,7 +42,14 @@ namespace IronSharp.Core
 
                 if (request.Content != null)
                 {
-                    sw.WriteLine(request.Content.ReadAsStringAsync().Result);
+                    try
+                    {
+                        sw.WriteLine(request.Content.ReadAsStringAsync().Result);
+                    }
+                    catch (Exception e)
+                    {
+                        sw.WriteLine("Unable to read response content. " + e.Message);
+                    }                    
                 }
 
                 return sw.ToString();
