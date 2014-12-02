@@ -516,13 +516,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Release(string messageId, int? delay = null)
         {
-            var query = new NameValueCollection();
-
-            if (delay.HasValue)
-            {
-                query.Add("delay", Convert.ToString(delay));
-            }
-
+            var query = new MessageOptions { Delay = delay };
             return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), query).HasExpectedMessage("Released");
         }
 
