@@ -57,5 +57,17 @@ namespace IronSharp.IronWorker
             Priority = priority;
             return this;
         }
+
+        public ScheduleOptionsBuilder WithLabel(String label)
+        {
+            Label = label;
+            return this;
+        }
+
+        public ScheduleOptionsBuilder WithCluster(String cluster)
+        {
+            Cluster = cluster;
+            return this;
+        }
     }
 }
