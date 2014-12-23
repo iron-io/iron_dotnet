@@ -19,6 +19,8 @@ namespace IronSharp.IronWorker
             Priority = options.Priority;
             RunEvery = options.RunEvery;
             StartAt = options.StartAt;
+            Cluster = options.Cluster;
+            Label = options.Label;
         }
 
         /// <summary>

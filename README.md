@@ -144,6 +144,8 @@ There are following possible Options:
   - **Priority**: Setting the priority of your job. Valid values are `TaskPriority.Default` (0), `TaskPriority.Medium` (1), and `TaskPriority.High` (2). The default is 0.
   - **Timeout**: The maximum runtime of your task in seconds. No task can exceed 3600 seconds (60 minutes). The default is 3600 but can be set to a shorter duration.
   - **Delay**: The number of seconds to delay before actually queuing the task. Default is 0.
+  - **label**: Optional text label for your task. 
+  - **cluster**: cluster name ex: "high-mem" or "dedicated".  This is a premium feature for customers to have access to more powerful or custom built worker solutions. Dedicated worker clusters exist for users who want to reserve a set number of workers just for their queued tasks. If not set default is set to  "default" which is the public IronWorker cluster.
 
 ### Scheduling Options
 
@@ -157,7 +159,8 @@ You can append to `ScheduleBuilder.Build()` (i.e. instance of ScheduleOptionsBui
   - **RunFor**: The amount of time specified with timespan scheduled task should be run for. The same as `StopAt(DateTime.Now + duration)`
   - **Delay**: The amount of time execution should be delayed. The same as `StartingOn(DateTime.Now + delay)`
   - **NeverStop**: Disables effects from previously called `StopAt` and `StopAfterNumberOfRuns`.
-
+  - **label**: Optional text label for your task. 
+  - **cluster**: cluster name ex: "high-mem" or "dedicated". 
 
 ## IronCache
 <http://dev.iron.io/cache/>

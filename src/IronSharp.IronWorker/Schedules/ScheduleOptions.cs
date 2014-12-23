@@ -41,5 +41,17 @@ namespace IronSharp.IronWorker
         /// </summary>
         [JsonProperty("start_at", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public DateTime? StartAt { get; set; }
+
+        /// <summary>
+        /// Optional text label for the task. 
+        /// </summary>
+        [JsonProperty("label", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public String Label { get; set; }
+
+        /// <summary>
+        /// The cluster name ex. "high-mem" or "dedicated". 
+        /// </summary>
+        [JsonProperty("cluster", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public String Cluster { get; set; } 
     }
 }

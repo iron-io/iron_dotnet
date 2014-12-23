@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace IronSharp.IronWorker
 {
@@ -15,5 +16,18 @@ namespace IronSharp.IronWorker
         /// </summary>
         [JsonProperty("delay", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Delay { get; set; }
+
+        /// <summary>
+        /// Optional text label for the task. 
+        /// </summary>
+        [JsonProperty("label", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public String Label { get; set; }
+
+        /// <summary>
+        /// The cluster name ex. "high-mem" or "dedicated". 
+        /// </summary>
+        [JsonProperty("cluster", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public String Cluster { get; set; } 
+
     }
 }

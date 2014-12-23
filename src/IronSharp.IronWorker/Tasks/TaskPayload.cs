@@ -22,6 +22,8 @@ namespace IronSharp.IronWorker
             Timeout = options.Timeout;
             Delay = options.Delay;
             Priority = options.Priority;
+            Label = options.Label;
+            Cluster = options.Cluster;
         }
 
         /// <summary>
