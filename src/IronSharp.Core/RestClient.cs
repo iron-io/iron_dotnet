@@ -12,6 +12,13 @@ namespace IronSharp.Core
 {
     public class RestClient
     {
+        private HttpClient httpClient;
+
+        public RestClient()
+        {
+            httpClient=new HttpClient();
+        }
+
         /// <summary>
         /// Generates the Uri for the specified request.
         /// </summary>
@@ -57,10 +64,7 @@ namespace IronSharp.Core
                 Content = request.Content
             });
 
-            using (var client = new HttpClient())
-            {
-                return client.SendAsync(httpRequest);
-            }
+            return httpClient.SendAsync(httpRequest);
         }
 
         public RestResponse<T> Get<T>(IronClientConfig config, string endPoint, NameValueCollection query = null) where T : class
@@ -122,47 +126,44 @@ namespace IronSharp.Core
 
             ILog logger = LogManager.GetLogger<RestClient>();
 
-            using (var client = new HttpClient())
+            if (logger.IsDebugEnabled)
             {
-                if (logger.IsDebugEnabled)
+                using (var sw = new StringWriter())
                 {
-                    using (var sw = new StringWriter())
+                    sw.WriteLine("{0} {1}", request.Method, request.RequestUri);
+                    if (request.Content != null)
                     {
-                        sw.WriteLine("{0} {1}", request.Method, request.RequestUri);
-                        if (request.Content != null)
-                        {
-                            sw.WriteLine(request.Content.ReadAsStringAsync().Result);
-                        }
-                        logger.Debug(sw.ToString());
+                        sw.WriteLine(request.Content.ReadAsStringAsync().Result);
                     }
+                    logger.Debug(sw.ToString());
                 }
+            }
 
-                HttpResponseMessage response = client.SendAsync(request).Result;
+            HttpResponseMessage response = httpClient.SendAsync(request).Result;
 
-                if (logger.IsDebugEnabled)
+            if (logger.IsDebugEnabled)
+            {
+                if (response.Content != null)
                 {
-                    if (response.Content != null)
-                    {
-                        logger.Debug(response.Content.ReadAsStringAsync().Result);
-                    }
+                    logger.Debug(response.Content.ReadAsStringAsync().Result);
                 }
+            }
 
-                if (response.IsSuccessStatusCode)
-                {
-                    return response;
-                }
-
-                if (HttpClientOptions.EnableRetry && IsRetriableStatusCode(response))
-                {
-                    attempt++;
-
-                    ExponentialBackoff.Sleep(sharpConfig.BackoffFactor, attempt);
-
-                    return AttemptRequest(sharpConfig, request, attempt);
-                }
-
+            if (response.IsSuccessStatusCode)
+            {
                 return response;
             }
+
+            if (HttpClientOptions.EnableRetry && IsRetriableStatusCode(response))
+            {
+                attempt++;
+
+                ExponentialBackoff.Sleep(sharpConfig.BackoffFactor, attempt);
+
+                return AttemptRequest(sharpConfig, request, attempt);
+            }
+
+            return response;
         }
 
         private HttpRequestMessage BuildRequest(IronClientConfig config, IRestClientRequest request)
