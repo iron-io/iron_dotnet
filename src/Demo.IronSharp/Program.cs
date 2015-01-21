@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Common.Logging;
@@ -23,8 +24,8 @@ namespace Demo.IronSharpConsole
             //IronMqRestClient ironMq = IronSharp.IronMQ.Client.New();
 
             // For beta testing
-            IronMqRestClient ironMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "53a3b3bd5e8edd1245000005", Token = "O7KrMTwmw997iq0KzL7v", Host = "192.168.1.155", ApiVersion = 3, Port = 8080, Scheme = Uri.UriSchemeHttp });
-
+            IronMqRestClient ironMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "53a3b3bd5e8edd1245000005", Token = "O7KrMTwmw997iq0KzL7v", Host = "192.168.1.155", ApiVersion = 3, Port = 8080, Scheme = Uri.UriSchemeHttp });            
+            
             // Simple actions
 
             // Post message to a queue
@@ -35,7 +36,7 @@ namespace Demo.IronSharpConsole
 
             // Post message, reserve it and delete
             TestDeletingReservedMessage(ironMq);
-            
+
             // Actions on queue
 
             // Update queue info
@@ -58,13 +59,13 @@ namespace Demo.IronSharpConsole
 
             // Get message by id without reservation
             TestGettingMessageById(ironMq);
-            
+
             // Get message without reserving it
             TestPeekingMessage(ironMq);
 
             // Delete unreserved message
             TestDeletingMessage(ironMq);
-            
+
             // Touch message to prolongate reservation
             TestTouching(ironMq);
 
@@ -77,6 +78,9 @@ namespace Demo.IronSharpConsole
             // Delete a bunch of messages
             TestDeletingMessages(ironMq);
 
+            // Get subscriber's URL
+            TestGettingSubscribersInfo(ironMq);
+
             // =========================================================
             // Iron.io Worker
             // =========================================================
@@ -87,7 +91,7 @@ namespace Demo.IronSharpConsole
 
             IronWorkerRestClient workerClient = IronSharp.IronWorker.Client.New();
 
-            string taskId = workerClient.Tasks.Create("Test", new {Key = "Value"});
+            string taskId = workerClient.Tasks.Create("Test", new { Key = "Value" });
 
             Console.WriteLine("TaskID: {0}", taskId);
 
@@ -107,7 +111,7 @@ namespace Demo.IronSharpConsole
             var payload = new
             {
                 a = "b",
-                c = new[] {1, 2, 3}
+                c = new[] { 1, 2, 3 }
             };
 
             ScheduleIdCollection schedule = workerClient.Schedules.Create("Test", payload, options);
@@ -271,6 +275,16 @@ namespace Demo.IronSharpConsole
             //     or
             //q.Delete(ms.Messages.ConvertAll(m => m.Id));
             Console.WriteLine("Size of Q should be eq to zero: {0}", q.Info().Size);
+        }
+
+        private static void TestGettingSubscribersInfo(IronMqRestClient ironMq)
+        {
+            var q = ironMq.Queue("my_push_queue");
+            string url = "http://myURL";
+            var subscribes = new List<Subscriber>{new Subscriber(){Url = url}};
+            q.Update(new QueueInfo { PushType = PushType.Multicast, PushInfo = new PushInfo{Subscribers = subscribes}});
+            Console.WriteLine("Amount of subscribers should be 1: {0}",q.Info().PushInfo.Subscribers.Count);
+            Console.WriteLine("The URL of subscriber should be {0}: {1}", url, q.Info().PushInfo.Subscribers[0].Url);
         }
 
         private static void TestTouching(IronMqRestClient ironMq)
