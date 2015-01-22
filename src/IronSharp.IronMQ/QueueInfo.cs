@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 namespace IronSharp.IronMQ
 {
     public class QueueInfo : IInspectable
-    {
-        [JsonProperty("subscribers", DefaultValueHandling = DefaultValueHandling.Ignore)] 
-        private List<Subscriber> _subscribers;
-        
+    {                
         [JsonProperty("alerts", DefaultValueHandling = DefaultValueHandling.Ignore)] 
         private List<Alert> _alerts;
+
+        [JsonProperty("push", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public PushInfo PushInfo { get; set; }
 
         [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Id { get; set; }
@@ -30,21 +30,6 @@ namespace IronSharp.IronMQ
         /// </summary>
         [JsonIgnore]
         public PushType PushType { get; set; }
-
-        /// <summary>
-        /// How many times to retry on failure.
-        /// Default is 3.
-        /// Maximum is 100.
-        /// </summary>
-        [JsonProperty("retries", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? Retries { get; set; }
-
-        /// <summary>
-        /// Delay between each retry in seconds.
-        /// Default is 60.
-        /// </summary>
-        [JsonProperty("retries_delay", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? RetriesDelay { get; set; }
 
         [JsonProperty("size", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Size { get; set; }
@@ -87,13 +72,6 @@ namespace IronSharp.IronMQ
         /// </summary>
         [JsonProperty("message_expiration", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? MessageExpiration { get; set; }
-
-        [JsonIgnore]
-        public List<Subscriber> Subscribers
-        {
-            get { return LazyInitializer.EnsureInitialized(ref _subscribers); }
-            set { _subscribers = value; }
-        }
 
         [JsonIgnore]
         public List<Alert> Alerts
