@@ -157,7 +157,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public bool Clear()
         {
-            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), null, new object()).HasExpectedMessage("Cleared.");
+            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), null, new object()).HasExpectedMessage("Cleared");
         }
 
         /// <summary>
