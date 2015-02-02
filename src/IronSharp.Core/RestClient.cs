@@ -7,16 +7,18 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using Common.Logging;
+using IronSharp.Core.Abstract;
+using IronSharp.Core.Types;
 
 namespace IronSharp.Core
 {
-    public class RestClient
+    public class RestClient: IRequestHelpersContainer
     {
         private HttpClient httpClient;
 
         public RestClient()
         {
-            httpClient=new HttpClient();
+            httpClient = new HttpClient();
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace IronSharp.Core
 
         public RestResponse<T> Delete<T>(IronClientConfig config, string endPoint, NameValueCollection query = null, Object payload = null) where T : class
         {
-            HttpRequestMessage request = BuildRequest(config, new RestClientRequest
+            var requestBuilder = new HttpRequestMessageBuilder(config, this, new RestClientRequest
             {
                 EndPoint = endPoint,
                 Query = query,
@@ -48,15 +50,15 @@ namespace IronSharp.Core
 
             if (payload != null)
             {
-                request.Content = new JsonContent(payload);
+                requestBuilder.RequestContent = new JsonContent(payload);
             }
 
-            return new RestResponse<T>(AttemptRequest(sharpConfig, request));
+            return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
         }
 
         public Task<HttpResponseMessage> Execute(IronClientConfig config, IRestClientRequest request)
         {
-            HttpRequestMessage httpRequest = BuildRequest(config, new RestClientRequest
+            var requestBuilder = new HttpRequestMessageBuilder(config, this, new RestClientRequest
             {
                 EndPoint = request.EndPoint,
                 Query = request.Query,
@@ -64,24 +66,24 @@ namespace IronSharp.Core
                 Content = request.Content
             });
 
-            return httpClient.SendAsync(httpRequest);
+            return httpClient.SendAsync(requestBuilder.Build());
         }
 
         public RestResponse<T> Get<T>(IronClientConfig config, string endPoint, NameValueCollection query = null) where T : class
         {
-            HttpRequestMessage request = BuildRequest(config, new RestClientRequest
+            var requestBuilder = new HttpRequestMessageBuilder(config, this, new RestClientRequest
             {
                 EndPoint = endPoint,
                 Query = query,
                 Method = HttpMethod.Get
             });
 
-            return new RestResponse<T>(AttemptRequest(config.SharpConfig, request));
+            return new RestResponse<T>(AttemptRequest(config.SharpConfig, requestBuilder));
         }
 
         public RestResponse<T> Post<T>(IronClientConfig config, string endPoint, object payload = null, NameValueCollection query = null) where T : class
         {
-            HttpRequestMessage request = BuildRequest(config, new RestClientRequest
+            var requestBuilder = new HttpRequestMessageBuilder(config, this, new RestClientRequest
             {
                 EndPoint = endPoint,
                 Query = query,
@@ -92,15 +94,15 @@ namespace IronSharp.Core
 
             if (payload != null)
             {
-                request.Content = new JsonContent(payload);
+                requestBuilder.RequestContent = new JsonContent(payload);
             }
 
-            return new RestResponse<T>(AttemptRequest(sharpConfig, request));
+            return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
         }
 
         public RestResponse<T> Put<T>(IronClientConfig config, string endPoint, object payload, NameValueCollection query = null) where T : class
         {
-            HttpRequestMessage request = BuildRequest(config, new RestClientRequest
+            var requestBuilder = new HttpRequestMessageBuilder(config, this, new RestClientRequest
             {
                 EndPoint = endPoint,
                 Query = query,
@@ -111,14 +113,15 @@ namespace IronSharp.Core
 
             if (payload != null)
             {
-                request.Content = new JsonContent(payload);
+                requestBuilder.RequestContent = new JsonContent(payload);
             }
 
-            return new RestResponse<T>(AttemptRequest(sharpConfig, request));
+            return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
         }
 
-        private HttpResponseMessage AttemptRequest(IronSharpConfig sharpConfig, HttpRequestMessage request, int attempt = 0)
+        private HttpResponseMessage AttemptRequest(IronSharpConfig sharpConfig, HttpRequestMessageBuilder requestBuilder, int attempt = 0)
         {
+            var request = requestBuilder.Build();
             if (attempt > HttpClientOptions.RetryLimit)
             {
                 throw new MaximumRetryAttemptsExceededException(request, HttpClientOptions.RetryLimit);
@@ -160,7 +163,7 @@ namespace IronSharp.Core
 
                 ExponentialBackoff.Sleep(sharpConfig.BackoffFactor, attempt);
 
-                return AttemptRequest(sharpConfig, request, attempt);
+                return AttemptRequest(sharpConfig, requestBuilder, attempt);
             }
 
             return response;
@@ -185,7 +188,7 @@ namespace IronSharp.Core
             return httpRequest;
         }
 
-        private Uri BuildUri(IronClientConfig config, string path, NameValueCollection query)
+        public Uri BuildUri(IronClientConfig config, string path, NameValueCollection query)
         {
             if (path.StartsWith("/"))
             {
@@ -220,7 +223,7 @@ namespace IronSharp.Core
             return response != null && response.StatusCode == HttpStatusCode.ServiceUnavailable;
         }
 
-        private void SetOathQueryParameterIfRequired(IRestClientRequest request, string token)
+        public void SetOathQueryParameterIfRequired(IRestClientRequest request, string token)
         {
             if (request.AuthTokenLocation != AuthTokenLocation.Querystring) return;
 
@@ -228,7 +231,7 @@ namespace IronSharp.Core
             request.Query["oauth"] = token;
         }
 
-        protected virtual void SetOauthHeaderIfRequired(IronClientConfig config, IRestClientRequest request, HttpRequestHeaders headers)
+        public virtual void SetOauthHeaderIfRequired(IronClientConfig config, IRestClientRequest request, HttpRequestHeaders headers)
         {
             if (request.AuthTokenLocation == AuthTokenLocation.Header)
             {
