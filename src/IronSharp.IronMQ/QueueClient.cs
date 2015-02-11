@@ -254,9 +254,11 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#get_message_by_id
         /// </remarks>
-        public MessageContainer Get(string messageId)
+        public QueueMessage Get(string messageId)
         {
-            return _restClient.Get<MessageContainer>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId));
+            MessageContainer messageContainer = _restClient.Get<MessageContainer>(_client.Config,
+                string.Format("{0}/messages/{1}", EndPoint, messageId));
+            return messageContainer.Message;            
         }
 
         /// <summary>
