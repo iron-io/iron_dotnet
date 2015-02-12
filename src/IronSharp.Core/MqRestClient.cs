@@ -31,7 +31,7 @@ namespace IronSharp.Core
             return new RestResponse<T>(response);
         }
 
-        protected override void SetOauthHeaderIfRequired(IronClientConfig config, IRestClientRequest request, HttpRequestHeaders headers)
+        public override void SetOauthHeaderIfRequired(IronClientConfig config, IRestClientRequest request, HttpRequestHeaders headers)
         {
             if (request.AuthTokenLocation == AuthTokenLocation.Header)
             {

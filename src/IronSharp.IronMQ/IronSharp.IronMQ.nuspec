@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Iron.IronMQ</id>
-    <version>3.0.4-on-premise</version>
+    <version>3.0.6-on-premise</version>
     <title>IronMQ</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
@@ -14,11 +14,14 @@
         cloud applications with critical messaging needs. Provides on-demand message
         queuing with HTTPS transport, one-time FIFO delivery, message persistence,
         and cloud-optimized performance.</description>
-    <releaseNotes>Beta version for MQ v3</releaseNotes>
+    <releaseNotes>
+      Beta version for MQ v3. ATTENTION! THIS VERSION IS FOR IronMQ VERSION 3 AND ON-PREMISE. IF YOU ARE USING THE PUBLIC VERSION PLEASE USE VERSION 1.0.X
+    </releaseNotes>
     <tags>iron.io,message queue</tags>
     <dependencies>
-      <dependency id="Iron.IronCore" version="3.0.2-on-premise"/>
+      <dependency id="Iron.IronCore" version="3.0.6-on-premise"/>
       <dependency id="Newtonsoft.Json" />
+      <dependency id="Common.Logging" version="2.1.2" />
     </dependencies>
   </metadata>
   <files>
