@@ -14,7 +14,19 @@ namespace Demo.IronSharpConsole.Tests
         [SetUp]
         public void Init()
         {
-            ironMq = Client.New(new IronClientConfig { ProjectId = "xxxxxxxxxxxxxxxxxxxxxxxx", Token = "yyyyyyyyyyyyyyyyyyyy", Host = "mq-v3-worker-1.iron.io", ApiVersion = 3, Port = 80, Scheme = Uri.UriSchemeHttp });
+            // Put your ".iron.json" file to home directory, eg. C:\Users\YourUsername
+            ironMq = Client.New();
+
+            // Or config the client here:
+            // ironMq = Client.New(new IronClientConfig
+            // {
+            //     ProjectId = "xxxxxxxxxxxxxxxxxxxxxxxx",
+            //     Token = "yyyyyyyyyyyyyyyyyyyy",
+            //     Host = "host-of-ironmq.com",
+            //     ApiVersion = 3,
+            //     Port = 80,
+            //     Scheme = Uri.UriSchemeHttp
+            // });
         }
 
         [Test]
