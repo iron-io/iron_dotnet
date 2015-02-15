@@ -571,9 +571,11 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#touch_a_message_on_a_queue
         /// </remarks>
-        public MessageOptions Touch(string messageId, string reservationId = null)
+        public MessageOptions Touch(string messageId, string reservationId, int? timeout = null)
         {
             var payload = new MessageOptions { ReservationId = reservationId };
+            if (timeout.HasValue)
+                payload.Timeout = timeout;
             return _restClient.Post<MessageOptions>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload);
         }
 
