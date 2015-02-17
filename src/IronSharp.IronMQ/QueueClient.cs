@@ -695,13 +695,13 @@ namespace IronSharp.IronMQ
         /// See http://dev.iron.io/mq/reference/push_queues/#how_the_endpoint_should_handle_push_messages for more information.
         /// </summary>
         /// <param name="messageId"> The id of the message. </param>
-        /// <param name="subscriberId"> The id of the subscriber to delete. </param>
+        /// <param name="subscriberName"> The id of the subscriber to delete. </param>        
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#acknowledge__delete_push_message_for_a_subscriber
         /// </remarks>
-        public bool Delete(string messageId, string subscriberId)
+        public bool Delete(string messageId, string subscriberName)
         {
-            return _restClient.Get<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/subscribers/{2}", EndPoint, messageId, subscriberId)).HasExpectedMessage("Deleted");
+            return _restClient.Get<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/subscribers/{2}", EndPoint, messageId, subscriberName)).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
