@@ -15,6 +15,9 @@ namespace IronSharp.IronMQ
             Url = url;
         }
 
+        [JsonProperty("name", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string Name { get; set; }
+
         [JsonProperty("retries_delay", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? RetriesDelay { get; set; }
 
