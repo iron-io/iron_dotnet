@@ -6,12 +6,13 @@ namespace IronSharp.IronMQ
 {
     public class Subscriber
     {
-        public Subscriber() : this(null)
+        public Subscriber() : this(null,null)
         {
         }
 
-        public Subscriber(string url)
+        public Subscriber(string name, string url)
         {
+            Name = name;
             Url = url;
         }
 
@@ -40,16 +41,6 @@ namespace IronSharp.IronMQ
         public HttpStatusCode StatusCode
         {
             get { return (HttpStatusCode) Code.GetValueOrDefault(200); }
-        }
-
-        public static implicit operator Subscriber(string url)
-        {
-            return new Subscriber(url);
-        }
-
-        public static implicit operator Subscriber(Uri uri)
-        {
-            return new Subscriber(uri.ToString());
-        }
+        }        
     }
 }

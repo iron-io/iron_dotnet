@@ -75,6 +75,9 @@ namespace IronSharp.IronMQ
         [JsonIgnore]
         internal QueueClient Client { get; set; }
 
+        [JsonIgnore]
+        public string SubscriberName { get; set; }
+
         public static implicit operator QueueMessage(string message)
         {
             return new QueueMessage(message);

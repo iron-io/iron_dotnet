@@ -18,7 +18,7 @@ namespace IronSharp.IronMQ
         public ReservedMessageIdCollection(MessageCollection collection)
         {
             _ids = new List<MessageIdContainer>();
-            _ids.AddRange(collection.Messages.ConvertAll(m => new MessageIdContainer { Id = m.Id, ReservationId = m.ReservationId }));
+            _ids.AddRange(collection.Messages.ConvertAll(m => new MessageIdContainer { Id = m.Id, ReservationId = m.ReservationId, SubscriberName = m.SubscriberName}));
         }
 
         [JsonProperty("ids", DefaultValueHandling = DefaultValueHandling.Ignore)]

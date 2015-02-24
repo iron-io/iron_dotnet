@@ -14,46 +14,20 @@ namespace IronSharp.IronMQ
         {
         }
 
-        public SubscriberCollection(Uri subscriber) : this(new[] {subscriber})
+        public SubscriberCollection(string name, string url)
         {
+            Subscribers.Add(new Subscriber(name,url));
         }
 
-        public SubscriberCollection(IEnumerable<Uri> subscribers)
-        {
-            foreach (Uri subscriber in subscribers)
-            {
-                Subscribers.Add(subscriber);
-            }
-        }
-
-        public SubscriberCollection(string subscriber)
-            : this(new[] {subscriber})
-        {
-        }
-
-        public SubscriberCollection(IEnumerable<string> subscribers)
-        {
-            foreach (string subscriber in subscribers)
-            {
-                Subscribers.Add(subscriber);
-            }
-        }
+        public SubscriberCollection(string name, Uri uri) : this(name, uri.ToString())
+        {            
+        }        
 
         [JsonIgnore]
         public List<Subscriber> Subscribers
         {
             get { return LazyInitializer.EnsureInitialized(ref _subscribers); }
             set { _subscribers = value; }
-        }
-
-        public static implicit operator SubscriberCollection(string url)
-        {
-            return new SubscriberCollection(url);
-        }
-
-        public static implicit operator SubscriberCollection(Uri url)
-        {
-            return new SubscriberCollection(url);
         }
     }
 }
