@@ -222,7 +222,7 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#delete_a_message_from_a_queue
         /// </remarks>
-        public bool DeleteMessage(string messageId, string reservationId, string subscriberName=null)
+        public bool DeleteMessage(string messageId, string reservationId=null, string subscriberName=null)
         {
             var payload = new MessageIdContainer {ReservationId = reservationId, SubscriberName = subscriberName};            
             return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, payload).HasExpectedMessage("Deleted");
