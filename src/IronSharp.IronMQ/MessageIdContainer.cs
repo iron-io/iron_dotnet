@@ -18,5 +18,8 @@ namespace IronSharp.IronMQ
         /// </summary>
         [JsonProperty("reservation_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string ReservationId { get; set; }
+
+        [JsonProperty("subscriber_name", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string SubscriberName { get; set; }
     }
 }
