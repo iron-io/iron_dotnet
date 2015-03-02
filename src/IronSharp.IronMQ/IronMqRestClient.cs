@@ -65,13 +65,6 @@ namespace IronSharp.IronMQ
             return new QueueClient(this, name);
         }
 
-        public QueueClient Queue(string name, QueueInfo updates)
-        {
-            var queueClient = new QueueClient(this, name);
-            queueClient.Update(updates);
-            return queueClient;
-        }
-
         /// <summary>
         /// Get a list of all queues in a project.
         /// By default, 30 queues are listed at a time.

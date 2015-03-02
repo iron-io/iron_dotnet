@@ -218,12 +218,13 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="messageId"> The id of the message to delete. </param>
         /// <param name="reservationId"> Reservation id of the message to delete. </param>
+        /// <param name="subscriberName"></param>
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#delete_a_message_from_a_queue
         /// </remarks>
-        public bool DeleteMessage(string messageId, string reservationId)
+        public bool DeleteMessage(string messageId, string reservationId=null, string subscriberName=null)
         {
-            var payload = new MessageIdContainer {ReservationId = reservationId};
+            var payload = new MessageIdContainer {ReservationId = reservationId, SubscriberName = subscriberName};            
             return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, payload).HasExpectedMessage("Deleted");
         }
 
@@ -244,7 +245,7 @@ namespace IronSharp.IronMQ
         {
             return _restClient
                 .Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messages))
-                .HasExpectedMessage("Deleted");            
+                .HasExpectedMessage("Deleted");
         }
 
         /// <summary>
@@ -573,9 +574,7 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public MessageOptions Touch(string messageId, string reservationId, int? timeout = null)
         {
-            var payload = new MessageOptions { ReservationId = reservationId };
-            if (timeout.HasValue)
-                payload.Timeout = timeout;
+            var payload = new MessageOptions { ReservationId = reservationId, Timeout = timeout};            
             return _restClient.Post<MessageOptions>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload);
         }
 
@@ -688,20 +687,6 @@ namespace IronSharp.IronMQ
         public QueueInfo AddSubscribers(SubscriberCollection subscriberCollection)
         {
             return _restClient.Post<QueueInfo>(_client.Config, string.Format("{0}/subscribers", EndPoint), subscriberCollection);
-        }
-
-        /// <summary>
-        /// This is only for use with long running processes that have previously returned a 202.
-        /// See http://dev.iron.io/mq/reference/push_queues/#how_the_endpoint_should_handle_push_messages for more information.
-        /// </summary>
-        /// <param name="messageId"> The id of the message. </param>
-        /// <param name="subscriberName"> The id of the subscriber to delete. </param>        
-        /// <remarks>
-        /// http://dev.iron.io/mq/reference/api/#acknowledge__delete_push_message_for_a_subscriber
-        /// </remarks>
-        public bool Delete(string messageId, string subscriberName)
-        {
-            return _restClient.Get<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/subscribers/{2}", EndPoint, messageId, subscriberName)).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
