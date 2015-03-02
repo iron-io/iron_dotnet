@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Iron.IronCore</id>
-    <version>1.0.2</version>
+    <version>1.0.5</version>
     <title>IronCore</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
@@ -14,7 +14,7 @@
     <releaseNotes>Package now creates an iron.json file in application root</releaseNotes>
     <tags>iron.io</tags>
     <dependencies>
-      <dependency id="Common.Logging" />
+      <dependency id="Common.Logging" version="2.1.2" />
       <dependency id="Microsoft.AspNet.WebApi.Client" version="4.0.30506" />
       <dependency id="Newtonsoft.Json" version="5.0.1" />
     </dependencies>
