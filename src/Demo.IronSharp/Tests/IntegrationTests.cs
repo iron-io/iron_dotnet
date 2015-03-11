@@ -21,6 +21,7 @@ namespace Demo.IronSharpConsole.Tests
             // Put your ".iron.json" file to home directory, eg. C:\Users\YourUsername
             ironMq = Client.New();            
             queue = ironMq.Queue(GetQueueName());
+            queue.Clear();
 
             // Or config the client here:
             // ironMq = Client.New(new IronClientConfig
@@ -73,49 +74,50 @@ namespace Demo.IronSharpConsole.Tests
 
         [Test]
         public void ClearQueue()
-        {            
+        {
             queue.Post("one");
-            queue.Clear();
+            var cleared = queue.Clear();
+            Assert.IsTrue(cleared);
             Assert.AreEqual(queue.Info().Size, 0);
         }
 
         [Test]
         public void DeleteReservedMessage()
-        {
-            queue.Clear();
+        {            
             PostTwoMessages();
             var message = queue.Reserve();
-            message.Delete();
+            var deleted = message.Delete();
+            Assert.IsTrue(deleted);
             Assert.AreEqual(queue.Info().Size, 1);
         }
 
         [Test]
         public void DeleteReservedMessageViaQueue()
         {
-            queue.Clear();
             PostTwoMessages();
             var message = queue.Reserve();
-            queue.DeleteMessage(message.Id, message.ReservationId);
+            var deleted = queue.DeleteMessage(message.Id, message.ReservationId);
+            Assert.IsTrue(deleted);
             Assert.AreEqual(queue.Info().Size, 1);
         }
 
         [Test]
         public void DeleteNotReservedMessage()
         {
-            queue.Clear();
             queue.Post("one");
-            var messageId = queue.Post("two");            
-            queue.Delete(messageId);
+            var messageId = queue.Post("two");
+            var deleted = queue.Delete(messageId);
+            Assert.IsTrue(deleted);
             Assert.AreEqual(1, queue.Info().Size);
         }
 
         [Test]
-        public void DeleteNotReservedMessagePassingEmptyReservationId()
+        public void DeleteNotReservedMessageViaQueue()
         {
-            queue.Clear();
-            queue.Post("one");
-            var messageId = queue.Post("two");
-            queue.DeleteMessage(messageId,"");
+            var messageId = queue.Post("one");
+            queue.Post("two");
+            var deleted = queue.DeleteMessage(messageId);
+            Assert.IsTrue(deleted);
             Assert.AreEqual(1, queue.Info().Size);
         }
 
@@ -135,14 +137,15 @@ namespace Demo.IronSharpConsole.Tests
         public void DeleteQueue()
         {
             var q = ironMq.Queue(GetQueueName());
-            q.Delete();
-            Assert.AreEqual(null, q.Info());
+            q.Post("one");
+            var deleted = q.Delete();
+            Assert.IsTrue(deleted);
+            Assert.IsNull(q.Info());
         }
 
         [Test]
         public void GetMessageById()
-        {
-            queue.Clear();
+        {            
             var expectedBody = "testGetById";
             var messageId = queue.Post(expectedBody);
             Assert.AreEqual(expectedBody,queue.Get(messageId).Body);
@@ -150,36 +153,26 @@ namespace Demo.IronSharpConsole.Tests
 
         [Test]
         public void PeekMessage()
-        {
-            queue.Clear();
+        {            
             var firstMessageId = queue.Post("one");
             queue.Post("two");
             var peekedMessage = queue.PeekNext();
             Assert.AreEqual(firstMessageId, peekedMessage.Id);            
-        }
-
-        [Test]
-        public void TouchMessage()
-        {
-            queue.Post("one");
-            var msg = queue.Reserve();
-            var oldReservationId = msg.ReservationId;
-            msg.Touch();
-            Assert.AreNotEqual(oldReservationId, msg.ReservationId);
-        }
+        }        
 
         [Test]
         public void ReleaseMessage()
         {
-            queue.Post("one");            
-            var msg = queue.Reserve();            
-            Assert.IsTrue(msg.Release());
+            queue.Post("one");
+            var msg = queue.Reserve();
+            var released = msg.Release();
+            Assert.IsTrue(released);
+            Assert.AreEqual(msg.Id,queue.Reserve().Id);
         }
 
         [Test]
         public void DeleteMessages()
-        {
-            queue.Clear();
+        {            
             PostTwoMessages();
             var messages = queue.Reserve(2);
             queue.Delete(messages);
@@ -187,7 +180,7 @@ namespace Demo.IronSharpConsole.Tests
         }
 
         [Test]
-        public void TurnPull2PushQueue()
+        public void CreatePushQueue()
         {
             var q = ironMq.Queue(GetQueueName());
             var pushInfo = GenerateSubscribers(1);
@@ -224,7 +217,7 @@ namespace Demo.IronSharpConsole.Tests
         {
             var subscribes = new List<Subscriber>();
             for(int i=0;i<count;i++)
-                subscribes.Add(new Subscriber{Url = String.Format("http://myURL{0}",i)});
+                subscribes.Add(new Subscriber(String.Format("subscriber_{0}", i), String.Format("http://myURL{0}", i)));
             return new PushInfo {Subscribers = subscribes};
         }
     }
