@@ -50,7 +50,7 @@ namespace IronSharp.Core
 
             if (payload != null)
             {
-                requestBuilder.RequestContent = new JsonContent(payload);
+                requestBuilder.Payload = payload;
             }
 
             return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
@@ -94,7 +94,7 @@ namespace IronSharp.Core
 
             if (payload != null)
             {
-                requestBuilder.RequestContent = new JsonContent(payload);
+                requestBuilder.Payload = payload;
             }
 
             return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
@@ -113,7 +113,7 @@ namespace IronSharp.Core
 
             if (payload != null)
             {
-                requestBuilder.RequestContent = new JsonContent(payload);
+                requestBuilder.Payload = payload;
             }
 
             return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
