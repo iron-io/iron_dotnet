@@ -24,6 +24,9 @@ namespace IronSharp.IronWorker
         [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Id { get; set; }
 
+        [JsonProperty("schedule_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string ScheduleId { get; set; }
+
         [JsonProperty("msg", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Message { get; set; }
 
