@@ -10,6 +10,7 @@ namespace IronSharp.IronWorker
     public class TaskClient
     {
         private readonly IronWorkerRestClient _client;
+        protected readonly RestClient _restClient; 
 
         public TaskClient(IronWorkerRestClient client)
         {
@@ -17,6 +18,7 @@ namespace IronSharp.IronWorker
             Contract.EndContractBlock();
 
             _client = client;
+            _restClient = client.RestClient;
         }
 
         public string EndPoint
@@ -38,7 +40,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public bool Cancel(string taskId)
         {
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/cancel", TaskEndPoint(taskId))).HasExpectedMessage("Cancelled");
+            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/cancel", TaskEndPoint(taskId))).HasExpectedMessage("Cancelled");
         }
 
         /// <summary>
@@ -106,7 +108,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public TaskIdCollection Create(TaskPayloadCollection collection)
         {
-            return RestClient.Post<TaskIdCollection>(_client.Config, EndPoint, collection);
+            return _restClient.Post<TaskIdCollection>(_client.Config, EndPoint, collection);
         }
 
         /// <summary>
@@ -118,7 +120,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public TaskInfo Get(string taskId)
         {
-            return RestClient.Get<TaskInfo>(_client.Config, TaskEndPoint(taskId));
+            return _restClient.Get<TaskInfo>(_client.Config, TaskEndPoint(taskId));
         }
 
         /// <summary>
@@ -144,7 +146,7 @@ namespace IronSharp.IronWorker
                 ApplyStatusFilter(query, filter.Status);
             }
 
-            return RestClient.Get<TaskInfoCollection>(_client.Config, EndPoint, query).Result;
+            return _restClient.Get<TaskInfoCollection>(_client.Config, EndPoint, query).Result;
         }
 
         /// <summary>
@@ -156,7 +158,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public string Log(string taskId)
         {
-            return RestClient.Get<string>(_client.Config, string.Format("{0}/log", TaskEndPoint(taskId))).Content.ReadAsStringAsync().Result;
+            return _restClient.Get<string>(_client.Config, string.Format("{0}/log", TaskEndPoint(taskId))).Content.ReadAsStringAsync().Result;
         }
 
         /// <summary>
@@ -169,7 +171,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public bool Progress(string taskId, TaskProgress taskProgress)
         {
-            return RestClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/progress", TaskEndPoint(taskId)), taskProgress).HasExpectedMessage("Progress set");
+            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/progress", TaskEndPoint(taskId)), taskProgress).HasExpectedMessage("Progress set");
         }
 
         /// <summary>
@@ -189,7 +191,7 @@ namespace IronSharp.IronWorker
                 payload = new {delay};
             }
 
-            return RestClient.Post<TaskIdCollection>(_client.Config, string.Format("{0}/retry", TaskEndPoint(taskId)), payload);
+            return _restClient.Post<TaskIdCollection>(_client.Config, string.Format("{0}/retry", TaskEndPoint(taskId)), payload);
         }
 
         public string TaskEndPoint(string taskId)
@@ -210,7 +212,7 @@ namespace IronSharp.IronWorker
                     {"code_name", codeName}
                 }
             };
-            return RestClient.BuildRequestUri(_client.Config, request, token);
+            return _restClient.BuildRequestUri(_client.Config, request, token);
         }
 
         private static void ApplyDateRangeFilters(NameValueCollection query, DateTime? fromTime, DateTime? toTime)

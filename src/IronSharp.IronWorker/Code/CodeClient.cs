@@ -10,11 +10,13 @@ namespace IronSharp.IronWorker
     {
         private readonly IronWorkerRestClient _client;
         private readonly string _codeId;
+        protected readonly RestClient _restClient; 
 
         public CodeClient(IronWorkerRestClient client, string codeId)
         {
             _client = client;
             _codeId = codeId;
+            _restClient = client.RestClient;
         }
 
         public string EndPoint
@@ -30,7 +32,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public bool Delete()
         {
-            return RestClient.Delete<ResponseMsg>(_client.Config, EndPoint).HasExpectedMessage("Deleted");
+            return _restClient.Delete<ResponseMsg>(_client.Config, EndPoint).HasExpectedMessage("Deleted");
         }
 
         /// <summary>
@@ -41,7 +43,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public Task<HttpResponseMessage> Download()
         {
-            return RestClient.Execute(_client.Config, new RestClientRequest
+            return _restClient.Execute(_client.Config, new RestClientRequest
             {
                 EndPoint = EndPoint + "/download",
                 Method = HttpMethod.Get,
@@ -57,7 +59,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public CodeInfo Info()
         {
-            return RestClient.Get<CodeInfo>(_client.Config, EndPoint);
+            return _restClient.Get<CodeInfo>(_client.Config, EndPoint);
         }
 
         public RevisionCollection Revisions(int? page = null, int? perPage = null)
@@ -73,7 +75,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public RevisionCollection Revisions(PagingFilter filter = null)
         {
-            return RestClient.Get<RevisionCollection>(_client.Config, EndPoint + "/revisions", filter);
+            return _restClient.Get<RevisionCollection>(_client.Config, EndPoint + "/revisions", filter);
         }
 
         /// <summary>
@@ -84,7 +86,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public Task<HttpResponseMessage> Upload(Stream zipFile, WorkerOptions options)
         {
-            return RestClient.Execute(_client.Config, new RestClientRequest
+            return _restClient.Execute(_client.Config, new RestClientRequest
             {
                 EndPoint = EndPoint,
                 Method = HttpMethod.Post,
