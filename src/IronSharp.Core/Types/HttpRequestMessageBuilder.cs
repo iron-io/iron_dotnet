@@ -31,8 +31,7 @@ namespace IronSharp.Core.Types
 
             HttpRequestHeaders headers = httpRequest.Headers;
             RequestHelpersContainer.SetOauthHeaderIfRequired(Config, Request, headers);
-            headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-            headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+
             headers.Accept.Add(new MediaTypeWithQualityHeaderValue(Request.Accept));
 
             return httpRequest;

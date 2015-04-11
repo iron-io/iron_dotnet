@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace IronSharp.Core
 {
@@ -7,10 +8,21 @@ namespace IronSharp.Core
     {
         public static HttpClient CreateHttpClient()
         {
-            return HttpClientFactory.Create(new HttpClientHandler
+            var handler = new HttpClientHandler();
+            
+            var client =  HttpClientFactory.Create(handler);
+
+            if (handler.SupportsAutomaticDecompression)
             {
-                AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip
-            });
+                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+                var headers = client.DefaultRequestHeaders;
+
+                headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+            }
+
+            return client;
         }
     }
 }
