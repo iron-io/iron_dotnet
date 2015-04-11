@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IronSharp.Core</RootNamespace>
     <AssemblyName>IronSharp.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,10 +59,11 @@
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\IRequestHelpersContainer.cs" />
+    <Compile Include="Abstract\IRequestAuthBuilder.cs" />
+    <Compile Include="Abstract\IRequestBuilder.cs" />
     <Compile Include="Abstract\ITokenContainer.cs" />
     <Compile Include="Attributes\QueueNameAttribute.cs" />
-    <Compile Include="Config\KeystoneClientConfig.cs" />
+    <Compile Include="Keystone\KeystoneClientConfig.cs" />
     <Compile Include="Constants\AuthHeaderLocation.cs" />
     <Compile Include="DateTimeHelpers.cs" />
     <Compile Include="DefaultValueSerializer.cs" />
@@ -82,15 +84,29 @@
     <Compile Include="Config\IronSharpConfig.cs" />
     <Compile Include="Exceptions\IronSharpException.cs" />
     <Compile Include="Abstract\IValueSerializer.cs" />
+    <Compile Include="Abstract\IHideObjectMembers.cs" />
+    <Compile Include="Http\IronRequestBuilder.cs" />
+    <Compile Include="Keystone\Auth.cs" />
+    <Compile Include="Keystone\Credentials.cs" />
+    <Compile Include="Keystone\KestoneToken.cs" />
+    <Compile Include="Keystone\KeystoneAccess.cs" />
+    <Compile Include="Keystone\KeyStoneAuthRequestBuilder.cs" />
+    <Compile Include="Keystone\KeystoneClient.cs" />
+    <Compile Include="Keystone\KeystoneResponse.cs" />
+    <Compile Include="Keystone\KeystoneUtil.cs" />
+    <Compile Include="Tasks\ExpectedResultIronTask.cs" />
+    <Compile Include="Tasks\IIronTask.cs" />
+    <Compile Include="Tasks\IronTask.cs" />
     <Compile Include="JsonContent.cs" />
     <Compile Include="JSON.cs" />
     <Compile Include="Exceptions\MaximumRetryAttemptsExceededException.cs" />
-    <Compile Include="MqRestClient.cs" />
     <Compile Include="RestUtility.cs" />
+    <Compile Include="Tasks\JsonIronTask.cs" />
+    <Compile Include="Tasks\StringIronTask.cs" />
     <Compile Include="Types\HttpRequestMessageBuilder.cs" />
-    <Compile Include="Types\IronTokenContainer.cs" />
-    <Compile Include="Types\Keystone.cs" />
-    <Compile Include="Types\KeystoneContainer.cs" />
+    <Compile Include="Http\IronTokenContainer.cs" />
+    <Compile Include="Keystone\Keystone.cs" />
+    <Compile Include="Keystone\KeystoneContainer.cs" />
     <Compile Include="Types\PagingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Config\HttpClientOptions.cs" />

@@ -4,23 +4,32 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Common.Logging;
 using IronSharp.Core.Abstract;
+using IronSharp.Core.Http;
 using IronSharp.Core.Types;
 
 namespace IronSharp.Core
 {
-    public class RestClient: IRequestHelpersContainer
+    public class RestClient
     {
-        private HttpClient httpClient;
+        private IRequestBuilder _requestBuilder;
+        private readonly HttpClient _httpClient;
 
-        public RestClient()
+        public RestClient(IRequestBuilder requestBuilder = null)
         {
-            httpClient = RestUtility.CreateHttpClient();
+            _requestBuilder = requestBuilder;
+            _httpClient = RestUtility.CreateHttpClient();
         }
-        
+
+        public IRequestBuilder RequestBuilder
+        {
+            get { return LazyInitializer.EnsureInitialized(ref _requestBuilder, ()=> new IronRequestBuilder()); }
+        }
+
         /// <summary>
         /// Generates the Uri for the specified request.
         /// </summary>
@@ -66,7 +75,7 @@ namespace IronSharp.Core
                 Content = request.Content
             });
 
-            return httpClient.SendAsync(requestBuilder.Build());
+            return _httpClient.SendAsync(requestBuilder.Build());
         }
 
         public RestResponse<T> Get<T>(IronClientConfig config, string endPoint, NameValueCollection query = null) where T : class
@@ -143,7 +152,7 @@ namespace IronSharp.Core
                 }
             }
 
-            HttpResponseMessage response = httpClient.SendAsync(request).Result;
+            HttpResponseMessage response = _httpClient.SendAsync(request).Result;
 
             if (logger.IsDebugEnabled)
             {
@@ -158,7 +167,7 @@ namespace IronSharp.Core
                 return response;
             }
 
-            if (HttpClientOptions.EnableRetry && IsRetriableStatusCode(response))
+            if (HttpClientOptions.EnableRetry && ExponentialBackoff.IsRetriableStatusCode(response))
             {
                 attempt++;
 
@@ -170,55 +179,8 @@ namespace IronSharp.Core
             return response;
         }
 
-        public Uri BuildUri(IronClientConfig config, string path, NameValueCollection query)
-        {
-            if (path.StartsWith("/"))
-            {
-                path = path.Substring(1);
-            }
 
-            string queryString = "";
 
-            if (query != null && query.Count > 0)
-            {
-                NameValueCollection httpValueCollection = HttpUtility.ParseQueryString("");
 
-                httpValueCollection.Add(query);
-
-                queryString = httpValueCollection.ToString();
-            }
-
-            var scheme = String.IsNullOrEmpty(config.Scheme) ? Uri.UriSchemeHttps : config.Scheme;
-            var uriBuilder = new UriBuilder(scheme, config.Host)
-            {
-                Path = string.Format("{0}/{1}", config.ApiVersion, path.Replace("{Project ID}", config.ProjectId)),
-                Query = queryString
-            };
-            if (config.Port.HasValue)
-                uriBuilder.Port = config.Port.Value;
-
-            return uriBuilder.Uri;
-        }
-
-        private static bool IsRetriableStatusCode(HttpResponseMessage response)
-        {
-            return response != null && response.StatusCode == HttpStatusCode.ServiceUnavailable;
-        }
-
-        public void SetOathQueryParameterIfRequired(IRestClientRequest request, string token)
-        {
-            if (request.AuthTokenLocation != AuthTokenLocation.Querystring) return;
-
-            request.Query = request.Query ?? new NameValueCollection();
-            request.Query["oauth"] = token;
-        }
-
-        public virtual void SetOauthHeaderIfRequired(IronClientConfig config, IRestClientRequest request, HttpRequestHeaders headers)
-        {
-            if (request.AuthTokenLocation == AuthTokenLocation.Header)
-            {
-                headers.Authorization = new AuthenticationHeaderValue("OAuth", config.Token);
-            }
-        }
     }
 }

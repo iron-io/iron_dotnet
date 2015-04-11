@@ -8,29 +8,34 @@ namespace IronSharp.Core.Types
     internal class HttpRequestMessageBuilder
     {
         public IronClientConfig Config { get; set; }
+        
         public IRestClientRequest Request { get; set; }
+        
         public Object Payload { get; set; }
-        public IRequestHelpersContainer RequestHelpersContainer { get; set; }
 
-        public HttpRequestMessageBuilder(IronClientConfig config, IRequestHelpersContainer requestHelpersContainer, IRestClientRequest request)
+        public IRequestBuilder RequestBuilder { get; set; }
+
+        public HttpRequestMessageBuilder(IronClientConfig config, IRequestBuilder requestBuilder, IRestClientRequest request)
         {
             Config = config;
-            RequestHelpersContainer = requestHelpersContainer;
+            RequestBuilder = requestBuilder;
             Request = request;
         }
 
         public HttpRequestMessage Build()
         {
-            RequestHelpersContainer.SetOathQueryParameterIfRequired(Request, Config.Token);
+            RequestBuilder.SetOathQueryParameterIfRequired(Request, Config.Token);
+
             var httpRequest = new HttpRequestMessage
             {
                 Content = Payload != null ? new JsonContent(Payload) : Request.Content,
-                RequestUri = RequestHelpersContainer.BuildUri(Config, Request.EndPoint, Request.Query),
+                RequestUri = RequestBuilder.BuildUri(Config, Request.EndPoint, Request.Query),
                 Method = Request.Method
             };
 
             HttpRequestHeaders headers = httpRequest.Headers;
-            RequestHelpersContainer.SetOauthHeaderIfRequired(Config, Request, headers);
+
+            RequestBuilder.SetOauthHeaderIfRequired(Config, Request, headers);
 
             headers.Accept.Add(new MediaTypeWithQualityHeaderValue(Request.Accept));
 
