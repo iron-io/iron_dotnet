@@ -18,9 +18,9 @@ namespace IronSharp.Core
 
         public RestClient()
         {
-            httpClient = new HttpClient();
+            httpClient = RestUtility.CreateHttpClient();
         }
-
+        
         /// <summary>
         /// Generates the Uri for the specified request.
         /// </summary>
@@ -121,7 +121,8 @@ namespace IronSharp.Core
 
         private HttpResponseMessage AttemptRequest(IronSharpConfig sharpConfig, HttpRequestMessageBuilder requestBuilder, int attempt = 0)
         {
-            var request = requestBuilder.Build();
+            HttpRequestMessage request = requestBuilder.Build();
+
             if (attempt > HttpClientOptions.RetryLimit)
             {
                 throw new MaximumRetryAttemptsExceededException(request, HttpClientOptions.RetryLimit);
@@ -169,25 +170,6 @@ namespace IronSharp.Core
             return response;
         }
 
-        private HttpRequestMessage BuildRequest(IronClientConfig config, IRestClientRequest request)
-        {
-            SetOathQueryParameterIfRequired(request, config.Token);
-            var httpRequest = new HttpRequestMessage
-            {
-                Content = request.Content,
-                RequestUri = BuildUri(config, request.EndPoint, request.Query),
-                Method = request.Method
-            };
-
-            HttpRequestHeaders headers = httpRequest.Headers;
-            SetOauthHeaderIfRequired(config, request, headers);
-            headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-            headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
-            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(request.Accept));
-
-            return httpRequest;
-        }
-
         public Uri BuildUri(IronClientConfig config, string path, NameValueCollection query)
         {
             if (path.StartsWith("/"))
@@ -218,7 +200,7 @@ namespace IronSharp.Core
             return uriBuilder.Uri;
         }
 
-        private bool IsRetriableStatusCode(HttpResponseMessage response)
+        private static bool IsRetriableStatusCode(HttpResponseMessage response)
         {
             return response != null && response.StatusCode == HttpStatusCode.ServiceUnavailable;
         }

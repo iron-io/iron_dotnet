@@ -86,6 +86,7 @@
     <Compile Include="JSON.cs" />
     <Compile Include="Exceptions\MaximumRetryAttemptsExceededException.cs" />
     <Compile Include="MqRestClient.cs" />
+    <Compile Include="RestUtility.cs" />
     <Compile Include="Types\HttpRequestMessageBuilder.cs" />
     <Compile Include="Types\IronTokenContainer.cs" />
     <Compile Include="Types\Keystone.cs" />
