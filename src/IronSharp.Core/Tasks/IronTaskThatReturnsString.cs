@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class IronTaskThatReturnsString : IronTask<string>
     {

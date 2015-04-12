@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public interface IIdCollection
     {

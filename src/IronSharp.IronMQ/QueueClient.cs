@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using IronIO.Core;
 using IronSharp.Core;
 
 namespace IronSharp.IronMQ

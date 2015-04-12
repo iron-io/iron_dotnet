@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using IronSharp.Core;
+using IronIO.Core;
 
 namespace IronSharp.IronWorker
 {

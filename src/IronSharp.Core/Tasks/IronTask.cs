@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public abstract class IronTask<TResult> : IIronTask<TResult>
     {

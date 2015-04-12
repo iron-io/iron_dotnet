@@ -1,5 +1,5 @@
 ﻿using System;
-using IronSharp.Core;
+using IronIO.Core;
 
 namespace IronSharp.Extras.ProtoBufSerializers
 {

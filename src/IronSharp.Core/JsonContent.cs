@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class JsonContent : StringContent
     {

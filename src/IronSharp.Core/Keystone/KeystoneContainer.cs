@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class KeystoneContainer : ITokenContainer
     {

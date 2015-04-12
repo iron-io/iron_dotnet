@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
     public interface IHideObjectMembers

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 
-namespace IronSharp.Core
+namespace IronIO.Core.Extensions
 {
     public static class ExtensionsForDictionary
     {

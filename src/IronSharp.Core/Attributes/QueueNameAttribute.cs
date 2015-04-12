@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace IronSharp.Core.Attributes
+namespace IronIO.Core.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class)]
     public sealed class QueueNameAttribute : Attribute
     {
         public QueueNameAttribute(string name)

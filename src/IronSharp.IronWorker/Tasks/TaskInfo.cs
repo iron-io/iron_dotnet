@@ -1,5 +1,6 @@
 ﻿using System;
-using IronSharp.Core;
+using IronIO.Core;
+using IronIO.Core.Extensions;
 using Newtonsoft.Json;
 
 namespace IronSharp.IronWorker

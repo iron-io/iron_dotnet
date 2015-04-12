@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     internal static class ExponentialBackoff
     {

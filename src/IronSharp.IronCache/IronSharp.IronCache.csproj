@@ -52,13 +52,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheClient.cs" />
-    <Compile Include="CacheIncrementResult.cs" />
-    <Compile Include="CacheInfo.cs" />
-    <Compile Include="CacheItem.cs" />
-    <Compile Include="CacheItemOptions.cs" />
+    <Compile Include="Types\CacheIncrementResult.cs" />
+    <Compile Include="Types\CacheInfo.cs" />
+    <Compile Include="Types\CacheItem.cs" />
+    <Compile Include="Constants\CacheItemOptions.cs" />
     <Compile Include="IronCacheRestClient.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="IronCacheCloudHosts.cs" />
+    <Compile Include="Constants\IronCacheCloudHosts.cs" />
+    <Compile Include="Tasks\IronTaskThatGetsOrSetsCacheItem.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsCacheItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +70,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="IronSharp.IronCache.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>

@@ -4,15 +4,21 @@ using System.IO;
 using System.Reflection;
 using System.Web.Hosting;
 using Common.Logging;
+using IronIO.Core.Extensions;
 using Newtonsoft.Json;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     /// <summary>
     /// http://dev.iron.io/cache/reference/configuration/
     /// </summary>
     public static class IronDotConfigManager
     {
+        private static ILog ConfigLogger
+        {
+            get { return LogManager.GetLogger("iron.io-config"); }
+        }
+
         public static string GetEnvironmentKey(IronProduct product, string key)
         {
             if (key == null) throw new ArgumentNullException("key");
@@ -104,9 +110,9 @@ namespace IronSharp.Core
             targetConfig.Token     = string.IsNullOrEmpty(overrideConfig.Token)     ? targetConfig.Token  : overrideConfig.Token;
             targetConfig.Host      = string.IsNullOrEmpty(overrideConfig.Host)      ? targetConfig.Host   : overrideConfig.Host;
             targetConfig.Scheme    = string.IsNullOrEmpty(overrideConfig.Scheme)    ? targetConfig.Scheme : overrideConfig.Scheme;
-            targetConfig.ApiVersion = overrideConfig.ApiVersion == default(int) ? targetConfig.ApiVersion : overrideConfig.ApiVersion;
+            targetConfig.ApiVersion = overrideConfig.ApiVersion.HasValue ? overrideConfig.ApiVersion : targetConfig.ApiVersion;
             targetConfig.Port = overrideConfig.Port.HasValue ? overrideConfig.Port : targetConfig.Port;
-            targetConfig.Keystone = overrideConfig.Keystone == null ? targetConfig.Keystone : overrideConfig.Keystone;
+            targetConfig.Keystone = overrideConfig.Keystone ?? targetConfig.Keystone;
         }
 
         private static string _appDirectory;
@@ -203,7 +209,7 @@ namespace IronSharp.Core
             }
             catch (IOException ex)
             {
-                LogManager.GetCurrentClassLogger().Error(ex);
+                ConfigLogger.Error(ex);
             }
             return new JsonDotConfigModel();
         }

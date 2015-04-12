@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Threading;
 using Newtonsoft.Json;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class KeystoneClientConfig
     {

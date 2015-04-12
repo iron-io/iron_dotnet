@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public static class RestUtility
     {

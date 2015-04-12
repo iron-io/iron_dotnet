@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class IronTaskRequestBuilder
     {

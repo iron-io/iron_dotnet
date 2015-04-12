@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using IronIO.Core;
 using Newtonsoft.Json;
 
 namespace IronSharp.Core

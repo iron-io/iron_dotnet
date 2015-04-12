@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using IronSharp.Core;
+using IronIO.Core;
 
 namespace IronSharp.IronWorker
 {

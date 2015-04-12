@@ -48,8 +48,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IronCachExample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleClass.cs" />
     <Compile Include="Tests\IntegrationTests.cs" />
     <Compile Include="Tests\LongRunningIntegrationTests.cs" />
   </ItemGroup>

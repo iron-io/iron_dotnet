@@ -86,6 +86,7 @@
     <Compile Include="Code\WorkerOptions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="IronSharp.IronWorker.csproj.DotSettings" />
     <None Include="IronSharp.IronWorker.nuspec" />
     <None Include="packages.config" />

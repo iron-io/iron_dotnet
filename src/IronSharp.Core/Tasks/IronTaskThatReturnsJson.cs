@@ -1,7 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading;
-
-namespace IronSharp.Core
+﻿namespace IronIO.Core
 {
     public class IronTaskThatReturnsJson<TResult> : IronTask<TResult>
     {

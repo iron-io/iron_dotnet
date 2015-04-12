@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public interface IIronTask<TResult> : IHideObjectMembers
     {

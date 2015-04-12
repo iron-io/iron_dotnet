@@ -17,7 +17,7 @@ asynchronous processing and communication.</description>
     <releaseNotes></releaseNotes>
     <tags>iron.io,cache</tags>
     <dependencies>
-      <dependency id="Iron.IronCore" />
+      <dependency id="IronIO.IronCore" />
       <dependency id="Newtonsoft.Json" />
     </dependencies>
   </metadata>

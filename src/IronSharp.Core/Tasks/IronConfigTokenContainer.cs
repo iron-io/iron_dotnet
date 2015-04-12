@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class IronConfigTokenContainer : ITokenContainer
     {

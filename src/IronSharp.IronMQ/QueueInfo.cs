@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using IronIO.Core;
+using IronIO.Core.Extensions;
 using IronSharp.Core;
 using Newtonsoft.Json;
 

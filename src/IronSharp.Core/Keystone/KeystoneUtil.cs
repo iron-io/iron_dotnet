@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public static class KeystoneUtil
     {

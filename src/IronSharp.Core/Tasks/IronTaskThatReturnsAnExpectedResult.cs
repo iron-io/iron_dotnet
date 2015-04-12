@@ -1,9 +1,17 @@
 using System.Threading;
 using System.Threading.Tasks;
+using IronIO.Core.Extensions;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
-    public class IronTaskThatReturnsAnExpectedResult : IronTask<ResponseMsg>, IIronTask<bool>
+    public class IronTaskThatReturnsAnExpectedResult : IronTaskThatReturnsAnExpectedResult<ResponseMsg>
+    {
+        public IronTaskThatReturnsAnExpectedResult(IronTaskRequestBuilder taskBuilder, string expectedResultMessage) : base(taskBuilder, expectedResultMessage)
+        {
+        }
+    }
+
+    public class IronTaskThatReturnsAnExpectedResult<TResponseMsg> : IronTask<TResponseMsg>, IIronTask<bool> where TResponseMsg: IMsg
     {
         private readonly string _expectedResultMessage;
 

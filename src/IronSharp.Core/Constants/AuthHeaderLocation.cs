@@ -1,4 +1,4 @@
-﻿namespace IronSharp.Core
+﻿namespace IronIO.Core
 {
    public enum AuthTokenLocation
     {

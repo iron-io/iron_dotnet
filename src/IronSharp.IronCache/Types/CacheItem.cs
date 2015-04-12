@@ -3,6 +3,33 @@ using Newtonsoft.Json;
 
 namespace IronSharp.IronCache
 {
+    public class CacheItem<TValue> : CacheItem
+    {
+        public CacheItem()
+        {
+        }
+
+        public CacheItem(int value, CacheItemOptions options = null) 
+            : base(value, options)
+        {
+        }
+
+        public CacheItem(string value, CacheItemOptions options = null)
+            : base(value, options)
+        {
+        }
+
+        public TValue ReadValueAs()
+        {
+            if (Value is TValue)
+            {
+                return (TValue)Value;
+            }
+
+            return Client.ValueSerializer.Parse<TValue>(Convert.ToString(Value));
+        }
+    }
+
     public class CacheItem : CacheItemOptions
     {
         public CacheItem()
@@ -53,6 +80,11 @@ namespace IronSharp.IronCache
             }
 
             return Client.ValueSerializer.Parse<T>(Convert.ToString(Value));
+        }
+
+        public static bool IsDefaultValue(CacheItem item)
+        {
+            return item == null || item.Value == null || string.IsNullOrEmpty(Convert.ToString(item.Value));
         }
     }
 }
