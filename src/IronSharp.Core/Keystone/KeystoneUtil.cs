@@ -5,9 +5,9 @@ namespace IronSharp.Core
 {
     public static class KeystoneUtil
     {
-        public static bool CurrentTokenIsInvalid(string token, DateTime localExpiresAt, DateTime? now = null)
+        public static bool CurrentTokenIsInvalid(AuthToken token, DateTime localExpiresAt, DateTime? now = null)
         {
-            if (string.IsNullOrEmpty(token))
+            if (token == null)
             {
                 return true;
             }

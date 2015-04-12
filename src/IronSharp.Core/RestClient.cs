@@ -16,18 +16,18 @@ namespace IronSharp.Core
 {
     public class RestClient
     {
-        private IRequestBuilder _requestBuilder;
+        private ITokenManager _tokenManager;
         private readonly HttpClient _httpClient;
 
-        public RestClient(IRequestBuilder requestBuilder = null)
+        public RestClient(ITokenManager tokenManager = null)
         {
-            _requestBuilder = requestBuilder;
+            _tokenManager = tokenManager;
             _httpClient = RestUtility.CreateHttpClient();
         }
 
-        public IRequestBuilder RequestBuilder
+        public ITokenManager TokenManager
         {
-            get { return LazyInitializer.EnsureInitialized(ref _requestBuilder, ()=> new IronRequestBuilder()); }
+            get { return LazyInitializer.EnsureInitialized(ref _tokenManager, ()=> new IronTokenManager()); }
         }
 
         /// <summary>
@@ -42,8 +42,8 @@ namespace IronSharp.Core
             {
                 token = config.Token;
             }
-            SetOathQueryParameterIfRequired(request, token);
-            return BuildUri(config, request.EndPoint, request.Query);
+            TokenManager.SetAuthQueryParameterIfRequired(request, token);
+            return TokenManager.BuildUri(config, request.EndPoint, request.Query);
         }
 
         public RestResponse<T> Delete<T>(IronClientConfig config, string endPoint, NameValueCollection query = null, Object payload = null) where T : class

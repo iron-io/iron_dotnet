@@ -8,62 +8,64 @@ namespace IronSharp.Core
 {
     public abstract class IronTask<TResult> : IIronTask<TResult>
     {
-        private readonly CancellationToken? _cancellationToken;
-        private readonly HttpClient _httpClient;
-        private readonly HttpRequestMessage _request;
+        private readonly IronTaskRequestBuilder _taskBuilder;
+        private HttpClient _httpClient;
 
-        protected IronTask(HttpClient httpClient, HttpRequestMessage request,
-            CancellationToken? cancellationToken = null)
+        protected IronTask(IronTaskRequestBuilder taskBuilder)
         {
-            _httpClient = httpClient;
-            _request = request;
-            _cancellationToken = cancellationToken;
+            _taskBuilder = taskBuilder;
         }
 
-        public virtual void FireAndForget()
+        public HttpClient HttpClient
+        {
+            get { return LazyInitializer.EnsureInitialized(ref _httpClient, () => RestUtility.DefaultInstance); }
+            set { _httpClient = value; }
+        }
+
+        public virtual void FireAndForget(CancellationToken cancellationToken = new CancellationToken())
         {
             if (HostingEnvironment.IsHosted)
             {
                 Func<CancellationToken, Task> task = bgWorkerCancellationToken =>
-                        ExecuteSendAsync(CreateLinkedToken(bgWorkerCancellationToken, _cancellationToken));
+                    GetResponseAsync(CreateLinkedToken(bgWorkerCancellationToken, cancellationToken));
 
                 HostingEnvironment.QueueBackgroundWorkItem(task);
             }
             else
             {
-                Task.Run(() => ExecuteSendAsync(), _cancellationToken.GetValueOrDefault()).ConfigureAwait(false);
+                Task.Run(() => GetResponseAsync(cancellationToken), cancellationToken).ConfigureAwait(false);
             }
         }
 
         public virtual TResult Send()
         {
             var response = GetResponseSync();
+            SendExecuted(response);
             var result = ReadResultSync(response);
             return InspectResultAndReturn(result);
         }
 
-        public virtual async Task<TResult> SendAsync()
+        public virtual async Task<TResult> SendAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            var response = await ExecuteSendAsync().ConfigureAwait(false);
+            var response = await GetResponseAsync(cancellationToken).ConfigureAwait(false);
+            SendExecuted(response);
             var result = await ReadResultAsync(response).ConfigureAwait(false);
             return InspectResultAndReturn(result);
         }
 
-        protected virtual Task<HttpResponseMessage> ExecuteSendAsync()
+        protected virtual async Task<HttpResponseMessage> GetResponseAsync(
+            CancellationToken cancellationToken = new CancellationToken())
         {
-            return ExecuteSendAsync(_cancellationToken);
-        }
-
-        protected virtual Task<HttpResponseMessage> ExecuteSendAsync(CancellationToken? cancellationToken)
-        {
-            return cancellationToken.HasValue
-                ? _httpClient.SendAsync(_request, cancellationToken.Value)
-                : _httpClient.SendAsync(_request);
+            var request = await _taskBuilder.BuildAsync();
+            SendExecuting(HttpClient, request);
+            return await HttpClient.SendAsync(request, cancellationToken);
         }
 
         protected virtual HttpResponseMessage GetResponseSync()
         {
-            return ExecuteSendAsync().Result;
+            var request = _taskBuilder.Build();
+            SendExecuting(HttpClient, request);
+            return HttpClient.SendAsync(request).Result;
         }
 
         protected virtual TResult InspectResultAndReturn(TResult result)
@@ -79,6 +81,14 @@ namespace IronSharp.Core
         protected virtual TResult ReadResultSync(HttpResponseMessage response)
         {
             return ReadResultAsync(response).Result;
+        }
+
+        protected virtual void SendExecuted(HttpResponseMessage response)
+        {
+        }
+
+        protected virtual void SendExecuting(HttpClient httpClient, HttpRequestMessage request)
+        {
         }
 
         private static CancellationToken CreateLinkedToken(CancellationToken t1, CancellationToken? t2)

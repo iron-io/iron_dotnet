@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,9 +16,10 @@ namespace IronSharp.Core
         }
 
         public DateTime LocalExpiresAt { get; set; }
-        public string Token { get; set; }
+        public AuthToken Token { get; set; }
 
-        public String GetToken()
+        [SuppressMessage("ReSharper", "InvertIf")]
+        public AuthToken GetToken()
         {
             if (KeystoneUtil.CurrentTokenIsInvalid(Token, LocalExpiresAt))
             {
@@ -29,7 +31,8 @@ namespace IronSharp.Core
             return Token;
         }
 
-        public async Task<string> GetTokenAsync()
+        [SuppressMessage("ReSharper", "InvertIf")]
+        public async Task<AuthToken> GetTokenAsync()
         {
             if (KeystoneUtil.CurrentTokenIsInvalid(Token, LocalExpiresAt))
             {
@@ -56,7 +59,13 @@ namespace IronSharp.Core
             var keyStoneToken = response.Access.Token;
 
             LocalExpiresAt = KeystoneUtil.ComputeNewExpirationDate(keyStoneToken);
-            Token = keyStoneToken.Id;
+
+            Token = new AuthToken
+            {
+                Location = AuthTokenLocation.Header,
+                Scheme = "OAuth",
+                Token = keyStoneToken.Id
+            };
         }
     }
 }

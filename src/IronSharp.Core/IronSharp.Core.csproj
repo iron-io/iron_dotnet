@@ -59,8 +59,6 @@
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\IRequestAuthBuilder.cs" />
-    <Compile Include="Abstract\IRequestBuilder.cs" />
     <Compile Include="Abstract\ITokenContainer.cs" />
     <Compile Include="Attributes\QueueNameAttribute.cs" />
     <Compile Include="Keystone\KeystoneClientConfig.cs" />
@@ -85,26 +83,29 @@
     <Compile Include="Exceptions\IronSharpException.cs" />
     <Compile Include="Abstract\IValueSerializer.cs" />
     <Compile Include="Abstract\IHideObjectMembers.cs" />
-    <Compile Include="Http\IronRequestBuilder.cs" />
     <Compile Include="Keystone\Auth.cs" />
     <Compile Include="Keystone\Credentials.cs" />
     <Compile Include="Keystone\KestoneToken.cs" />
     <Compile Include="Keystone\KeystoneAccess.cs" />
-    <Compile Include="Keystone\KeyStoneAuthRequestBuilder.cs" />
     <Compile Include="Keystone\KeystoneClient.cs" />
     <Compile Include="Keystone\KeystoneResponse.cs" />
     <Compile Include="Keystone\KeystoneUtil.cs" />
-    <Compile Include="Tasks\ExpectedResultIronTask.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsAnExpectedResult.cs" />
     <Compile Include="Tasks\IIronTask.cs" />
+    <Compile Include="Tasks\IIronTaskEndPointConfig.cs" />
+    <Compile Include="Tasks\IronConfigTokenContainer.cs" />
     <Compile Include="Tasks\IronTask.cs" />
     <Compile Include="JsonContent.cs" />
     <Compile Include="JSON.cs" />
     <Compile Include="Exceptions\MaximumRetryAttemptsExceededException.cs" />
     <Compile Include="RestUtility.cs" />
-    <Compile Include="Tasks\JsonIronTask.cs" />
-    <Compile Include="Tasks\StringIronTask.cs" />
+    <Compile Include="Tasks\IronTaskClient.cs" />
+    <Compile Include="Tasks\IronTaskEndPointConfig.cs" />
+    <Compile Include="Tasks\IronTaskRequestBuilder.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsJson.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsString.cs" />
+    <Compile Include="Types\AuthToken.cs" />
     <Compile Include="Types\HttpRequestMessageBuilder.cs" />
-    <Compile Include="Http\IronTokenContainer.cs" />
     <Compile Include="Keystone\Keystone.cs" />
     <Compile Include="Keystone\KeystoneContainer.cs" />
     <Compile Include="Types\PagingFilter.cs" />
@@ -125,7 +126,9 @@
     <None Include="IronSharp.Core.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Http\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Net;
+using System.Net.Http;
 using IronSharp.Core;
 
 namespace IronSharp.IronCache
@@ -8,7 +10,6 @@ namespace IronSharp.IronCache
     {
         private readonly string _cacheName;
         private readonly IronCacheRestClient _client;
-        private readonly RestClient _restClient = new RestClient();
 
         public CacheClient(IronCacheRestClient client, string cacheName)
         {
@@ -22,7 +23,7 @@ namespace IronSharp.IronCache
 
         public IValueSerializer ValueSerializer
         {
-            get { return _client.Config.SharpConfig.ValueSerializer; }
+            get { return _client.EndPointConfig.Config.SharpConfig.ValueSerializer; }
         }
 
         /// <summary>
@@ -31,14 +32,26 @@ namespace IronSharp.IronCache
         /// <remarks>
         /// http://dev.iron.io/cache/reference/api/#clear_a_cache
         /// </remarks>
-        public bool Clear()
+        public IIronTask<bool> Clear()
         {
-            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/clear", CacheNameEndPoint())).HasExpectedMessage("Deleted.");
+            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = string.Format("{0}/clear", CacheNameEndPoint())
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
         }
 
-        public bool Delete(string key)
+        public IIronTask<bool> Delete(string key)
         {
-            return _restClient.Delete<ResponseMsg>(_client.Config, CacheItemEndPoint(key)).HasExpectedMessage("Deleted.");
+            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = CacheItemEndPoint(key)
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
         }
 
         /// <summary>
@@ -48,16 +61,15 @@ namespace IronSharp.IronCache
         /// <remarks>
         /// http://dev.iron.io/cache/reference/api/#get_an_item_from_a_cache
         /// </remarks>
-        public CacheItem Get(string key)
+        public IIronTask<CacheItem> Get(string key)
         {
-            RestResponse<CacheItem> response = _restClient.Get<CacheItem>(_client.Config, CacheItemEndPoint(key));
-
-            if (response.CanReadResult())
+            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
             {
-                response.Result.Client = this;
-            }
+                HttpMethod = HttpMethod.Get,
+                Path = CacheItemEndPoint(key)
+            };
 
-            return response;
+            return new IronTaskThatReturnsCacheItem(builder, this);
         }
 
         public T Get<T>(string key)
@@ -112,7 +124,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public CacheIncrementResult Increment(string key, int amount = 1)
         {
-            return _restClient.Post<CacheIncrementResult>(_client.Config, string.Format("{0}/increment", CacheItemEndPoint(key)), new {amount});
+            return _restClient.Post<CacheIncrementResult>(_client.EndPointConfig, string.Format("{0}/increment", CacheItemEndPoint(key)), new {amount});
         }
 
         /// <summary>
@@ -123,7 +135,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public CacheInfo Info()
         {
-            return _restClient.Get<CacheInfo>(_client.Config, CacheNameEndPoint());
+            return _restClient.Get<CacheInfo>(_client.EndPointConfig, CacheNameEndPoint());
         }
 
         public bool Put(string key, object value, CacheItemOptions options = null)
@@ -151,7 +163,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public bool Put(string key, CacheItem item)
         {
-            return _restClient.Put<ResponseMsg>(_client.Config, CacheItemEndPoint(key), item).HasExpectedMessage("Stored.");
+            return _restClient.Put<ResponseMsg>(_client.EndPointConfig, CacheItemEndPoint(key), item).HasExpectedMessage("Stored.");
         }
 
         private static bool IsDefaultValue(CacheItem item)
@@ -167,6 +179,25 @@ namespace IronSharp.IronCache
         private string CacheNameEndPoint()
         {
             return string.Format("{0}/{1}", _client.EndPoint, _cacheName);
+        }
+    }
+
+    public class IronTaskThatReturnsCacheItem : IronTaskThatReturnsJson<CacheItem>
+    {
+        private readonly CacheClient _cacheClient;
+
+        public IronTaskThatReturnsCacheItem(IronTaskRequestBuilder taskBuilder, CacheClient cacheClient) : base(taskBuilder)
+        {
+            _cacheClient = cacheClient;
+        }
+
+        protected override CacheItem InspectResultAndReturn(CacheItem result)
+        {
+            if (result != null)
+            {
+                result.Client = _cacheClient;
+            }
+            return result;
         }
     }
 }

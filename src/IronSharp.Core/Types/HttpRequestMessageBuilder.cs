@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using IronSharp.Core.Abstract;
 
 namespace IronSharp.Core.Types
 {
@@ -13,29 +12,29 @@ namespace IronSharp.Core.Types
         
         public Object Payload { get; set; }
 
-        public IRequestBuilder RequestBuilder { get; set; }
+        public ITokenManager TokenManager { get; set; }
 
-        public HttpRequestMessageBuilder(IronClientConfig config, IRequestBuilder requestBuilder, IRestClientRequest request)
+        public HttpRequestMessageBuilder(IronClientConfig config, ITokenManager tokenManager, IRestClientRequest request)
         {
             Config = config;
-            RequestBuilder = requestBuilder;
+            TokenManager = tokenManager;
             Request = request;
         }
 
         public HttpRequestMessage Build()
         {
-            RequestBuilder.SetOathQueryParameterIfRequired(Request, Config.Token);
+            TokenManager.SetAuthQueryParameterIfRequired(Request, Config.Token);
 
             var httpRequest = new HttpRequestMessage
             {
                 Content = Payload != null ? new JsonContent(Payload) : Request.Content,
-                RequestUri = RequestBuilder.BuildUri(Config, Request.EndPoint, Request.Query),
+                RequestUri = TokenManager.BuildUri(Config, Request.EndPoint, Request.Query),
                 Method = Request.Method
             };
 
             HttpRequestHeaders headers = httpRequest.Headers;
 
-            RequestBuilder.SetOauthHeaderIfRequired(Config, Request, headers);
+            TokenManager.SetAuthHeaderIfRequired(Config, Request, headers);
 
             headers.Accept.Add(new MediaTypeWithQualityHeaderValue(Request.Accept));
 

@@ -1,13 +1,11 @@
 ﻿using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace IronSharp.Core
 {
-    public class StringIronTask : IronTask<string>
+    public class IronTaskThatReturnsString : IronTask<string>
     {
-        public StringIronTask(HttpClient httpClient, HttpRequestMessage request, CancellationToken? cancellationToken = null)
-            : base(httpClient, request, cancellationToken)
+        public IronTaskThatReturnsString(IronTaskRequestBuilder taskBuilder) : base(taskBuilder)
         {
         }
 

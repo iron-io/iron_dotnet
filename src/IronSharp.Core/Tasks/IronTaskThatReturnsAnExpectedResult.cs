@@ -1,15 +1,14 @@
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace IronSharp.Core
 {
-    public class ExpectedResultIronTask : IronTask<ResponseMsg>
+    public class IronTaskThatReturnsAnExpectedResult : IronTask<ResponseMsg>, IIronTask<bool>
     {
         private readonly string _expectedResultMessage;
 
-        public ExpectedResultIronTask(string expectedResultMessage, HttpClient httpClient, HttpRequestMessage request,
-            CancellationToken? cancellationToken = null) : base(httpClient, request, cancellationToken)
+        public IronTaskThatReturnsAnExpectedResult(IronTaskRequestBuilder taskBuilder, string expectedResultMessage)
+            : base(taskBuilder)
         {
             _expectedResultMessage = expectedResultMessage;
         }
@@ -19,9 +18,9 @@ namespace IronSharp.Core
             return IsExpectedResult(base.Send());
         }
 
-        public new async Task<bool> SendAsync()
+        public new async Task<bool> SendAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            return IsExpectedResult(await base.SendAsync());
+            return IsExpectedResult(await base.SendAsync(cancellationToken));
         }
 
         private bool IsExpectedResult(IMsg result)
