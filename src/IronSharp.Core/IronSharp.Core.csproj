@@ -87,7 +87,7 @@
     <Compile Include="Config\IronDotConfigManager.cs" />
     <Compile Include="Constants\IronProduct.cs" />
     <Compile Include="Config\IronSharpConfig.cs" />
-    <Compile Include="Exceptions\IronSharpException.cs" />
+    <Compile Include="Exceptions\IronIoException.cs" />
     <Compile Include="Abstract\IValueSerializer.cs" />
     <Compile Include="Abstract\IHideObjectMembers.cs" />
     <Compile Include="Keystone\Auth.cs" />
@@ -109,6 +109,7 @@
     <Compile Include="Tasks\IronTaskEndPointConfig.cs" />
     <Compile Include="Tasks\IronTaskRequestBuilder.cs" />
     <Compile Include="Tasks\IronTaskThatReturnsJson.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsResponse.cs" />
     <Compile Include="Tasks\IronTaskThatReturnsString.cs" />
     <Compile Include="Types\AuthToken.cs" />
     <Compile Include="Keystone\Keystone.cs" />

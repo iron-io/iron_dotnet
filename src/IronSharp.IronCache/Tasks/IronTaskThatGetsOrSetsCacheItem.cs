@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IronIO.Core;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public class IronTaskThatGetsOrSetsCacheItem : IronTaskThatReturnsCacheItem
     {
@@ -53,7 +53,7 @@ namespace IronSharp.IronCache
         private readonly CacheItemOptions _options;
 
         public IronTaskThatGetsOrSetsCacheItem(IronTaskRequestBuilder taskBuilder, CacheClient cacheClient, string key, Func<TValue> valueFactory, CacheItemOptions options = null)
-            : base(taskBuilder)
+            : base(taskBuilder, cacheClient)
         {
             _cacheClient = cacheClient;
             _key = key;

@@ -16,5 +16,15 @@ namespace IronIO.Core
 
         [JsonProperty("password")]
         public String Password { get; set; }
+
+        public virtual string CreateKey()
+        {
+            return string.Concat(Tenant, Server, Username);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Tenant: {0}, Server: {1}, Username: {2}, Password: {3}", Tenant, Server, Username, Password);
+        }
     }
 }

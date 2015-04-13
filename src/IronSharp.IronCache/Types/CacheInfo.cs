@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public class CacheInfo
     {

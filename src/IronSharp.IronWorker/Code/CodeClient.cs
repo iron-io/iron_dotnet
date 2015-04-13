@@ -1,15 +1,13 @@
 ﻿using System.IO;
 using System.Net.Http;
 using System.Net.Mime;
-using System.Threading.Tasks;
 using IronIO.Core;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class CodeClient
     {
         private readonly IronWorkerRestClient _client;
-        private readonly RestClient _restClient = new RestClient();
         private readonly string _codeId;
 
         public CodeClient(IronWorkerRestClient client, string codeId)
@@ -24,77 +22,104 @@ namespace IronSharp.IronWorker
         }
 
         /// <summary>
-        /// Delete a code package
+        ///     Delete a code package
         /// </summary>
         /// <remarks>
-        /// http://dev.iron.io/worker/reference/api/#delete_a_code_package
+        ///     http://dev.iron.io/worker/reference/api/#delete_a_code_package
         /// </remarks>
-        public bool Delete()
+        public IIronTask<bool> Delete()
         {
-            return _restClient.Delete<ResponseMsg>(_client.Config, EndPoint).HasExpectedMessage("Deleted");
-        }
-
-        /// <summary>
-        /// Download a Code Package
-        /// </summary>
-        /// <remarks>
-        /// http://dev.iron.io/worker/reference/api/#download_a_code_package
-        /// </remarks>
-        public Task<HttpResponseMessage> Download()
-        {
-            return _restClient.Execute(_client.Config, new RestClientRequest
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                EndPoint = EndPoint + "/download",
-                Method = HttpMethod.Get,
-                Accept = MediaTypeNames.Application.Octet
-            });
+                HttpMethod = HttpMethod.Delete,
+                Path = EndPoint
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted");
         }
 
         /// <summary>
-        /// Get info about a code package
+        ///     Download a Code Package
         /// </summary>
         /// <remarks>
-        /// http://dev.iron.io/worker/reference/api/#get_info_about_a_code_package
+        ///     http://dev.iron.io/worker/reference/api/#download_a_code_package
         /// </remarks>
-        public CodeInfo Info()
+        public IIronTask<HttpResponseMessage> Download()
         {
-            return _restClient.Get<CodeInfo>(_client.Config, EndPoint);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = EndPoint + "/download",
+                Accept = MediaTypeNames.Application.Octet
+            };
+
+            return new IronTaskThatReturnsResponse(builder);
         }
 
-        public RevisionCollection Revisions(int? page = null, int? perPage = null)
+        /// <summary>
+        ///     Get info about a code package
+        /// </summary>
+        /// <remarks>
+        ///     http://dev.iron.io/worker/reference/api/#get_info_about_a_code_package
+        /// </remarks>
+        public IIronTask<CodeInfo> Info()
+        {
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = EndPoint
+            };
+
+            return new IronTaskThatReturnsJson<CodeInfo>(builder);
+        }
+
+        public IIronTask<RevisionCollection> Revisions(int? page = null, int? perPage = null)
         {
             return Revisions(new PagingFilter(page, perPage));
         }
 
         /// <summary>
-        /// List Code Package Revisions
+        ///     List Code Package Revisions
         /// </summary>
         /// <remarks>
-        /// http://dev.iron.io/worker/reference/api/#list_code_package_revisions
+        ///     http://dev.iron.io/worker/reference/api/#list_code_package_revisions
         /// </remarks>
-        public RevisionCollection Revisions(PagingFilter filter = null)
+        public IIronTask<RevisionCollection> Revisions(PagingFilter filter = null)
         {
-            return _restClient.Get<RevisionCollection>(_client.Config, EndPoint + "/revisions", filter);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = EndPoint + "/revisions"
+            };
+
+            if (filter != null)
+            {
+                builder.Query.Add(filter);
+            }
+
+            return new IronTaskThatReturnsJson<RevisionCollection>(builder);
         }
 
         /// <summary>
-        /// Upload a Code Package
+        ///     Upload a Code Package
         /// </summary>
         /// <remarks>
-        /// http://dev.iron.io/worker/reference/api/#upload_or_update_a_code_package
+        ///     http://dev.iron.io/worker/reference/api/#upload_or_update_a_code_package
         /// </remarks>
-        public Task<HttpResponseMessage> Upload(Stream zipFile, WorkerOptions options)
+        public IIronTask<HttpResponseMessage> Upload(Stream zipFile, WorkerOptions options)
         {
-            return _restClient.Execute(_client.Config, new RestClientRequest
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                EndPoint = EndPoint,
-                Method = HttpMethod.Post,
-                Content = new MultipartFormDataContent
+                HttpMethod = HttpMethod.Post,
+                Path = EndPoint + "/download",
+                HttpContent = new MultipartFormDataContent
                 {
                     new JsonContent(options),
                     new StreamContent(zipFile)
                 }
-            });
+            };
+
+            return new IronTaskThatReturnsResponse(builder);
         }
     }
 }

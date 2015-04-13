@@ -2,7 +2,7 @@
 using IronIO.Core.Extensions;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public class CacheIncrementResult : IMsg, IInspectable
     {

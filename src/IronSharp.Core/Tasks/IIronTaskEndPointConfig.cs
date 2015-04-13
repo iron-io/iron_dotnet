@@ -1,6 +1,6 @@
 ﻿namespace IronIO.Core
 {
-    public interface IIronTaskEndPointConfig
+    public interface IIronTaskEndpointConfig
     {
         IronClientConfig Config { get; }
         ITokenContainer TokenContainer { get; }

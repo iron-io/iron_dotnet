@@ -11,6 +11,23 @@ namespace IronIO.Core
             _config = config;
         }
 
+        public AuthToken GetWebHookToken(string tokenId)
+        {
+            string tokenValue = _config.Token;
+
+            if (!string.IsNullOrEmpty(tokenId))
+            {
+                tokenValue = tokenId;
+            }
+
+            return new AuthToken
+            {
+                Token = tokenValue,
+                Location = AuthTokenLocation.Querystring,
+                Scheme = "oauth"
+            };
+        }
+
         public AuthToken GetToken()
         {
             return new AuthToken

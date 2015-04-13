@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace IronIO.Core
 {
-    public class RestResponseException : IronSharpException
+    public class RestResponseException : IronIOException
     {
         public RestResponseException(string message, HttpResponseMessage response)
             : base(message + AppendDebugInfo(response))

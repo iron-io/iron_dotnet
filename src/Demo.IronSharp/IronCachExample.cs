@@ -1,28 +1,40 @@
 using System;
 using System.Threading.Tasks;
+using IronIO.Core;
 using IronIO.Core.Extensions;
-using IronSharp.Core;
-using IronSharp.IronCache;
+using IronIO.IronCache;
 
 namespace Demo.IronSharpConsole
 {
-    static internal class IronCachExample
+    internal static class IronCachExample
     {
-        public async static Task RunAsync()
+        public static void Main()
         {
+            //Run();
+
+            RunAsync().Wait();
+
+            Console.WriteLine("done");
+            Console.Read();
+        }
+
+        public static async Task RunAsync()
+        {
+            Console.WriteLine("Begin Async Cache Test");
+
             // =========================================================
             // Iron.io Cache
             // =========================================================
 
-            IronCacheRestClient ironCacheClient = Client.New();
+            var ironCacheClient = Client.New();
 
             // Get a Cache object
-            CacheClient cache = ironCacheClient.Cache("my_cache");
+            var cache = ironCacheClient.Cache("my_cache");
 
             // Put value to cache by key
             await cache.Put("number_item", 42).SendAsync();
 
-            CacheItem item =  await cache.Get("number_item").SendAsync();
+            var item = await cache.Get("number_item").SendAsync();
 
             // Get value from cache by key
             Console.WriteLine(item.Value);
@@ -36,39 +48,43 @@ namespace Demo.IronSharpConsole
             // Immediately delete an item
             await cache.Delete("number_item").SendAsync();
 
-            await cache.Put("complex_item", new { greeting = "Hello", target = "world" }).SendAsync();
+            await cache.Put("complex_item", new {greeting = "Hello", target = "world"}).SendAsync();
 
-            CacheItem complexItem = await cache.Get("complex_item").SendAsync();
+            var complexItem = await cache.Get("complex_item").SendAsync();
 
             // Get value from cache by key
             Console.WriteLine(complexItem.Value);
 
             await cache.Delete("complex_item").SendAsync();
 
-            await cache.Put("sample_class", new SampleClass { Name = "Sample Class CacheItem" }).SendAsync();
+            await cache.Put("sample_class", new SampleClass {Name = "Sample Class CacheItem"}).SendAsync();
 
-            SampleClass sampleClassItem = await cache.Get<SampleClass>("sample_class").SendAsync();
+            var sampleClassItem = await cache.Get<SampleClass>("sample_class").SendAsync();
 
             Console.WriteLine(sampleClassItem.Inspect());
 
             await cache.Delete("sample_class").SendAsync();
         }
 
-        public  static Void Run()
+        public static void Run()
         {
+            Console.WriteLine("Begin Synchronous Cache Test");
+
             // =========================================================
             // Iron.io Cache
             // =========================================================
 
-            IronCacheRestClient ironCacheClient = Client.New();
+            var ironCacheClient = Client.New();
 
             // Get a Cache object
-            CacheClient cache = ironCacheClient.Cache("my_cache");
+            var cache = ironCacheClient.Cache("my_cache");
 
             // Put value to cache by key
-            cache.Put("number_item", 42).Send();
+            var ironTask = cache.Put("number_item", 42);
 
-            CacheItem item =  cache.Get("number_item").Send();
+            ironTask.Send();
+
+            var item = cache.Get("number_item").Send();
 
             // Get value from cache by key
             Console.WriteLine(item.Value);
@@ -82,18 +98,18 @@ namespace Demo.IronSharpConsole
             // Immediately delete an item
             cache.Delete("number_item").Send();
 
-            cache.Put("complex_item", new { greeting = "Hello", target = "world" }).Send();
+            cache.Put("complex_item", new {greeting = "Hello", target = "world"}).Send();
 
-            CacheItem complexItem = cache.Get("complex_item").Send();
+            var complexItem = cache.Get("complex_item").Send();
 
             // Get value from cache by key
             Console.WriteLine(complexItem.Value);
 
             cache.Delete("complex_item").Send();
 
-            cache.Put("sample_class", new SampleClass { Name = "Sample Class CacheItem" }).Send();
+            cache.Put("sample_class", new SampleClass {Name = "Sample Class CacheItem"}).Send();
 
-            SampleClass sampleClassItem = cache.Get<SampleClass>("sample_class").Send();
+            var sampleClassItem = cache.Get<SampleClass>("sample_class").Send();
 
             Console.WriteLine(sampleClassItem.Inspect());
 

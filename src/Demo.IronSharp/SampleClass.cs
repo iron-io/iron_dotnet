@@ -1,5 +1,4 @@
 using IronIO.Core;
-using IronSharp.Core;
 
 namespace Demo.IronSharpConsole
 {

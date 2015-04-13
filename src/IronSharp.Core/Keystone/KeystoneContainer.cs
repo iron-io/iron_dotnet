@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace IronIO.Core
 {
     public class KeystoneContainer : ITokenContainer
     {
-        private static ITokenContainer _instance;
+        private static readonly ConcurrentDictionary<string, ITokenContainer> KeystoneContainers =
+            new ConcurrentDictionary<string, ITokenContainer>();
+
         private readonly KeystoneClientConfig _config;
 
         private KeystoneContainer(KeystoneClientConfig config)
@@ -17,6 +19,16 @@ namespace IronIO.Core
 
         public DateTime LocalExpiresAt { get; set; }
         public AuthToken Token { get; set; }
+
+        public AuthToken GetWebHookToken(string tokenId)
+        {
+            return new AuthToken
+            {
+                Location = AuthTokenLocation.Header,
+                Scheme = "oauth",
+                Token = tokenId
+            };
+        }
 
         [SuppressMessage("ReSharper", "InvertIf")]
         public AuthToken GetToken()
@@ -51,7 +63,9 @@ namespace IronIO.Core
 
         public static ITokenContainer GetOrCreateInstance(KeystoneClientConfig config)
         {
-            return LazyInitializer.EnsureInitialized(ref _instance, () => Create(config));
+            var key = config.CreateKey();
+
+            return KeystoneContainers.GetOrAdd(key, k => Create(config));
         }
 
         private void UpdateLocalValues(KeystoneResponse response)

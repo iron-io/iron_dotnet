@@ -1,11 +1,16 @@
 ﻿namespace IronIO.Core
 {
-    public class IronTaskEndPointConfig : IIronTaskEndPointConfig
+    public class IronTaskEndpointConfig : IIronTaskEndpointConfig
     {
-        public IronTaskEndPointConfig(IronClientConfig config)
+        public IronTaskEndpointConfig(IronClientConfig config, ITokenContainer tokenContainer = null)
         {
+            if (tokenContainer == null)
+            {
+                tokenContainer = new IronConfigTokenContainer(config);
+            }
+
             Config = config;
-            TokenContainer = new IronConfigTokenContainer(config);
+            TokenContainer = tokenContainer;
         }
 
         public IronClientConfig Config { get; protected set; }

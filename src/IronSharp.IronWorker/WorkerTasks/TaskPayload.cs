@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     /// <summary>
     /// http://dev.iron.io/worker/reference/api/#schedule_a_task

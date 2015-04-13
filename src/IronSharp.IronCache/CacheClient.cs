@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Net.Http;
 using IronIO.Core;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public class CacheClient
     {
@@ -22,7 +22,7 @@ namespace IronSharp.IronCache
 
         public IValueSerializer ValueSerializer
         {
-            get { return _client.EndPointConfig.Config.SharpConfig.ValueSerializer; }
+            get { return _client.EndpointConfig.Config.SharpConfig.ValueSerializer; }
         }
 
         /// <summary>
@@ -33,10 +33,10 @@ namespace IronSharp.IronCache
         /// </remarks>
         public IIronTask<bool> Clear()
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Post,
-                Path = string.Format("{0}/clear", CacheNameEndPoint())
+                Path = string.Format("{0}/clear", ProjectPathWithCacheName())
             };
 
             return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
@@ -44,10 +44,10 @@ namespace IronSharp.IronCache
 
         public IIronTask<bool> Delete(string key)
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Delete,
-                Path = CacheItemEndPoint(key)
+                Path = ProjectPathWithCacheNameAndItemKey(key)
             };
 
             return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
@@ -62,10 +62,10 @@ namespace IronSharp.IronCache
         /// </remarks>
         public IIronTask<CacheItem> Get(string key)
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = CacheItemEndPoint(key)
+                Path = ProjectPathWithCacheNameAndItemKey(key)
             };
 
             return new IronTaskThatReturnsCacheItem(builder, this);
@@ -73,21 +73,21 @@ namespace IronSharp.IronCache
 
         public IIronTask<T> Get<T>(string key)
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = CacheItemEndPoint(key)
+                Path = ProjectPathWithCacheNameAndItemKey(key)
             };
 
-            return new IronTaskThatReturnsCacheItem<T>(builder);
+            return new IronTaskThatReturnsCacheItem<T>(builder, this);
         }
 
         public IIronTask<T> GetOrAdd<T>(string key, Func<T> valueFactory, CacheItemOptions options = null)
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = CacheItemEndPoint(key)
+                Path = ProjectPathWithCacheNameAndItemKey(key)
             };
 
             return new IronTaskThatGetsOrSetsCacheItem<T>(builder, this, key, valueFactory, options);
@@ -95,10 +95,10 @@ namespace IronSharp.IronCache
 
         public IIronTask<CacheItem> GetOrAdd(string key, Func<CacheItem> valueFactory)
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = CacheItemEndPoint(key)
+                Path = ProjectPathWithCacheNameAndItemKey(key)
             };
 
             return new IronTaskThatGetsOrSetsCacheItem(builder, this, key, valueFactory);
@@ -117,10 +117,10 @@ namespace IronSharp.IronCache
         /// </remarks>
         public IIronTask<bool> Increment(string key, int amount = 1)
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Post,
-                Path = string.Format("{0}/increment", CacheItemEndPoint(key)),
+                Path = string.Format("{0}/increment", ProjectPathWithCacheNameAndItemKey(key)),
                 HttpContent = new JsonContent(new {amount})
             };
 
@@ -135,10 +135,10 @@ namespace IronSharp.IronCache
         /// </remarks>
         public IIronTask<CacheInfo> Info()
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = CacheNameEndPoint()
+                Path = ProjectPathWithCacheName()
             };
 
             return new IronTaskThatReturnsJson<CacheInfo>(builder);
@@ -169,24 +169,24 @@ namespace IronSharp.IronCache
         /// </remarks>
         public IIronTask<bool> Put(string key, CacheItem item)
         {
-            var builder = new IronTaskRequestBuilder(_client.EndPointConfig)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Put,
-                Path = string.Format("{0}/increment", CacheItemEndPoint(key)),
+                Path =  ProjectPathWithCacheNameAndItemKey(key),
                 HttpContent = new JsonContent(item)
             };
 
             return new IronTaskThatReturnsAnExpectedResult(builder, "Stored.");
         }
 
-        private string CacheItemEndPoint(string key)
+        private string ProjectPathWithCacheNameAndItemKey(string key)
         {
-            return string.Format("{0}/items/{1}", CacheNameEndPoint(), key);
+            return string.Format("{0}/items/{1}", ProjectPathWithCacheName(), key);
         }
 
-        private string CacheNameEndPoint()
+        private string ProjectPathWithCacheName()
         {
-            return string.Format("{0}/{1}", _client.EndPoint, _cacheName);
+            return string.Format("{0}/{1}", _client.ProjectPath, _cacheName);
         }
     }
 }

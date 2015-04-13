@@ -5,7 +5,7 @@ using IronIO.Core;
 using IronIO.Core.Extensions;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class TaskIdCollection : IMsg, IInspectable, IIdCollection
     {

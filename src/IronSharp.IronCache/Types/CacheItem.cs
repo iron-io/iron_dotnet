@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public class CacheItem<TValue> : CacheItem
     {

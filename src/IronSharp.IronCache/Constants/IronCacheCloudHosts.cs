@@ -1,4 +1,4 @@
-﻿namespace IronSharp.IronCache
+﻿namespace IronIO.IronCache
 {
     /// <summary>
     /// http://dev.iron.io/mq/reference/clouds/

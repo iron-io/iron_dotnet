@@ -10,7 +10,7 @@ namespace IronIO.Core
 {
     public class IronTaskRequestBuilder
     {
-        private readonly IIronTaskEndPointConfig _endPointConfig;
+        private readonly IIronTaskEndpointConfig _endpointConfig;
         private NameValueCollection _query;
 
         protected IronTaskRequestBuilder()
@@ -19,9 +19,9 @@ namespace IronIO.Core
 
         }
 
-        public IronTaskRequestBuilder(IIronTaskEndPointConfig endPointConfig) : this()
+        public IronTaskRequestBuilder(IIronTaskEndpointConfig endpointConfig) : this()
         {
-            _endPointConfig = endPointConfig;
+            _endpointConfig = endpointConfig;
         }
 
         public NameValueCollection Query
@@ -76,19 +76,19 @@ namespace IronIO.Core
 
         public HttpRequestMessage Build()
         {
-            var authToken = _endPointConfig.TokenContainer.GetToken();
+            var authToken = _endpointConfig.TokenContainer.GetToken();
             return Build(authToken);
         }
 
         public async Task<HttpRequestMessage> BuildAsync()
         {
-            var authToken = await _endPointConfig.TokenContainer.GetTokenAsync();
+            var authToken = await _endpointConfig.TokenContainer.GetTokenAsync();
             return Build(authToken);
         }
 
         private HttpRequestMessage Build(AuthToken authToken)
         {
-            var config = _endPointConfig.Config;
+            var config = _endpointConfig.Config;
 
             if (authToken.Location == AuthTokenLocation.Querystring)
             {

@@ -1,6 +1,6 @@
 ﻿using IronIO.Core;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public static class Client
     {

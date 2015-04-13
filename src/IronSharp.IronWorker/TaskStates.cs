@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     [Flags]
     public enum TaskStates

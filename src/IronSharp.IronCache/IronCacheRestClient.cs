@@ -3,11 +3,11 @@ using System.Net.Http;
 using System.Threading;
 using IronIO.Core;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public class IronCacheRestClient
     {
-        private readonly IIronTaskEndPointConfig _endPointConfig;
+        private readonly IIronTaskEndpointConfig _endpointConfig;
 
         internal IronCacheRestClient(IronClientConfig config)
         {
@@ -18,20 +18,17 @@ namespace IronSharp.IronCache
                 config.Host = IronCacheCloudHosts.DEFAULT;
             }
 
-            if (config.ApiVersion == default (int))
-            {
-                config.ApiVersion = 1;
-            }
+            config.ApiVersion = config.ApiVersion.GetValueOrDefault(1);
 
-            _endPointConfig = new IronTaskEndPointConfig(config);
+            _endpointConfig = new IronTaskEndpointConfig(config);
         }
 
-        public IIronTaskEndPointConfig EndPointConfig
+        public IIronTaskEndpointConfig EndpointConfig
         {
-            get { return _endPointConfig; }
+            get { return _endpointConfig; }
         }
 
-        public string EndPoint
+        public string ProjectPath
         {
             get { return "/projects/{Project ID}/caches"; }
         }
@@ -50,10 +47,10 @@ namespace IronSharp.IronCache
         /// </remarks>
         public IIronTask<bool> Delete(string cacheName)
         {
-            var builder = new IronTaskRequestBuilder(_endPointConfig)
+            var builder = new IronTaskRequestBuilder(_endpointConfig)
             {
                 HttpMethod = HttpMethod.Delete,
-                Path = string.Format("{0}/{1}", EndPoint, cacheName)
+                Path = string.Format("{0}/{1}", ProjectPath, cacheName)
             };
 
             return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
@@ -68,10 +65,10 @@ namespace IronSharp.IronCache
         /// </remarks>
         public IIronTask<CacheInfo[]> List(int? page)
         {
-            var builder = new IronTaskRequestBuilder(_endPointConfig)
+            var builder = new IronTaskRequestBuilder(_endpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = EndPoint
+                Path = ProjectPath
             };
 
             if (page.HasValue)

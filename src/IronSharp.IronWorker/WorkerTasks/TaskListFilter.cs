@@ -1,7 +1,7 @@
 ﻿using System;
 using IronIO.Core;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class TaskListFilter : PagingFilter
     {
