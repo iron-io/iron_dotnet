@@ -60,7 +60,7 @@ namespace IronSharp.IronMQ
                 switch (PushType)
                 {
                     case PushType.Pull:
-                        return "push";
+                        return "pull";
                     case PushType.Multicast:
                         return "multicast";
                     case PushType.Unicast:
