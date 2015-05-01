@@ -8,10 +8,12 @@ namespace IronSharp.IronCache
     public class IronCacheRestClient
     {
         private readonly IronClientConfig _config;
+        protected readonly RestClient _restClient; 
 
         internal IronCacheRestClient(IronClientConfig config)
         {
             _config = LazyInitializer.EnsureInitialized(ref config);
+            _restClient = new RestClient();
 
             if (string.IsNullOrEmpty(Config.Host))
             {
@@ -27,6 +29,11 @@ namespace IronSharp.IronCache
         public IronClientConfig Config
         {
             get { return _config; }
+        }
+
+        public RestClient RestClient
+        {
+            get { return _restClient; }
         }
 
         public string EndPoint
@@ -49,7 +56,7 @@ namespace IronSharp.IronCache
         /// </remarks>
         public bool Delete(string cacheName)
         {
-            return RestClient.Delete<ResponseMsg>(_config, string.Format("{0}/{1}", EndPoint, cacheName)).HasExpectedMessage("Deleted.");
+            return _restClient.Delete<ResponseMsg>(_config, string.Format("{0}/{1}", EndPoint, cacheName)).HasExpectedMessage("Deleted.");
         }
 
         /// <summary>
@@ -68,7 +75,7 @@ namespace IronSharp.IronCache
                 query.Add("page", Convert.ToString(page));
             }
 
-            return RestClient.Get<CacheInfo[]>(_config, EndPoint, query);
+            return _restClient.Get<CacheInfo[]>(_config, EndPoint, query);
         }
     }
 }

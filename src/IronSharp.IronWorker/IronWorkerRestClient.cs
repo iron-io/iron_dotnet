@@ -6,11 +6,13 @@ namespace IronSharp.IronWorker
     public class IronWorkerRestClient
     {
         private readonly IronClientConfig _config;
+        protected readonly RestClient _restClient; 
 
         internal IronWorkerRestClient(IronClientConfig config)
         {
             _config = LazyInitializer.EnsureInitialized(ref config);
-
+            _restClient = new RestClient();
+    
             if (string.IsNullOrEmpty(Config.Host))
             {
                 Config.Host = IronWorkCloudHosts.DEFAULT;
@@ -25,6 +27,11 @@ namespace IronSharp.IronWorker
         public IronClientConfig Config
         {
             get { return _config; }
+        }
+
+        public RestClient RestClient
+        {
+            get { return _restClient; }
         }
 
         public string EndPoint
@@ -57,7 +64,7 @@ namespace IronSharp.IronWorker
         /// </remarks>
         public CodeInfoCollection Codes(PagingFilter filter = null)
         {
-            return RestClient.Get<CodeInfoCollection>(_config, string.Format("{0}/codes", EndPoint), filter).Result;
+            return _restClient.Get<CodeInfoCollection>(_config, string.Format("{0}/codes", EndPoint), filter).Result;
         }
 
         #endregion

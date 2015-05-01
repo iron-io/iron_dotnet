@@ -14,7 +14,7 @@
     <releaseNotes>Added generate Webhook URI method</releaseNotes>
     <tags>iron.io,cloud workers,task,scheduling</tags>
     <dependencies>
-      <dependency id="Iron.IronCore" />
+      <dependency id="Iron.IronCore" version="1.0.6" />
       <dependency id="Newtonsoft.Json" />
     </dependencies>
   </metadata>

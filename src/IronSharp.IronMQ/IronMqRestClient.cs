@@ -8,9 +8,11 @@ namespace IronSharp.IronMQ
     public class IronMqRestClient
     {
         private readonly IronClientConfig _config;
+        private readonly RestClient _restClient;
 
         internal IronMqRestClient(IronClientConfig config)
         {
+            _restClient = new RestClient();
             _config = LazyInitializer.EnsureInitialized(ref config);
 
             if (string.IsNullOrEmpty(Config.Host))
@@ -27,6 +29,11 @@ namespace IronSharp.IronMQ
         public IronClientConfig Config
         {
             get { return _config; }
+        }
+
+        public RestClient RestClient
+        {
+            get { return _restClient; }
         }
 
         public string EndPoint
@@ -54,7 +61,7 @@ namespace IronSharp.IronMQ
         /// <returns> </returns>
         public IEnumerable<QueueInfo> Queues(PagingFilter filter = null)
         {
-            return RestClient.Get<IEnumerable<QueueInfo>>(_config, EndPoint, filter).Result;
+            return _restClient.Get<IEnumerable<QueueInfo>>(_config, EndPoint, filter).Result;
         }
     }
 }
