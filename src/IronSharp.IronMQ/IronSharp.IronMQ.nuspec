@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Iron.IronMQ</id>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <title>IronMQ</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
@@ -17,7 +17,7 @@
     <releaseNotes>Added generate Webhook URI method, added TimeSpan overloads for time parameters</releaseNotes>
     <tags>iron.io,message queue</tags>
     <dependencies>
-      <dependency id="Iron.IronCore" />
+      <dependency id="Iron.IronCore" version="1.0.6" />
       <dependency id="Newtonsoft.Json" />
     </dependencies>
   </metadata>
