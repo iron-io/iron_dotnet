@@ -347,7 +347,7 @@ message.Delete();
 
 ## Multithread execution recomendations
 
-Please, try not to use this client more then in 25 threads at the same time inside one process. If you need to have more threads, you can use several processes.
+Please, try not to use this client more than in 25 threads at the same time inside one process. If you need to have more threads, you can use several processes.
 
 Also try to make not more than 50 requests per second from each thread.
 
