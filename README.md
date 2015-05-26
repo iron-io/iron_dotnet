@@ -345,16 +345,6 @@ message.Delete();
 
 --
 
-## Multithread execution recomendations
-
-Please, try not to use this client more than in 25 threads at the same time inside one process. If you need to have more threads, you can use several processes.
-
-Also try to make not more than 50 requests per second from each thread.
-
-It's also recommended to reuse Client instead of instantiating it for each request.
-
---
-
 ### Delete Messages 
 
 Batch deleting of messages can be done via deleting MessageCollection
@@ -371,6 +361,16 @@ var id1 = queue.Reserve();
 var id2 = queue.Reserve();
 q.Delete(new[]{id1, id2});
 ```
+
+--
+
+## Multithread execution recomendations
+
+Please, try not to use this client more than in 25 threads at the same time inside one process. If you need to have more threads, you can use several processes.
+
+Also try to make not more than 50 requests per second from each thread.
+
+It's also recommended to reuse Client instead of instantiating it for each request.
 
 --
 
