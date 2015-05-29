@@ -372,6 +372,8 @@ Also try to make not more than 50 requests per second from each thread.
 
 It's also recommended to reuse Client instead of instantiating it for each request.
 
+Don't try more than 15-20 consumer threads per queue concurrently. Use long poll with keep alive connections.
+
 --
 
 
