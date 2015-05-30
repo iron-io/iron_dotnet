@@ -366,13 +366,10 @@ q.Delete(new[]{id1, id2});
 
 ## Multithread execution recomendations
 
-Please, try not to use this client more than in 25 threads at the same time inside one process. If you need to have more threads, you can use several processes.
-
-Also try to make not more than 50 requests per second from each thread.
-
-It's also recommended to reuse Client instead of instantiating it for each request.
-
-Don't try more than 15-20 consumer threads per queue concurrently. Use long poll with keep alive connections.
+- Do not use more than 25 threads inside one process. If you need more threads, use several processes.
+- Do not exceed 50 requests per second from each thread
+- Reuse the Client instead of instantiating it for each request.
+- Don't try more than 15-20 consumer threads per queue concurrently. Instead, use long polling with keep alive connections.
 
 --
 
