@@ -38,7 +38,7 @@ string messageId = @queue.Post("hello world!");
 Console.WriteLine(messageId);
 
 // Get a message
-QueueMessage msg = queue.Get(n:30, timeout: 60, wait: 100);
+QueueMessage msg = queue.Get(messageId);
 
 Console.WriteLine(msg.Inspect());
 
