@@ -2,9 +2,9 @@
 using System.IO;
 using System.Net.Http;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
-    public class RestResponseException : IronSharpException
+    public class RestResponseException : IronIOException
     {
         public RestResponseException(string message, HttpResponseMessage response)
             : base(message + AppendDebugInfo(response))

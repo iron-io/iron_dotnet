@@ -1,8 +1,8 @@
 ﻿using System.Net.Http;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
-    public class MaximumRetryAttemptsExceededException : IronSharpException
+    public class MaximumRetryAttemptsExceededException : IronIOException
     {
         private readonly HttpRequestMessage _request;
 

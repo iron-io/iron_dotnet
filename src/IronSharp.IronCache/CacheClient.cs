@@ -1,172 +1,189 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using IronSharp.Core;
+using System.Net.Http;
+using IronIO.Core;
 
-namespace IronSharp.IronCache
+namespace IronIO.IronCache
 {
     public class CacheClient
     {
         private readonly string _cacheName;
         private readonly IronCacheRestClient _client;
-        private readonly RestClient _restClient = new RestClient();
 
         public CacheClient(IronCacheRestClient client, string cacheName)
         {
-            if (client == null) throw new ArgumentNullException("client");
-            if (string.IsNullOrEmpty(cacheName)) throw new ArgumentNullException("cacheName");
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (string.IsNullOrEmpty(cacheName)) throw new ArgumentNullException(nameof(cacheName));
             Contract.EndContractBlock();
 
             _client = client;
             _cacheName = cacheName;
         }
 
-        public IValueSerializer ValueSerializer
-        {
-            get { return _client.Config.SharpConfig.ValueSerializer; }
-        }
+        public IValueSerializer ValueSerializer => _client.EndpointConfig.Config.SharpConfig.ValueSerializer;
 
         /// <summary>
-        /// Delete all items in a cache. This cannot be undone.
+        ///     Delete all items in a cache. This cannot be undone.
         /// </summary>
         /// <remarks>
-        /// http://dev.iron.io/cache/reference/api/#clear_a_cache
+        ///     http://dev.iron.io/cache/reference/api/#clear_a_cache
         /// </remarks>
-        public bool Clear()
+        public IIronTask<bool> Clear()
         {
-            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/clear", CacheNameEndPoint())).HasExpectedMessage("Deleted.");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{ProjectPathWithCacheName()}/clear"
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
         }
 
-        public bool Delete(string key)
+        public IIronTask<bool> Delete(string key)
         {
-            return _restClient.Delete<ResponseMsg>(_client.Config, CacheItemEndPoint(key)).HasExpectedMessage("Deleted.");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = ProjectPathWithCacheNameAndItemKey(key)
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
         }
 
         /// <summary>
-        /// This call retrieves an item from the cache. The item will not be deleted.
+        ///     This call retrieves an item from the cache. The item will not be deleted.
         /// </summary>
         /// <param name="key"> The key the item is stored under in the cache. </param>
         /// <remarks>
-        /// http://dev.iron.io/cache/reference/api/#get_an_item_from_a_cache
+        ///     http://dev.iron.io/cache/reference/api/#get_an_item_from_a_cache
         /// </remarks>
-        public CacheItem Get(string key)
+        public IIronTask<CacheItem> Get(string key)
         {
-            RestResponse<CacheItem> response = _restClient.Get<CacheItem>(_client.Config, CacheItemEndPoint(key));
-
-            if (response.CanReadResult())
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                response.Result.Client = this;
-            }
+                HttpMethod = HttpMethod.Get,
+                Path = ProjectPathWithCacheNameAndItemKey(key)
+            };
 
-            return response;
+            return new IronTaskThatReturnsCacheItem(builder, this);
         }
 
-        public T Get<T>(string key)
+        public IIronTask<T> Get<T>(string key)
         {
-            CacheItem item = Get(key);
-
-            if (IsDefaultValue(item))
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                return default(T);
-            }
+                HttpMethod = HttpMethod.Get,
+                Path = ProjectPathWithCacheNameAndItemKey(key)
+            };
 
-            return item.ReadValueAs<T>();
+            return new IronTaskThatReturnsCacheItem<T>(builder, this);
         }
 
-        public T GetOrAdd<T>(string key, Func<T> valueFactory, CacheItemOptions options = null)
+        public IIronTask<T> GetOrAdd<T>(string key, Func<T> valueFactory, CacheItemOptions options = null)
         {
-            var item = Get<T>(key);
-
-            if (Equals(item, default(T)))
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                item = valueFactory();
-                Put(key, item, options);
-            }
+                HttpMethod = HttpMethod.Get,
+                Path = ProjectPathWithCacheNameAndItemKey(key)
+            };
 
-            return item;
+            return new IronTaskThatGetsOrSetsCacheItem<T>(builder, this, key, valueFactory, options);
         }
 
-        public CacheItem GetOrAdd(string key, Func<CacheItem> valueFactory)
+        public IIronTask<CacheItem> GetOrAdd(string key, Func<CacheItem> valueFactory)
         {
-            CacheItem item = Get(key);
-
-            if (IsDefaultValue(item))
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                item = valueFactory();
-                Put(key, item);
-            }
+                HttpMethod = HttpMethod.Get,
+                Path = ProjectPathWithCacheNameAndItemKey(key)
+            };
 
-            item.Client = this;
-
-            return item;
+            return new IronTaskThatGetsOrSetsCacheItem(builder, this, key, valueFactory);
         }
 
         /// <summary>
-        /// This call increments the numeric value of an item in the cache. The amount must be a number and attempting to increment non-numeric values results in an error.
-        /// Negative amounts may be passed to decrement the value.
-        /// The increment is atomic, so concurrent increments will all be observed.
+        ///     This call increments the numeric value of an item in the cache. The amount must be a number and attempting to
+        ///     increment non-numeric values results in an error.
+        ///     Negative amounts may be passed to decrement the value.
+        ///     The increment is atomic, so concurrent increments will all be observed.
         /// </summary>
         /// <param name="key"> The key of the item to increment </param>
         /// <param name="amount"> The amount to increment the value, as an integer. If negative, the value will be decremented. </param>
         /// <remarks>
-        /// http://dev.iron.io/cache/reference/api/#increment_an_items_value
+        ///     http://dev.iron.io/cache/reference/api/#increment_an_items_value
         /// </remarks>
-        public CacheIncrementResult Increment(string key, int amount = 1)
+        public IIronTask<bool> Increment(string key, int amount = 1)
         {
-            return _restClient.Post<CacheIncrementResult>(_client.Config, string.Format("{0}/increment", CacheItemEndPoint(key)), new {amount});
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{ProjectPathWithCacheNameAndItemKey(key)}/increment",
+                HttpContent = new JsonContent(new {amount})
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult<CacheIncrementResult>(builder, "Added");
         }
 
         /// <summary>
-        /// This call gets general information about a cache.
+        ///     This call gets general information about a cache.
         /// </summary>
         /// <remarks>
-        /// http://dev.iron.io/cache/reference/api/#get_info_about_a_cache
+        ///     http://dev.iron.io/cache/reference/api/#get_info_about_a_cache
         /// </remarks>
-        public CacheInfo Info()
+        public IIronTask<CacheInfo> Info()
         {
-            return _restClient.Get<CacheInfo>(_client.Config, CacheNameEndPoint());
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = ProjectPathWithCacheName()
+            };
+
+            return new IronTaskThatReturnsJson<CacheInfo>(builder);
         }
 
-        public bool Put(string key, object value, CacheItemOptions options = null)
+        public IIronTask<bool> Put(string key, object value, CacheItemOptions options = null)
         {
             return Put(key, ValueSerializer.Generate(value), options);
         }
 
-        public bool Put(string key, int value, CacheItemOptions options = null)
+        public IIronTask<bool> Put(string key, int value, CacheItemOptions options = null)
         {
             return Put(key, new CacheItem(value, options));
         }
 
-        public bool Put(string key, string value, CacheItemOptions options = null)
+        public IIronTask<bool> Put(string key, string value, CacheItemOptions options = null)
         {
             return Put(key, new CacheItem(value, options));
         }
 
         /// <summary>
-        /// This call puts an item into a cache.
+        ///     This call puts an item into a cache.
         /// </summary>
         /// <param name="key"> The key to store the item under in the cache. </param>
         /// <param name="item"> The item’s data </param>
         /// <remarks>
-        /// http://dev.iron.io/cache/reference/api/#put_an_item_into_a_cache
+        ///     http://dev.iron.io/cache/reference/api/#put_an_item_into_a_cache
         /// </remarks>
-        public bool Put(string key, CacheItem item)
+        public IIronTask<bool> Put(string key, CacheItem item)
         {
-            return _restClient.Put<ResponseMsg>(_client.Config, CacheItemEndPoint(key), item).HasExpectedMessage("Stored.");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Put,
+                Path =  ProjectPathWithCacheNameAndItemKey(key),
+                HttpContent = new JsonContent(item)
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Stored.");
         }
 
-        private static bool IsDefaultValue(CacheItem item)
+        private string ProjectPathWithCacheNameAndItemKey(string key)
         {
-            return item == null || item.Value == null || string.IsNullOrEmpty(Convert.ToString(item.Value));
+            return $"{ProjectPathWithCacheName()}/items/{key}";
         }
 
-        private string CacheItemEndPoint(string key)
+        private string ProjectPathWithCacheName()
         {
-            return string.Format("{0}/items/{1}", CacheNameEndPoint(), key);
-        }
-
-        private string CacheNameEndPoint()
-        {
-            return string.Format("{0}/{1}", _client.EndPoint, _cacheName);
+            return $"{_client.ProjectPath}/{_cacheName}";
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace IronSharp.Core
+namespace IronIO.Core.Extensions
 {
     public static class ExtensionsForString
     {

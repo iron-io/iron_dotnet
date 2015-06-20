@@ -1,7 +1,7 @@
-﻿using IronSharp.Core;
+﻿using IronIO.Core;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class CodeInfo : IInspectable
     {

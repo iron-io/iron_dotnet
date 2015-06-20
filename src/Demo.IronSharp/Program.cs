@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using Common.Logging;
 using Common.Logging.Simple;
+using IronIO.Core;
+using IronIO.Core.Extensions;
 using IronSharp.Core;
 using IronSharp.IronCache;
 using IronSharp.IronMQ;
@@ -361,10 +363,5 @@ namespace Demo.IronSharpConsole
 
         }
 
-    }
-
-    public class SampleClass
-    {
-        public string Name { get; set; }
     }
 }

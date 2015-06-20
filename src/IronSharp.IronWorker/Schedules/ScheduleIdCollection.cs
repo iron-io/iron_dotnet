@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using IronSharp.Core;
+using IronIO.Core;
+using IronIO.Core.Extensions;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class ScheduleIdCollection : IMsg, IInspectable
     {

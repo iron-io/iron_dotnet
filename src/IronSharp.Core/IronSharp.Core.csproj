@@ -7,10 +7,11 @@
     <ProjectGuid>{1A6CC922-40A5-440A-868D-757FCDB08622}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.Core</RootNamespace>
-    <AssemblyName>IronSharp.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>IronIO.Core</RootNamespace>
+    <AssemblyName>IronIO.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,29 +40,36 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
+    <Reference Include="Common.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Common.Logging.3.1.0\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\packages\Common.Logging.Core.3.1.0\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\IRequestHelpersContainer.cs" />
     <Compile Include="Abstract\ITokenContainer.cs" />
     <Compile Include="Attributes\QueueNameAttribute.cs" />
-    <Compile Include="Config\KeystoneClientConfig.cs" />
+    <Compile Include="Exceptions\IronIORestException.cs" />
+    <Compile Include="Keystone\KeystoneClientConfig.cs" />
     <Compile Include="Constants\AuthHeaderLocation.cs" />
     <Compile Include="DateTimeHelpers.cs" />
     <Compile Include="DefaultValueSerializer.cs" />
@@ -80,22 +88,37 @@
     <Compile Include="Config\IronDotConfigManager.cs" />
     <Compile Include="Constants\IronProduct.cs" />
     <Compile Include="Config\IronSharpConfig.cs" />
-    <Compile Include="Exceptions\IronSharpException.cs" />
+    <Compile Include="Exceptions\IronIoException.cs" />
     <Compile Include="Abstract\IValueSerializer.cs" />
+    <Compile Include="Abstract\IHideObjectMembers.cs" />
+    <Compile Include="Keystone\Auth.cs" />
+    <Compile Include="Keystone\Credentials.cs" />
+    <Compile Include="Keystone\KestoneToken.cs" />
+    <Compile Include="Keystone\KeystoneAccess.cs" />
+    <Compile Include="Keystone\KeystoneClient.cs" />
+    <Compile Include="Keystone\KeystoneResponse.cs" />
+    <Compile Include="Keystone\KeystoneUtil.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsAnExpectedResult.cs" />
+    <Compile Include="Tasks\IIronTask.cs" />
+    <Compile Include="Tasks\IIronTaskEndPointConfig.cs" />
+    <Compile Include="Tasks\IronConfigTokenContainer.cs" />
+    <Compile Include="Tasks\IronTask.cs" />
     <Compile Include="JsonContent.cs" />
     <Compile Include="JSON.cs" />
     <Compile Include="Exceptions\MaximumRetryAttemptsExceededException.cs" />
-    <Compile Include="MqRestClient.cs" />
     <Compile Include="RestUtility.cs" />
-    <Compile Include="Types\HttpRequestMessageBuilder.cs" />
-    <Compile Include="Types\IronTokenContainer.cs" />
-    <Compile Include="Types\Keystone.cs" />
-    <Compile Include="Types\KeystoneContainer.cs" />
+    <Compile Include="Tasks\IronTaskEndPointConfig.cs" />
+    <Compile Include="Tasks\IronTaskRequestBuilder.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsJson.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsResponse.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsString.cs" />
+    <Compile Include="Types\AuthToken.cs" />
+    <Compile Include="Keystone\Keystone.cs" />
+    <Compile Include="Keystone\KeystoneContainer.cs" />
     <Compile Include="Types\PagingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Config\HttpClientOptions.cs" />
     <Compile Include="Types\ResponseMsg.cs" />
-    <Compile Include="RestClient.cs" />
     <Compile Include="Types\RestClientRequest.cs" />
     <Compile Include="Types\RestResponse.cs" />
     <Compile Include="Exceptions\RestResponseException.cs" />
@@ -107,7 +130,9 @@
     </None>
     <None Include="IronSharp.Core.csproj.DotSettings" />
     <None Include="IronSharp.Core.nuspec" />
+    <None Include="pack.bat" />
     <None Include="packages.config" />
+    <None Include="push.bat" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
