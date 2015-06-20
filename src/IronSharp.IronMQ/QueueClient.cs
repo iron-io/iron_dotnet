@@ -652,7 +652,7 @@ namespace IronSharp.IronMQ
         /// <remarks>
         ///     http://dev.iron.io/mq/reference/api/#touch_a_message_on_a_queue
         /// </remarks>
-        public IIronTask<MessageOptions> Touch(string messageId, string reservationId, int? timeout = null)
+        public IIronTask<MessageOptions> Touch(string messageId, string reservationId, IronTimespan timeout = new IronTimespan())
         {
             var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
@@ -663,7 +663,7 @@ namespace IronSharp.IronMQ
             builder.SetJsonContent(new MessageOptions
             {
                 ReservationId = reservationId,
-                Timeout = timeout
+                Timeout = timeout.GetSeconds()
             });
 
             return new IronTaskThatReturnsJson<MessageOptions>(builder);
@@ -700,9 +700,17 @@ namespace IronSharp.IronMQ
         ///     http://dev.iron.io/mq/reference/api/#add_alerts_to_a_queue
         ///     http://dev.iron.io/mq/reference/queue_alerts/
         /// </remarks>
-        public QueueInfo AddAlerts(AlertCollection alertCollection)
+        public IIronTask<QueueInfo> AddAlerts(AlertCollection alertCollection)
         {
-            return _restClient.Post<QueueInfo>(_client.Config, string.Format("{0}/alerts", QueuePath), alertCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/alerts"
+            };
+
+            builder.SetJsonContent(alertCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         /// <summary>
@@ -712,9 +720,17 @@ namespace IronSharp.IronMQ
         ///     http://dev.iron.io/mq/reference/api/#update_alerts_to_a_queue
         ///     http://dev.iron.io/mq/reference/queue_alerts/
         /// </remarks>
-        public QueueInfo UpdateAlerts(AlertCollection alertCollection)
+        public IIronTask<QueueInfo> UpdateAlerts(AlertCollection alertCollection)
         {
-            return _restClient.Put<QueueInfo>(_client.Config, string.Format("{0}/alerts", QueuePath), alertCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Put,
+                Path = $"{QueuePath}/alerts"
+            };
+
+            builder.SetJsonContent(alertCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         /// <summary>
@@ -725,30 +741,33 @@ namespace IronSharp.IronMQ
         /// <remarks>
         ///     http://dev.iron.io/mq/reference/api/#remove_alert_from_a_queue_by_id
         /// </remarks>
-        public bool DeleteAlert(Alert alert)
+        public IIronTask<bool> DeleteAlert(Alert alert)
         {
-            if (alert == null)
-            {
-                return false;
-            }
-            return DeleteAlert(alert.Id);
+            return DeleteAlert(alert?.Id);
         }
 
         /// <summary>
         ///     Removes an alert specified by id from the queue.
         ///     See http://dev.iron.io/mq/reference/queue_alerts/ for more information.
         /// </summary>
-        /// <param name="alert"> Id of alert to delete. </param>
+        /// <param name="alertId"> Id of alert to delete. </param>
         /// <remarks>
         ///     http://dev.iron.io/mq/reference/api/#remove_alert_from_a_queue_by_id
         /// </remarks>
-        public bool DeleteAlert(string alertId)
+        public IIronTask<bool> DeleteAlert(string alertId)
         {
             if (string.IsNullOrEmpty(alertId))
             {
-                return false;
+                return new NoOpIronTaskResult<bool>(false);
             }
-            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/alerts/{1}", QueuePath, alertId)).HasExpectedMessage("Deleted");
+
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/alerts/{alertId}"
+            };
+            
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted");
         }
 
         /// <summary>
@@ -757,9 +776,17 @@ namespace IronSharp.IronMQ
         /// <remarks>
         ///     http://dev.iron.io/mq/reference/api/#remove_alerts_from_a_queue
         /// </remarks>
-        public QueueInfo RemoveAlerts(AlertCollection alertCollection)
+        public IIronTask<QueueInfo> RemoveAlerts(AlertCollection alertCollection)
         {
-            return _restClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/alerts", QueuePath), payload: alertCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/alerts"
+            };
+
+            builder.SetJsonContent(alertCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         #endregion

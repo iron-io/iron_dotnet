@@ -112,9 +112,11 @@
     <Compile Include="Tasks\IronTaskThatReturnsJson.cs" />
     <Compile Include="Tasks\IronTaskThatReturnsResponse.cs" />
     <Compile Include="Tasks\IronTaskThatReturnsString.cs" />
+    <Compile Include="Tasks\NoOpIronTaskResult.cs" />
     <Compile Include="Types\AuthToken.cs" />
     <Compile Include="Keystone\Keystone.cs" />
     <Compile Include="Keystone\KeystoneContainer.cs" />
+    <Compile Include="Types\IronTimespan.cs" />
     <Compile Include="Types\PagingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Config\HttpClientOptions.cs" />
