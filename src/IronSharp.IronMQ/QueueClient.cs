@@ -6,7 +6,7 @@ using System.Net.Http;
 using IronIO.Core;
 using IronIO.Core.Extensions;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class QueueClient<T> : QueueClient
     {

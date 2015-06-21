@@ -5,7 +5,7 @@ using IronIO.Core;
 using IronIO.Core.Extensions;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class QueueInfo : IInspectable
     {

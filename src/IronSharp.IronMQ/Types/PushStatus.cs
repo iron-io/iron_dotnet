@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class PushStatus
     {

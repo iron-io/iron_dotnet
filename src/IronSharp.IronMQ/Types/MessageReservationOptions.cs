@@ -1,4 +1,4 @@
-﻿namespace IronSharp.IronMQ
+﻿namespace IronIO.IronMQ
 {
     public class MessageReservationOptions : ReservationOptions
     {

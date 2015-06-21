@@ -1,6 +1,6 @@
 ﻿using IronIO.Core;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class IronTaskThatTouchesMessage : IronTaskThatReturnsJson<MessageOptions>
     {

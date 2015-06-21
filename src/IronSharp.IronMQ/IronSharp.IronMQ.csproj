@@ -7,8 +7,8 @@
     <ProjectGuid>{D891A220-AA6F-4D0C-B012-B25875787BA0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.IronMQ</RootNamespace>
-    <AssemblyName>IronSharp.IronMQ</AssemblyName>
+    <RootNamespace>IronIO.IronMQ</RootNamespace>
+    <AssemblyName>IronIO.IronMQ</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

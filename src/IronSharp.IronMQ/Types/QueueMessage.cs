@@ -2,7 +2,7 @@
 using IronIO.Core;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class QueueMessage : MessageOptions
     {

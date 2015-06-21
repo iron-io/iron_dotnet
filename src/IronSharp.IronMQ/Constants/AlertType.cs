@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     [JsonConverter(typeof (StringEnumConverter))]
     public enum AlertType

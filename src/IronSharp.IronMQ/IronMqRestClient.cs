@@ -4,7 +4,7 @@ using IronIO.Core;
 using IronIO.Core.Attributes;
 using IronIO.Core.Extensions;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class IronMqRestClient
     {

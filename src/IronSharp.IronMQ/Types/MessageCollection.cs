@@ -2,7 +2,7 @@
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class MessageCollection
     {

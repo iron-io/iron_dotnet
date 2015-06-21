@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using IronIO.Core.Extensions;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     internal static class ReservationUtil
     {
