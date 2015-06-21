@@ -1,9 +1,10 @@
 ﻿using System.Net;
+using IronIO.Core;
 using Newtonsoft.Json;
 
 namespace IronIO.IronMQ
 {
-    public class Subscriber
+    public class Subscriber : IInspectable
     {
         public Subscriber() : this(null, null)
         {
