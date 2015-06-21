@@ -24,6 +24,12 @@ namespace IronSharp.IronMQ
         [JsonProperty("retries_delay", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? RetriesDelay { get; set; }
 
+        [JsonProperty("error_queue", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string ErrorQueueName { get; set; }
+
+        [JsonProperty("rate_limit", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int? RateLimit { get; set; }
+
         [JsonIgnore]
         public List<Subscriber> Subscribers
         {

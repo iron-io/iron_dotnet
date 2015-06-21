@@ -10,7 +10,7 @@ namespace IronIO.Core
         public static HttpClient CreateHttpClient()
         {
             var handler = new HttpClientHandler();
-            
+
             var client =  HttpClientFactory.Create(handler);
 
             if (handler.SupportsAutomaticDecompression)

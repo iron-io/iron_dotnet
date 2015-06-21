@@ -69,6 +69,7 @@
     <Compile Include="Abstract\ITokenContainer.cs" />
     <Compile Include="Attributes\QueueNameAttribute.cs" />
     <Compile Include="Exceptions\IronIORestException.cs" />
+    <Compile Include="Extensions\ExtensionsForInteger.cs" />
     <Compile Include="Keystone\KeystoneClientConfig.cs" />
     <Compile Include="Constants\AuthHeaderLocation.cs" />
     <Compile Include="DateTimeHelpers.cs" />

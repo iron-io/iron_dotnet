@@ -33,11 +33,11 @@ namespace IronIO.Core
         public HttpContent HttpContent { get; set; }
 
         public HttpMethod HttpMethod { get; set; }
-        
+
         public string Accept { get; set; }
-        
+
         public AuthToken AuthToken { get; set; }
-        
+
         public string Path { get; set; }
 
         public void SetJsonContent(object value)

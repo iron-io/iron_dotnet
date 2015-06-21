@@ -24,10 +24,13 @@ namespace IronIO.IronCache
             var result = base.Send();
             if (CacheItem.IsDefaultValue(result))
             {
-                result = _valueFactory();
+                result = _valueFactory?.Invoke();
                 _cacheClient.Put(_key, result).Send();
             }
-            result.Client = _cacheClient;
+            if (result != null)
+            {
+                result.Client = _cacheClient;
+            }
             return result;
         }
 
@@ -37,10 +40,13 @@ namespace IronIO.IronCache
             if (CacheItem.IsDefaultValue(result))
             {
                 CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                result = _valueFactory();
+                result = _valueFactory?.Invoke();
                 await _cacheClient.Put(_key, result).SendAsync(cts.Token);
             }
-            result.Client = _cacheClient;
+            if (result != null)
+            {
+                result.Client = _cacheClient;
+            }
             return result;
         }
     }

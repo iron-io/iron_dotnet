@@ -52,9 +52,12 @@
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QueuesFilter.cs" />
+    <Compile Include="ReservationUtil.cs" />
     <Compile Include="Tasks\IronTaskThatReturnsMessageCollection.cs" />
     <Compile Include="Tasks\IronTaskThatReturnsMessageId.cs" />
     <Compile Include="Tasks\IronTaskThatReturnsQueueInfo.cs" />
+    <Compile Include="Tasks\IronTaskThatTouchesMessage.cs" />
     <Compile Include="Types\Alert.cs" />
     <Compile Include="Types\AlertCollection.cs" />
     <Compile Include="Constants\AlertType.cs" />
@@ -66,12 +69,13 @@
     <Compile Include="Types\MessageCollection.cs" />
     <Compile Include="Types\MessageIdCollection.cs" />
     <Compile Include="Types\MessageContainer.cs" />
+    <Compile Include="Types\MessageReservationOptions.cs" />
     <Compile Include="Types\PushInfo.cs" />
     <Compile Include="Types\QueueContainer.cs" />
+    <Compile Include="Types\ReservationOptions.cs" />
     <Compile Include="Types\ReservedMessageIdCollection.cs" />
     <Compile Include="Types\MessageIdContainer.cs" />
     <Compile Include="Types\MessageOptions.cs" />
-    <Compile Include="MqPagingFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\PushStatus.cs" />
     <Compile Include="Constants\PushType.cs" />

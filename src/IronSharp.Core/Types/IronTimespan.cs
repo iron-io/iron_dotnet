@@ -19,7 +19,7 @@ namespace IronIO.Core
             return new IronTimespan(value);
         }
 
-        public static IronTimespan None = new IronTimespan(0);
+        public static IronTimespan None => new IronTimespan();
 
         public IronTimespan(int seconds)
         {
@@ -54,8 +54,10 @@ namespace IronIO.Core
 
         public int? GetSeconds(int? defaultValue = default(int?), int? min = null, int? max = null)
         {
-            return Seconds > 0 ? GetRange(Seconds, min, max) : defaultValue;
+            return HasValue ? GetRange(Seconds, min, max) : defaultValue;
         }
+
+        public bool HasValue => Seconds > 0;
 
         private static int? GetRange(int seconds, int? min, int? max)
         {

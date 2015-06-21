@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using IronIO.Core;
-using IronSharp.Core;
 using Newtonsoft.Json;
 
 namespace IronSharp.IronMQ

@@ -12,11 +12,25 @@ namespace IronIO.IronWorker
 {
     public class TaskClient
     {
+        private static readonly TaskStates[] StatesToCheck =
+        {
+            TaskStates.Queued,
+            TaskStates.Running,
+            TaskStates.Complete,
+            TaskStates.Error,
+            TaskStates.Cancelled,
+            TaskStates.Killed,
+            TaskStates.Timeout
+        };
+
         private readonly IronWorkerRestClient _client;
 
         public TaskClient(IronWorkerRestClient client)
         {
-            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
             Contract.EndContractBlock();
 
             _client = client;
@@ -27,11 +41,11 @@ namespace IronIO.IronWorker
         public IValueSerializer ValueSerializer => _client.EndpointConfig.Config.SharpConfig.ValueSerializer;
 
         /// <summary>
-        ///     Cancel a Task
+        /// Cancel a Task
         /// </summary>
         /// <param name="taskId"> The ID of the task you want to cancel. </param>
         /// <remarks>
-        ///     http://dev.iron.io/worker/reference/api/#cancel_a_task
+        /// http://dev.iron.io/worker/reference/api/#cancel_a_task
         /// </remarks>
         public IIronTask<bool> Cancel(string taskId)
         {
@@ -45,7 +59,7 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Creates a single task
+        /// Creates a single task
         /// </summary>
         /// <param name="codeName"> The task Code Name </param>
         /// <param name="payload"> The task payload </param>
@@ -57,7 +71,7 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Creates a single task
+        /// Creates a single task
         /// </summary>
         /// <param name="codeName"> The task Code Name </param>
         /// <param name="payload"> The task payload </param>
@@ -69,7 +83,7 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Creates a single task
+        /// Creates a single task
         /// </summary>
         /// <param name="payload"> The task payload </param>
         /// <returns> The task id </returns>
@@ -103,11 +117,11 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Queue a Task
+        /// Queue a Task
         /// </summary>
         /// <param name="collection"> </param>
         /// <remarks>
-        ///     http://dev.iron.io/worker/reference/api/#queue_a_task
+        /// http://dev.iron.io/worker/reference/api/#queue_a_task
         /// </remarks>
         public IIronTask<TaskIdCollection> Create(TaskPayloadCollection collection)
         {
@@ -122,11 +136,11 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Get info about a task
+        /// Get info about a task
         /// </summary>
         /// <param name="taskId"> The ID of the task you want details on. </param>
         /// <remarks>
-        ///     http://dev.iron.io/worker/reference/api/#get_info_about_a_task
+        /// http://dev.iron.io/worker/reference/api/#get_info_about_a_task
         /// </remarks>
         public IIronTask<TaskInfo> Get(string taskId)
         {
@@ -143,11 +157,11 @@ namespace IronIO.IronWorker
         /// </summary>
         /// <param name="codeName"> The name of your worker (code package). </param>
         /// <param name="filter">
-        ///     List filtering options, to filter by Status use Status = TaskStates.Running | TaskStates.Queued
-        ///     to get all Running or Queued tasks
+        /// List filtering options, to filter by Status use Status = TaskStates.Running | TaskStates.Queued
+        /// to get all Running or Queued tasks
         /// </param>
         /// <remarks>
-        ///     http://dev.iron.io/worker/reference/api/#list_tasks
+        /// http://dev.iron.io/worker/reference/api/#list_tasks
         /// </remarks>
         public IIronTask<TaskInfoCollection> List(string codeName, TaskListFilter filter = null)
         {
@@ -172,11 +186,11 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Get a Task’s Log
+        /// Get a Task’s Log
         /// </summary>
         /// <param name="taskId"> The ID of the task whose log you are retrieving </param>
         /// <remarks>
-        ///     http://dev.iron.io/worker/reference/api/#get_a_tasks_log
+        /// http://dev.iron.io/worker/reference/api/#get_a_tasks_log
         /// </remarks>
         public IIronTask<string> Log(string taskId)
         {
@@ -190,12 +204,12 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Set a Task’s Progress
+        /// Set a Task’s Progress
         /// </summary>
         /// <param name="taskId"> The ID of the task whose progress you are updating. </param>
         /// <param name="taskProgress"> The task progress request </param>
         /// <remarks>
-        ///     http://dev.iron.io/worker/reference/api/#set_a_tasks_progress
+        /// http://dev.iron.io/worker/reference/api/#set_a_tasks_progress
         /// </remarks>
         public IIronTask<bool> Progress(string taskId, TaskProgress taskProgress)
         {
@@ -209,12 +223,12 @@ namespace IronIO.IronWorker
         }
 
         /// <summary>
-        ///     Retry a task
+        /// Retry a task
         /// </summary>
         /// <param name="taskId"> The ID of the task you want to retry. </param>
         /// <param name="delay"> The number of seconds the task should be delayed before it runs again. </param>
         /// <remarks>
-        ///     http://dev.iron.io/worker/reference/api/#retry_a_task
+        /// http://dev.iron.io/worker/reference/api/#retry_a_task
         /// </remarks>
         public IIronTask<TaskIdCollection> Retry(string taskId, int? delay = null)
         {
@@ -243,7 +257,10 @@ namespace IronIO.IronWorker
 
         public Uri Webhook(string codeName, string token = null)
         {
-            if (codeName == null) throw new ArgumentNullException(nameof(codeName));
+            if (codeName == null)
+            {
+                throw new ArgumentNullException(nameof(codeName));
+            }
 
             var endpointConfig = _client.EndpointConfig;
 
@@ -289,13 +306,7 @@ namespace IronIO.IronWorker
 
         private static void ApplyStatusFilter(NameValueCollection query, TaskStates statusFilter)
         {
-            var statesToCheck = new[]
-            {
-                TaskStates.Queued, TaskStates.Running, TaskStates.Complete, TaskStates.Error, TaskStates.Cancelled,
-                TaskStates.Killed, TaskStates.Timeout
-            };
-
-            foreach (var state in statesToCheck.Where(x => statusFilter.HasFlag(x)))
+            foreach (var state in StatesToCheck.Where(x => statusFilter.HasFlag(x)))
             {
                 query.Add(Convert.ToString(state).ToLower(), "1");
             }

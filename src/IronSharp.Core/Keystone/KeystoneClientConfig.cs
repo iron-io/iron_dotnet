@@ -1,21 +1,20 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace IronIO.Core
 {
     public class KeystoneClientConfig
     {
         [JsonProperty("tenant")]
-        public String Tenant { get; set; }
+        public string Tenant { get; set; }
 
         [JsonProperty("server")]
-        public String Server { get; set; }
+        public string Server { get; set; }
 
         [JsonProperty("username")]
-        public String Username { get; set; }
+        public string Username { get; set; }
 
         [JsonProperty("password")]
-        public String Password { get; set; }
+        public string Password { get; set; }
 
         public virtual string CreateKey()
         {
@@ -24,7 +23,7 @@ namespace IronIO.Core
 
         public override string ToString()
         {
-            return string.Format("Tenant: {0}, Server: {1}, Username: {2}, Password: {3}", Tenant, Server, Username, Password);
+            return $"Tenant: {Tenant}, Server: {Server}, Username: {Username}, Password: {Password}";
         }
     }
 }

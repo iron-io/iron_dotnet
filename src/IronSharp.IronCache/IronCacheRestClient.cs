@@ -48,6 +48,8 @@ namespace IronIO.IronCache
             return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
         }
 
+
+
         /// <summary>
         ///     Get a list of all caches in a project. 100 caches are listed at a time. To see more, use the page parameter.
         /// </summary>
@@ -55,6 +57,7 @@ namespace IronIO.IronCache
         /// <remarks>
         ///     http://dev.iron.io/cache/reference/api/#list_caches
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CC0021:You should use nameof instead of program element name string")]
         public IIronTask<CacheInfo[]> List(int? page)
         {
             var builder = new IronTaskRequestBuilder(EndpointConfig)
