@@ -22,15 +22,9 @@ namespace IronIO.IronWorker
             _endpointConfig = new IronTaskEndpointConfig(config);
         }
 
-        public IIronTaskEndpointConfig EndpointConfig
-        {
-            get { return _endpointConfig; }
-        }
+        public IIronTaskEndpointConfig EndpointConfig => _endpointConfig;
 
-        public string EndPoint
-        {
-            get { return "/projects/{Project ID}"; }
-        }
+        public string EndPoint => "/projects/{Project ID}";
 
         #region Code
 
@@ -60,7 +54,7 @@ namespace IronIO.IronWorker
             var builder = new IronTaskRequestBuilder(_endpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = string.Format("{0}/codes", EndPoint)
+                Path = $"{EndPoint}/codes"
             };
 
             return new IronTaskThatReturnsJson<CodeInfoCollection>(builder);
@@ -70,19 +64,13 @@ namespace IronIO.IronWorker
 
         #region Task
 
-        public TaskClient Tasks
-        {
-            get { return new TaskClient(this); }
-        }
+        public TaskClient Tasks => new TaskClient(this);
 
         #endregion
 
         #region Schedule
 
-        public ScheduleClient Schedules
-        {
-            get { return new ScheduleClient(this); }
-        }
+        public ScheduleClient Schedules => new ScheduleClient(this);
 
         #endregion
     }

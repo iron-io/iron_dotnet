@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using IronIO.Core;
-using IronSharp.Core;
+﻿using IronIO.Core;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class QueueContainer : IInspectable
     {

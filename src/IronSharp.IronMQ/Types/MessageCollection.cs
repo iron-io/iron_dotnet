@@ -2,7 +2,7 @@
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class MessageCollection
     {
@@ -29,7 +29,7 @@ namespace IronSharp.IronMQ
 
         public MessageCollection(IEnumerable<string> messages, MessageOptions options = null)
         {
-            foreach (string message in messages)
+            foreach (var message in messages)
             {
                 Messages.Add(new QueueMessage(message, options));
             }

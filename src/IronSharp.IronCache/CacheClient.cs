@@ -12,18 +12,15 @@ namespace IronIO.IronCache
 
         public CacheClient(IronCacheRestClient client, string cacheName)
         {
-            if (client == null) throw new ArgumentNullException("client");
-            if (string.IsNullOrEmpty(cacheName)) throw new ArgumentNullException("cacheName");
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (string.IsNullOrEmpty(cacheName)) throw new ArgumentNullException(nameof(cacheName));
             Contract.EndContractBlock();
 
             _client = client;
             _cacheName = cacheName;
         }
 
-        public IValueSerializer ValueSerializer
-        {
-            get { return _client.EndpointConfig.Config.SharpConfig.ValueSerializer; }
-        }
+        public IValueSerializer ValueSerializer => _client.EndpointConfig.Config.SharpConfig.ValueSerializer;
 
         /// <summary>
         ///     Delete all items in a cache. This cannot be undone.
@@ -36,7 +33,7 @@ namespace IronIO.IronCache
             var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Post,
-                Path = string.Format("{0}/clear", ProjectPathWithCacheName())
+                Path = $"{ProjectPathWithCacheName()}/clear"
             };
 
             return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
@@ -120,7 +117,7 @@ namespace IronIO.IronCache
             var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Post,
-                Path = string.Format("{0}/increment", ProjectPathWithCacheNameAndItemKey(key)),
+                Path = $"{ProjectPathWithCacheNameAndItemKey(key)}/increment",
                 HttpContent = new JsonContent(new {amount})
             };
 
@@ -181,12 +178,12 @@ namespace IronIO.IronCache
 
         private string ProjectPathWithCacheNameAndItemKey(string key)
         {
-            return string.Format("{0}/items/{1}", ProjectPathWithCacheName(), key);
+            return $"{ProjectPathWithCacheName()}/items/{key}";
         }
 
         private string ProjectPathWithCacheName()
         {
-            return string.Format("{0}/{1}", _client.ProjectPath, _cacheName);
+            return $"{_client.ProjectPath}/{_cacheName}";
         }
     }
 }

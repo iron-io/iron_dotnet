@@ -11,7 +11,7 @@ namespace IronIO.IronWorker
 
         public ScheduleClient(IronWorkerRestClient client)
         {
-            if (client == null) throw new ArgumentNullException("client");
+            if (client == null) throw new ArgumentNullException(nameof(client));
             Contract.EndContractBlock();
 
             _client = client;
@@ -19,20 +19,17 @@ namespace IronIO.IronWorker
 
         public string EndPoint
         {
-            get { return string.Format("{0}/schedules", _client.EndPoint); }
+            get { return $"{_client.EndPoint}/schedules"; }
         }
 
-        public IValueSerializer ValueSerializer
-        {
-            get { return _client.EndpointConfig.Config.SharpConfig.ValueSerializer; }
-        }
+        public IValueSerializer ValueSerializer => _client.EndpointConfig.Config.SharpConfig.ValueSerializer;
 
         public IIronTask<bool> Cancel(string scheduleId)
         {
             var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Post,
-                Path = ScheduleEndPoint(scheduleId) + "/cancel"
+                Path = $"{ScheduleEndPoint(scheduleId)}/cancel"
             };
 
             return new IronTaskThatReturnsAnExpectedResult(builder, "Cancelled");
@@ -96,7 +93,7 @@ namespace IronIO.IronWorker
 
         public string ScheduleEndPoint(string scheduleId)
         {
-            return string.Format("{0}/{1}", EndPoint, scheduleId);
+            return $"{EndPoint}/{scheduleId}";
         }
     }
 }

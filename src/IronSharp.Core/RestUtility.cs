@@ -10,7 +10,7 @@ namespace IronIO.Core
         public static HttpClient CreateHttpClient()
         {
             var handler = new HttpClientHandler();
-            
+
             var client =  HttpClientFactory.Create(handler);
 
             if (handler.SupportsAutomaticDecompression)
@@ -28,9 +28,6 @@ namespace IronIO.Core
 
         private static HttpClient _defaultInstance;
 
-        public static HttpClient DefaultInstance
-        {
-            get { return LazyInitializer.EnsureInitialized(ref _defaultInstance, CreateHttpClient); }
-        }
+        public static HttpClient DefaultInstance => LazyInitializer.EnsureInitialized(ref _defaultInstance, CreateHttpClient);
     }
 }

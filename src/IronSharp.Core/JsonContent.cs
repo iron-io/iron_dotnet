@@ -6,7 +6,7 @@ namespace IronIO.Core
 {
     public class JsonContent : StringContent
     {
-        public JsonContent(Object content)
+        public JsonContent(object content)
             : base(JSON.Generate(content))
         {
             Headers.ContentType = new MediaTypeHeaderValue("application/json");

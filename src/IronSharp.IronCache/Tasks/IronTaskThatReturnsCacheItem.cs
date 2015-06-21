@@ -17,29 +17,27 @@ namespace IronIO.IronCache
         public new TValue Send()
         {
             var result = base.Send();
-            
+
+            return GetValueFromResult(result);
+        }
+
+        private TValue GetValueFromResult(CacheItem<TValue> result)
+        {
             if (CacheItem.IsDefaultValue(result))
             {
                 return default(TValue);
             }
-            
+
             result.Client = _cacheClient;
-            
+
             return result.ReadValueAs();
         }
 
         public new async Task<TValue> SendAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             var result = await base.SendAsync(cancellationToken);
-            
-            if (CacheItem.IsDefaultValue(result))
-            {
-                return default(TValue);
-            }
-            
-            result.Client = _cacheClient;
-            
-            return result.ReadValueAs();
+
+            return GetValueFromResult(result);
         }
     }
 

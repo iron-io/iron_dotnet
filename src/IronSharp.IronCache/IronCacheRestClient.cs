@@ -7,8 +7,6 @@ namespace IronIO.IronCache
 {
     public class IronCacheRestClient
     {
-        private readonly IIronTaskEndpointConfig _endpointConfig;
-
         internal IronCacheRestClient(IronClientConfig config)
         {
             LazyInitializer.EnsureInitialized(ref config);
@@ -20,18 +18,12 @@ namespace IronIO.IronCache
 
             config.ApiVersion = config.ApiVersion.GetValueOrDefault(1);
 
-            _endpointConfig = new IronTaskEndpointConfig(config);
+            EndpointConfig = new IronTaskEndpointConfig(config);
         }
 
-        public IIronTaskEndpointConfig EndpointConfig
-        {
-            get { return _endpointConfig; }
-        }
+        public IIronTaskEndpointConfig EndpointConfig { get; }
 
-        public string ProjectPath
-        {
-            get { return "/projects/{Project ID}/caches"; }
-        }
+        public string ProjectPath => "/projects/{Project ID}/caches";
 
         public CacheClient Cache(string cacheName)
         {
@@ -47,14 +39,16 @@ namespace IronIO.IronCache
         /// </remarks>
         public IIronTask<bool> Delete(string cacheName)
         {
-            var builder = new IronTaskRequestBuilder(_endpointConfig)
+            var builder = new IronTaskRequestBuilder(EndpointConfig)
             {
                 HttpMethod = HttpMethod.Delete,
-                Path = string.Format("{0}/{1}", ProjectPath, cacheName)
+                Path = $"{ProjectPath}/{cacheName}"
             };
 
             return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
         }
+
+
 
         /// <summary>
         ///     Get a list of all caches in a project. 100 caches are listed at a time. To see more, use the page parameter.
@@ -63,9 +57,10 @@ namespace IronIO.IronCache
         /// <remarks>
         ///     http://dev.iron.io/cache/reference/api/#list_caches
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CC0021:You should use nameof instead of program element name string")]
         public IIronTask<CacheInfo[]> List(int? page)
         {
-            var builder = new IronTaskRequestBuilder(_endpointConfig)
+            var builder = new IronTaskRequestBuilder(EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
                 Path = ProjectPath

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class Subscriber
     {
-        public Subscriber() : this(null,null)
+        public Subscriber() : this(null, null)
         {
         }
 
@@ -38,9 +37,6 @@ namespace IronSharp.IronMQ
         public string ErrorQueue { get; set; }
 
         [JsonIgnore]
-        public HttpStatusCode StatusCode
-        {
-            get { return (HttpStatusCode) Code.GetValueOrDefault(200); }
-        }        
+        public HttpStatusCode StatusCode => (HttpStatusCode) Code.GetValueOrDefault(200);
     }
 }

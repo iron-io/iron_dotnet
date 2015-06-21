@@ -1,7 +1,8 @@
 ﻿using System;
+using IronIO.Core;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class QueueMessage : MessageOptions
     {
@@ -10,7 +11,10 @@ namespace IronSharp.IronMQ
         {
             Body = body;
 
-            if (options == null) return;
+            if (options == null)
+            {
+                return;
+            }
 
             Delay = options.Delay;
             ExpiresIn = options.ExpiresIn;
@@ -19,6 +23,27 @@ namespace IronSharp.IronMQ
 
         protected QueueMessage()
         {
+        }
+
+        [JsonIgnore]
+        internal QueueClient Client { get; set; }
+
+        [JsonProperty("subscriber_name", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string SubscriberName { get; set; }
+
+        public static implicit operator QueueMessage(string message)
+        {
+            return new QueueMessage(message);
+        }
+
+        public object ReadValueAs(Type type)
+        {
+            return Client.ValueSerializer.Parse(Body, type);
+        }
+
+        public T ReadValueAs<T>()
+        {
+            return Client.ValueSerializer.Parse<T>(Body);
         }
 
         #region Properties
@@ -45,7 +70,7 @@ namespace IronSharp.IronMQ
         /// <summary>
         /// This call will delete the message. Be sure you call this after you’re done with a message or it will be placed back on the queue.
         /// </summary>
-        public bool Delete()
+        public IIronTask<bool> Delete()
         {
             return Client.DeleteMessage(Id, ReservationId);
         }
@@ -55,7 +80,7 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="delay">The item will not be available on the queue until this many seconds have passed. Default is 0 seconds. Maximum is 604,800 seconds (7 days).</param>
         /// <returns> </returns>
-        public bool Release(int? delay = null)
+        public IIronTask<bool> Release(int? delay = null)
         {
             return Client.Release(Id, ReservationId, delay);
         }
@@ -63,34 +88,11 @@ namespace IronSharp.IronMQ
         /// <summary>
         /// Extends this message's timeout by the duration specified when the message was created, which is 60 seconds by default.
         /// </summary>
-        public MessageOptions Touch()
+        public IIronTask<MessageOptions> Touch()
         {
-            var options = Client.Touch(Id, ReservationId);
-            this.ReservationId = options.ReservationId;
-            return options;
+            return Client.Touch(this);
         }
 
         #endregion
-
-        [JsonIgnore]
-        internal QueueClient Client { get; set; }
-
-        [JsonProperty("subscriber_name", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string SubscriberName { get; set; }
-
-        public static implicit operator QueueMessage(string message)
-        {
-            return new QueueMessage(message);
-        }
-
-        public object ReadValueAs(Type type)
-        {
-            return Client.ValueSerializer.Parse(Body, type);
-        }
-
-        public T ReadValueAs<T>()
-        {
-            return Client.ValueSerializer.Parse<T>(Body);
-        }
     }
 }

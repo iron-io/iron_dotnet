@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using static System.Net.Http.HttpMethod;
 
 namespace IronIO.Core
 {
@@ -29,7 +30,7 @@ namespace IronIO.Core
 
         protected virtual string BuildTokensRequestUrl(KeystoneClientConfig config)
         {
-            return string.Format("{0}/tokens", VirtualPathUtility.RemoveTrailingSlash(config.Server));
+            return $"{VirtualPathUtility.RemoveTrailingSlash(config.Server)}/tokens";
         }
 
         protected virtual HttpContent CreatePostContent(KeystoneClientConfig config)
@@ -41,7 +42,7 @@ namespace IronIO.Core
 
         protected virtual HttpRequestMessage CreateRequestMessage(KeystoneClientConfig config)
         {
-            return new HttpRequestMessage(HttpMethod.Post, BuildTokensRequestUrl(config))
+            return new HttpRequestMessage(Post, BuildTokensRequestUrl(config))
             {
                 Content = CreatePostContent(config)
             };

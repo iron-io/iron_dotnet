@@ -1,9 +1,7 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class Alert
     {
@@ -44,9 +42,6 @@ namespace IronSharp.IronMQ
         protected int? Code { get; set; }
 
         [JsonIgnore]
-        public HttpStatusCode StatusCode
-        {
-            get { return (HttpStatusCode) Code.GetValueOrDefault(200); }
-        }
+        public HttpStatusCode StatusCode => (HttpStatusCode) Code.GetValueOrDefault(200);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace IronSharp.IronMQ
+﻿namespace IronIO.IronMQ
 {
     /// <summary>
     /// http://dev.iron.io/mq/reference/clouds/

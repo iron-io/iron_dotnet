@@ -16,10 +16,7 @@ namespace IronIO.IronWorker
             _codeId = codeId;
         }
 
-        public string EndPoint
-        {
-            get { return string.Format("{0}/codes/{1}", _client.EndPoint, _codeId); }
-        }
+        public string EndPoint => $"{_client.EndPoint}/codes/{_codeId}";
 
         /// <summary>
         ///     Delete a code package
@@ -49,7 +46,7 @@ namespace IronIO.IronWorker
             var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = EndPoint + "/download",
+                Path = $"{EndPoint}/download",
                 Accept = MediaTypeNames.Application.Octet
             };
 
@@ -89,7 +86,7 @@ namespace IronIO.IronWorker
             var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
-                Path = EndPoint + "/revisions"
+                Path = $"{EndPoint}/revisions"
             };
 
             if (filter != null)

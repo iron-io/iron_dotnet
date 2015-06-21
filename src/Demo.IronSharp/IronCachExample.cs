@@ -1,8 +1,8 @@
-using System;
 using System.Threading.Tasks;
 using IronIO.Core;
 using IronIO.Core.Extensions;
 using IronIO.IronCache;
+using static System.Console;
 
 namespace Demo.IronSharpConsole
 {
@@ -10,17 +10,17 @@ namespace Demo.IronSharpConsole
     {
         public static void Main()
         {
-            //Run();
+            Run();
 
             RunAsync().Wait();
 
-            Console.WriteLine("done");
-            Console.Read();
+            WriteLine("done");
+            Read();
         }
 
         public static async Task RunAsync()
         {
-            Console.WriteLine("Begin Async Cache Test");
+            WriteLine("Begin Async Cache Test");
 
             // =========================================================
             // Iron.io Cache
@@ -37,10 +37,10 @@ namespace Demo.IronSharpConsole
             var item = await cache.Get("number_item").SendAsync();
 
             // Get value from cache by key
-            Console.WriteLine(item.Value);
+            WriteLine(item.Value);
 
             // Get value from cache by key
-            Console.WriteLine(await cache.Get<int>("number_item").SendAsync());
+            WriteLine(await cache.Get<int>("number_item").SendAsync());
 
             // Numbers can be incremented
             await cache.Increment("number_item", 10).SendAsync();
@@ -53,7 +53,7 @@ namespace Demo.IronSharpConsole
             var complexItem = await cache.Get("complex_item").SendAsync();
 
             // Get value from cache by key
-            Console.WriteLine(complexItem.Value);
+            WriteLine(complexItem.Value);
 
             await cache.Delete("complex_item").SendAsync();
 
@@ -61,14 +61,14 @@ namespace Demo.IronSharpConsole
 
             var sampleClassItem = await cache.Get<SampleClass>("sample_class").SendAsync();
 
-            Console.WriteLine(sampleClassItem.Inspect());
+            WriteLine(sampleClassItem.Inspect());
 
             await cache.Delete("sample_class").SendAsync();
         }
 
         public static void Run()
         {
-            Console.WriteLine("Begin Synchronous Cache Test");
+            WriteLine("Begin Synchronous Cache Test");
 
             // =========================================================
             // Iron.io Cache
@@ -87,10 +87,10 @@ namespace Demo.IronSharpConsole
             var item = cache.Get("number_item").Send();
 
             // Get value from cache by key
-            Console.WriteLine(item.Value);
+            WriteLine(item.Value);
 
             // Get value from cache by key
-            Console.WriteLine(cache.Get<int>("number_item").Send());
+            WriteLine(cache.Get<int>("number_item").Send());
 
             // Numbers can be incremented
             cache.Increment("number_item", 10).Send();
@@ -103,7 +103,7 @@ namespace Demo.IronSharpConsole
             var complexItem = cache.Get("complex_item").Send();
 
             // Get value from cache by key
-            Console.WriteLine(complexItem.Value);
+            WriteLine(complexItem.Value);
 
             cache.Delete("complex_item").Send();
 
@@ -111,7 +111,7 @@ namespace Demo.IronSharpConsole
 
             var sampleClassItem = cache.Get<SampleClass>("sample_class").Send();
 
-            Console.WriteLine(sampleClassItem.Inspect());
+            WriteLine(sampleClassItem.Inspect());
 
             cache.Delete("sample_class").Send();
         }

@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Threading;
 using IronIO.Core;
 using IronIO.Core.Extensions;
-using IronSharp.Core;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class QueueInfo : IInspectable
-    {                
-        [JsonProperty("alerts", DefaultValueHandling = DefaultValueHandling.Ignore)] 
+    {
+        [JsonProperty("alerts", DefaultValueHandling = DefaultValueHandling.Ignore)]
         private List<Alert> _alerts;
 
         [JsonProperty("push", DefaultValueHandling = DefaultValueHandling.Ignore)]

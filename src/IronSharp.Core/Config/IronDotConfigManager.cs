@@ -14,18 +14,15 @@ namespace IronIO.Core
     /// </summary>
     public static class IronDotConfigManager
     {
-        private static ILog ConfigLogger
-        {
-            get { return LogManager.GetLogger("iron.io-config"); }
-        }
+        private static ILog ConfigLogger => LogManager.GetLogger("iron.io-config");
 
         public static string GetEnvironmentKey(IronProduct product, string key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             string productName = GetProductName(product);
 
-            return string.Format("{0}_{1}", productName, key).ToUpper();
+            return $"{productName}_{key}".ToUpper();
         }
 
         public static T GetEnvironmentValue<T>(IronProduct product, string key, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
@@ -126,8 +123,8 @@ namespace IronIO.Core
         {
             if (string.IsNullOrEmpty(_appDirectory))
             {
-                _appDirectory = HostingEnvironment.IsHosted ? 
-                    HostingEnvironment.MapPath("~/") : 
+                _appDirectory = HostingEnvironment.IsHosted ?
+                    HostingEnvironment.MapPath("~/") :
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
             }
             return _appDirectory;
@@ -157,7 +154,7 @@ namespace IronIO.Core
                     productName = "iron_cache";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("product");
+                    throw new ArgumentOutOfRangeException(nameof(product));
             }
             return productName;
         }

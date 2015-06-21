@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using static System.String;
 
 namespace IronIO.Core
 {
@@ -32,11 +33,11 @@ namespace IronIO.Core
         public HttpContent HttpContent { get; set; }
 
         public HttpMethod HttpMethod { get; set; }
-        
+
         public string Accept { get; set; }
-        
+
         public AuthToken AuthToken { get; set; }
-        
+
         public string Path { get; set; }
 
         public void SetJsonContent(object value)
@@ -57,7 +58,7 @@ namespace IronIO.Core
                 queryString = httpValueCollection.ToString();
             }
 
-            var scheme = String.IsNullOrEmpty(config.Scheme) ? Uri.UriSchemeHttps : config.Scheme;
+            var scheme = IsNullOrEmpty(config.Scheme) ? Uri.UriSchemeHttps : config.Scheme;
 
 
             var uriBuilder = new UriBuilder(scheme, config.Host)
@@ -116,14 +117,14 @@ namespace IronIO.Core
 
         public virtual string BuildPath(IronClientConfig config, string path)
         {
-            if (path == null) throw new ArgumentNullException("path");
+            if (path == null) throw new ArgumentNullException(nameof(path));
 
             if (path.StartsWith("/"))
             {
                 path = path.Substring(1);
             }
 
-            return string.Format("{0}/{1}", config.ApiVersion, path.Replace("{Project ID}", config.ProjectId));
+            return $"{config.ApiVersion}/{path.Replace("{Project ID}", config.ProjectId)}";
         }
     }
 }

@@ -30,7 +30,7 @@ namespace IronIO.IronCache
         /// <summary>
         ///  If set to true, only set the item if the item is not already in the cache. If the item is in the cache, do not overwrite it.
         /// </summary>
-        [JsonProperty("Add", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty("add", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool? Add { get; set; }
 
         /// <summary>

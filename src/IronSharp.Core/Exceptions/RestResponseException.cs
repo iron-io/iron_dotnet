@@ -49,7 +49,7 @@ namespace IronIO.Core
                     catch (Exception e)
                     {
                         sw.WriteLine("Unable to read response content. " + e.Message);
-                    }                    
+                    }
                 }
 
                 return sw.ToString();

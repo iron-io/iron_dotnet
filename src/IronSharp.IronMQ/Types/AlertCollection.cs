@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using IronIO.Core;
-using IronSharp.Core;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class AlertCollection : IInspectable
     {
@@ -21,7 +19,7 @@ namespace IronSharp.IronMQ
 
         public AlertCollection(IEnumerable<Alert> alerts)
         {
-            foreach (Alert alert in alerts)
+            foreach (var alert in alerts)
             {
                 Alerts.Add(alert);
             }

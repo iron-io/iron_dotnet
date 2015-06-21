@@ -1,7 +1,6 @@
 ﻿using IronIO.Core;
-using IronSharp.Core;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public static class Client
     {

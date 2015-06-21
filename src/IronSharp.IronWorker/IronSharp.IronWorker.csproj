@@ -63,7 +63,7 @@
     <Compile Include="Schedules\ScheduleClient.cs" />
     <Compile Include="Schedules\ScheduleIdCollection.cs" />
     <Compile Include="Schedules\ScheduleOptions.cs" />
-    <Compile Include="PriorityOption.cs" />
+    <Compile Include="Schedules\PriorityOption.cs" />
     <Compile Include="Schedules\ScheduleOptionsBuilder.cs" />
     <Compile Include="Schedules\SchedulePayload.cs" />
     <Compile Include="Schedules\SchedulePayloadCollection.cs" />
@@ -76,11 +76,11 @@
     <Compile Include="WorkerTasks\TaskOptions.cs" />
     <Compile Include="WorkerTasks\TaskPayload.cs" />
     <Compile Include="WorkerTasks\TaskPayloadCollection.cs" />
-    <Compile Include="TaskPriority.cs" />
+    <Compile Include="Constants\TaskPriority.cs" />
     <Compile Include="WorkerTasks\TaskProgress.cs" />
     <Compile Include="Schedules\ScheduleInfoCollection.cs" />
     <Compile Include="Schedules\ScheduleInfo.cs" />
-    <Compile Include="TaskStates.cs" />
+    <Compile Include="Constants\TaskStates.cs" />
     <Compile Include="WorkerTasks\TaskWebhookResponse.cs" />
     <Compile Include="WorkerTasks\TaskInfo.cs" />
     <Compile Include="Code\WorkerOptions.cs" />

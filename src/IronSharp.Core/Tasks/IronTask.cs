@@ -8,12 +8,11 @@ namespace IronIO.Core
 {
     public abstract class IronTask<TResult> : IIronTask<TResult>
     {
-        private readonly IronTaskRequestBuilder _taskBuilder;
         private HttpClient _httpClient;
 
         protected IronTask(IronTaskRequestBuilder taskBuilder)
         {
-            _taskBuilder = taskBuilder;
+            TaskBuilder = taskBuilder;
         }
 
         public HttpClient HttpClient
@@ -21,6 +20,8 @@ namespace IronIO.Core
             get { return LazyInitializer.EnsureInitialized(ref _httpClient, () => RestUtility.DefaultInstance); }
             set { _httpClient = value; }
         }
+
+        public IronTaskRequestBuilder TaskBuilder { get; }
 
         public virtual void FireAndForget(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -56,14 +57,14 @@ namespace IronIO.Core
         protected virtual async Task<HttpResponseMessage> GetResponseAsync(
             CancellationToken cancellationToken = new CancellationToken())
         {
-            var request = await _taskBuilder.BuildAsync();
+            var request = await TaskBuilder.BuildAsync();
             SendExecuting(HttpClient, request);
             return await HttpClient.SendAsync(request, cancellationToken);
         }
 
         protected virtual HttpResponseMessage GetResponseSync()
         {
-            var request = _taskBuilder.Build();
+            var request = TaskBuilder.Build();
             SendExecuting(HttpClient, request);
             return HttpClient.SendAsync(request).Result;
         }

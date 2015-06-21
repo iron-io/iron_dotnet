@@ -1,22 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Net.Http;
 using System.Threading;
-using IronSharp.Core;
-using System;
-using System.Net.Http;
 using IronIO.Core;
 using IronIO.Core.Attributes;
+using IronIO.Core.Extensions;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class IronMqRestClient
     {
-        private readonly IIronTaskEndpointConfig _endpointConfig;
-
         internal IronMqRestClient(IronClientConfig config)
         {
             LazyInitializer.EnsureInitialized(ref config);
-              
-                           
+
             if (string.IsNullOrEmpty(config.Host))
             {
                 config.Host = IronMqCloudHosts.DEFAULT;
@@ -36,22 +31,13 @@ namespace IronSharp.IronMQ
                 {
                     throw new IronIOException("Keystone keys missing");
                 }
-            } 
+            }
 
-            _endpointConfig = new IronTaskEndpointConfig(config, tokenContainer);
+            EndpointConfig = new IronTaskEndpointConfig(config, tokenContainer);
         }
 
-
-
-        public string EndPoint
-        {
-            get { return "/projects/{Project ID}/queues"; }
-        }
-
-        public IIronTaskEndpointConfig EndpointConfig
-        {
-            get { return _endpointConfig; }
-        }
+        public string EndPoint => "/projects/{Project ID}/queues";
+        public IIronTaskEndpointConfig EndpointConfig { get; }
 
         public QueueClient<T> Queue<T>()
         {
@@ -71,20 +57,40 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="filter"> </param>
         /// <returns> </returns>
-        public IIronTask<QueuesInfo> Queues(MqPagingFilter filter = null)
+        public IIronTask<QueuesInfo> Queues(QueuesFilter filter = null)
         {
-            var builder = new IronTaskRequestBuilder(_endpointConfig)
+            var builder = new IronTaskRequestBuilder(EndpointConfig)
             {
                 HttpMethod = HttpMethod.Get,
                 Path = EndPoint
             };
 
-            if (filter != null)
-            {
-                builder.Query.Add(filter);
-            }
+            SetQueueFilters(filter, builder);
 
             return new IronTaskThatReturnsJson<QueuesInfo>(builder);
+        }
+
+        private static void SetQueueFilters(QueuesFilter filter, IronTaskRequestBuilder builder)
+        {
+            if (filter == null)
+            {
+                return;
+            }
+
+            if (filter.PerPage.HasValue)
+            {
+                builder.Query.Add("per_page", filter.PerPage);
+            }
+
+            if (!string.IsNullOrEmpty(filter.Previous))
+            {
+                builder.Query.Add("previous", filter.Previous);
+            }
+
+            if (!string.IsNullOrEmpty(filter.Prefix))
+            {
+                builder.Query.Add("prefix", filter.Prefix);
+            }
         }
     }
 }

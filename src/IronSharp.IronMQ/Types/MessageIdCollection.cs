@@ -2,10 +2,9 @@
 using System.Threading;
 using IronIO.Core;
 using IronIO.Core.Extensions;
-using IronSharp.Core;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class MessageIdCollection : IMsg, IInspectable, IIdCollection
     {
@@ -27,23 +26,20 @@ namespace IronSharp.IronMQ
             set { _ids = value; }
         }
 
-        [JsonProperty("msg", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Message { get; set; }
-
         [JsonIgnore]
-        public bool Success
-        {
-            get { return this.HasExpectedMessage("Messages put on queue."); }
-        }
-
-        public static implicit operator bool(MessageIdCollection collection)
-        {
-            return collection.Success;
-        }
+        public bool Success => this.HasExpectedMessage("Messages put on queue.");
 
         IEnumerable<string> IIdCollection.GetIds()
         {
             return Ids;
+        }
+
+        [JsonProperty("msg", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string Message { get; set; }
+
+        public static implicit operator bool(MessageIdCollection collection)
+        {
+            return collection.Success;
         }
     }
 }
