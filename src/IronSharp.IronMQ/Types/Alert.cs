@@ -1,9 +1,10 @@
 ﻿using System.Net;
+using IronIO.Core;
 using Newtonsoft.Json;
 
 namespace IronIO.IronMQ
 {
-    public class Alert
+    public class Alert : IInspectable
     {
         public Alert() : this(AlertType.Fixed, AlertDirection.Asc, null, null)
         {

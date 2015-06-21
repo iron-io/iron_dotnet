@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json;
 
 namespace IronIO.Core
@@ -6,12 +5,12 @@ namespace IronIO.Core
     public class KestoneToken
     {
         [JsonProperty("issued_at")]
-        public String IssuedAt { get; set; }
+        public string IssuedAt { get; set; }
 
         [JsonProperty("expires")]
-        public String Expires { get; set; }
+        public string Expires { get; set; }
 
         [JsonProperty("id")]
-        public String Id { get; set; }
+        public string Id { get; set; }
     }
 }

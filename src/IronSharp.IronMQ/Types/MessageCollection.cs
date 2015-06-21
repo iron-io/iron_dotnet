@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using IronIO.Core;
 using Newtonsoft.Json;
 
 namespace IronIO.IronMQ
 {
-    public class MessageCollection
+    public class MessageCollection : IInspectable
     {
         [JsonProperty("messages")] private List<QueueMessage> _messages;
 

@@ -1,6 +1,8 @@
-﻿namespace IronIO.IronMQ
+﻿using IronIO.Core;
+
+namespace IronIO.IronMQ
 {
-    public class MessageReservationOptions : ReservationOptions
+    public class MessageReservationOptions : ReservationOptions, IInspectable
     {
         /// <summary>
         /// The maximum number of messages to get. Default is 1. Maximum is 100. Note: You may not receive all n messages on every request, the more sparse the queue, the less likely you are

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using IronIO.Core;
 using Newtonsoft.Json;
 
 namespace IronIO.IronMQ
 {
-    public class PushInfo
+    public class PushInfo : IInspectable
     {
         [JsonProperty("subscribers", DefaultValueHandling = DefaultValueHandling.Ignore)]
         private List<Subscriber> _subscribers;
