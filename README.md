@@ -13,12 +13,6 @@ Forked from [grcodemonkey/iron_sharp](https://github.com/grcodemonkey/iron_sharp
 3. Download the iron.json file from "Credentials" block of project
 
 
-# IronMQ On-Premise
-
-**Note:** You are reading documentation of Iron.MQ v3. There are some differences from the previous version of IronMQ. For more information please go to [Iron.io Dev Center](http://dev.iron.io/mq-onpremise/).
-
-This version is for **IronMq Version 3** and **On-Premise**. If you are using the public version please use [version 1.0.2](http://github.com/iron-io/iron_dotnet)
-
 ### Installation
 
 ```PM> Install-Package Iron.IronMQ -Pre```
@@ -137,7 +131,7 @@ Console.WriteLine(message.Body);
 Console.WriteLine(message.ReservationId);
 ```
 
-**Note:** since v3 you should reserve message if you want to process it.
+**Note:** you should reserve message if you want to process it.
 
 --
 
@@ -236,8 +230,6 @@ queue.Post(new object[] {1, 2, 3}, new MessageOptions{Delay = 20});
 
 **Parameters:**
 
-* `Timeout`: **Deprecated**. Timeout is not allowed since v3 for messages because it's not possible to set timeout when posting a message, only when reserving one.
-
 * `Delay`: The item will not be available on the queue until this many seconds have passed.
 Default is 0 seconds. Maximum is 604,800 seconds (7 days).
 
@@ -245,7 +237,7 @@ Default is 0 seconds. Maximum is 604,800 seconds (7 days).
 
 ### Get Messages from a Queue
 
-Since REST API changed in v3 all messages should be reserved to be processed. So, for backward compatibility method Get now reserves messages.
+All messages should be reserved to be processed. So, method Get reserves messages.
 
 ```C#
 // All methods below reserve the message:
