@@ -2,16 +2,16 @@
 <package >
   <metadata>
     <id>Iron.IronCore</id>
-    <version>3.0.8-on-premise</version>
+    <version>3.0.9</version>
     <title>IronCore</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>
-	<licenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</licenseUrl>
+    <licenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/iron-io/iron_dotnet</projectUrl>
     <iconUrl>https://raw.github.com/iron-io/iron_dotnet/master/images/net-iron-core.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>IronCore is core for IronWorker, IronMq, IronCache packets</description>
-    <releaseNotes>Beta version for MQ v3</releaseNotes>
+    <releaseNotes>New version for MQ v3 and others products</releaseNotes>
     <tags>iron.io</tags>
     <dependencies>
       <dependency id="Common.Logging" version="2.1.2" />
