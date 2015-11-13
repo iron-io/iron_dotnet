@@ -364,6 +364,15 @@ q.Delete(new[]{id1, id2});
 
 --
 
+## Multithread execution recomendations
+
+- Do not use more than 25 threads inside one process. If you need more threads, use several processes.
+- Do not exceed 50 requests per second from each thread
+- Reuse the Client instead of instantiating it for each request.
+- Don't try more than 15-20 consumer threads per queue concurrently. Instead, use long polling with keep alive connections.
+
+--
+
 
 # IronWorker
 <http://dev.iron.io/worker/>
