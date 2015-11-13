@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices;
-using IronSharp.Core;
+using System.Threading.Tasks;
+using IronIO.Core;
+using IronIO.Core.Extensions;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class QueueClient<T> : QueueClient
     {
         private int? _delay;
-
         private Action<QueueMessageContext<T>, Exception> _errorHandler;
 
         public QueueClient(IronMqRestClient client, string name)
@@ -23,26 +23,16 @@ namespace IronSharp.IronMQ
         /// Consumes the next message off the queue. Set context.Success to <c>false</c> to *Release* the message back to the queue; otherwise it will be automatically deleted.
         /// </summary>
         /// <param name="consumeAction"></param>
-        /// <param name="timeout"></param>
+        /// <param name="timeout">
+        /// After timeout (in seconds), item will be placed back onto queue. You must delete the message from the queue to ensure it does not go back onto the queue. If
+        /// not set, value from queue is used. Default is 60 seconds, minimum is 30 seconds, and maximum is 86,400 seconds (24 hours).
+        /// </param>
         /// <returns>
         /// Returns <c>false</c> if the queue is empty; otherwise <c>true</c>.
         /// </returns>
-        public bool Consume(Action<QueueMessageContext<T>, T> consumeAction, TimeSpan timeout)
+        public bool Consume(Action<QueueMessageContext<T>, T> consumeAction, IronTimespan timeout = default(IronTimespan))
         {
-            return Consume(consumeAction, timeout.Seconds);
-        }
-
-        /// <summary>
-        /// Consumes the next message off the queue. Set context.Success to <c>false</c> to *Release* the message back to the queue; otherwise it will be automatically deleted.
-        /// </summary>
-        /// <param name="consumeAction"></param>
-        /// <param name="timeout"></param>
-        /// <returns>
-        /// Returns <c>false</c> if the queue is empty; otherwise <c>true</c>.
-        /// </returns>
-        public bool Consume(Action<QueueMessageContext<T>, T> consumeAction, int? timeout = null)
-        {
-            QueueMessage queueMessage = Next(timeout);
+            var queueMessage = ReserveNext(timeout).Send();
 
             if (queueMessage == null)
             {
@@ -55,17 +45,17 @@ namespace IronSharp.IronMQ
                 Success = true,
                 Client = this
             };
-            
+
             try
             {
-                consumeAction(context, queueMessage.ReadValueAs<T>());
+                consumeAction?.Invoke(context, queueMessage.ReadValueAs<T>());
             }
             catch (Exception ex)
             {
                 if (_errorHandler != null)
                 {
                     context.Success = false;
-                    _errorHandler(context, ex);
+                    _errorHandler?.Invoke(context, ex);
                 }
                 else
                 {
@@ -109,7 +99,8 @@ namespace IronSharp.IronMQ
         }
 
         /// <summary>
-        /// Called whenever an error occurs while consuming the message.  Set context.Success to <c>true</c> to *Delete* the message; otherwise it will be automatically released back to the queue.
+        /// Called whenever an error occurs while consuming the message.  Set context.Success to <c>true</c> to *Delete* the message; otherwise it will be automatically released back to
+        /// the queue.
         /// </summary>
         public QueueClient<T> OnError(Action<QueueMessageContext<T>, Exception> errorHandler)
         {
@@ -128,24 +119,16 @@ namespace IronSharp.IronMQ
     {
         private readonly IronMqRestClient _client;
         private readonly string _name;
-        private MqRestClient _restClient;
 
         public QueueClient(IronMqRestClient client, string name)
         {
             _client = client;
             _name = name;
-            _restClient = new MqRestClient(_client.TokenContainer);
         }
 
-        public string EndPoint
-        {
-            get { return string.Format("{0}/{1}", _client.EndPoint, _name); }
-        }
+        public string QueuePath => $"{_client.EndPoint}/{_name}";
 
-        public IValueSerializer ValueSerializer
-        {
-            get { return _client.Config.SharpConfig.ValueSerializer; }
-        }
+        public IValueSerializer ValueSerializer => _client.EndpointConfig.Config.SharpConfig.ValueSerializer;
 
         #region Queue
 
@@ -155,9 +138,16 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#clear_all_messages_from_a_queue
         /// </remarks>
-        public bool Clear()
+        public IIronTask<bool> Clear()
         {
-            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), null, new object()).HasExpectedMessage("Cleared");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/messages",
+                HttpContent = new JsonContent(new object())
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Cleared");
         }
 
         /// <summary>
@@ -166,9 +156,15 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#delete_a_message_queue
         /// </remarks>
-        public bool Delete()
+        public IIronTask<bool> Delete()
         {
-            return _restClient.Delete<ResponseMsg>(_client.Config, EndPoint).HasExpectedMessage("Deleted.");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = QueuePath
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted.");
         }
 
         /// <summary>
@@ -177,10 +173,15 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#get_info_about_a_message_queue
         /// </remarks>
-        public QueueInfo Info()
+        public IIronTask<QueueInfo> Info()
         {
-            QueueContainer container = _restClient.Get<QueueContainer>(_client.Config, EndPoint);
-            return container.Queue;
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = QueuePath
+            };
+
+            return new IronTaskThatReturnsQueueInfo(builder);
         }
 
         /// <summary>
@@ -191,10 +192,16 @@ namespace IronSharp.IronMQ
         /// http://dev.iron.io/mq/reference/api/#update_a_message_queue
         /// </remarks>
         /// <returns> </returns>
-        public QueueInfo Update(QueueInfo updates)
+        public IIronTask<QueueInfo> Update(QueueInfo updates)
         {
-            QueueContainer response = _restClient.Put<QueueContainer>(_client.Config, EndPoint, new QueueContainer(updates));
-            return response.Queue;
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Put,
+                Path = QueuePath,
+                HttpContent = new JsonContent(new QueueContainer(updates))
+            };
+
+            return new IronTaskThatReturnsQueueInfo(builder);
         }
 
         #endregion
@@ -208,9 +215,16 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#delete_a_message_from_a_queue
         /// </remarks>
-        public bool Delete(string messageId)
+        public IIronTask<bool> Delete(string messageId)
         {
-            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, new object()).HasExpectedMessage("Deleted");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/messages/{messageId}",
+                HttpContent = new JsonContent(new object())
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted");
         }
 
         /// <summary>
@@ -222,10 +236,20 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#delete_a_message_from_a_queue
         /// </remarks>
-        public bool DeleteMessage(string messageId, string reservationId=null, string subscriberName=null)
+        public IIronTask<bool> DeleteMessage(string messageId, string reservationId = null, string subscriberName = null)
         {
-            var payload = new MessageIdContainer {ReservationId = reservationId, SubscriberName = subscriberName};            
-            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}", EndPoint, messageId), null, payload).HasExpectedMessage("Deleted");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/messages/{messageId}",
+                HttpContent = new JsonContent(new MessageIdContainer
+                {
+                    ReservationId = reservationId,
+                    SubscriberName = subscriberName
+                })
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted");
         }
 
         /// <summary>
@@ -235,17 +259,28 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#delete_a_message_from_a_queue
         /// </remarks>
-        public bool Delete(IEnumerable<string> messageIds)
+        public IIronTask<bool> Delete(IEnumerable<string> messageIds)
         {
-            return
-                _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messageIds)).HasExpectedMessage("Deleted");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/messages",
+                HttpContent = new JsonContent(new ReservedMessageIdCollection(messageIds))
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted");
         }
 
-        public bool Delete(MessageCollection messages)
+        public IIronTask<bool> Delete(MessageCollection messages)
         {
-            return _restClient
-                .Delete<ResponseMsg>(_client.Config, string.Format("{0}/messages", EndPoint), payload: new ReservedMessageIdCollection(messages))
-                .HasExpectedMessage("Deleted");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/messages",
+                HttpContent = new JsonContent(new ReservedMessageIdCollection(messages))
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted");
         }
 
         /// <summary>
@@ -255,11 +290,44 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#get_message_by_id
         /// </remarks>
-        public QueueMessage Get(string messageId)
+        public IIronTask<QueueMessage> Get(string messageId)
         {
-            MessageContainer messageContainer = _restClient.Get<MessageContainer>(_client.Config,
-                string.Format("{0}/messages/{1}", EndPoint, messageId));
-            return messageContainer.Message;            
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = $"{QueuePath}/messages/{messageId}"
+            };
+
+            return new IronTaskThatReturnsQueueMessage(builder, this);
+        }
+
+        /// <param name="n">
+        /// The maximum number of messages to get. Default is 1. Maximum is 100. Note: You may not receive all n messages on every request, the more sparse the queue, the less
+        /// likely you are to receive all n messages.
+        /// </param>
+        public IIronTask<MessageCollection> Reserve(int n)
+        {
+            return Reserve(new MessageReservationOptions
+            {
+                Number = n
+            });
+        }
+
+        /// <param name="n">
+        /// The maximum number of messages to get. Default is 1. Maximum is 100. Note: You may not receive all n messages on every request, the more sparse the queue, the less
+        /// likely you are to receive all n messages.
+        /// </param>
+        /// <param name="timeout">
+        /// After timeout (in seconds), item will be placed back onto queue. You must delete the message from the queue to ensure it does not go back onto the queue. If
+        /// not set, value from queue is used. Default is 60 seconds, minimum is 30 seconds, and maximum is 86,400 seconds (24 hours).
+        /// </param>
+        public IIronTask<MessageCollection> Reserve(int n, IronTimespan timeout)
+        {
+            return Reserve(new MessageReservationOptions
+            {
+                Number = n,
+                Timeout = timeout
+            });
         }
 
         /// <summary>
@@ -268,111 +336,23 @@ namespace IronSharp.IronMQ
         /// If the timeout expires before the messages are deleted, the messages will be placed back onto the queue.
         /// As a result, be sure to delete the messages after you’re done with them.
         /// </summary>
-        /// <param name="n">
-        /// The maximum number of messages to get.
-        /// Default is 1.
-        /// Maximum is 100.
-        /// </param>
-        /// <param name="timeout">
-        /// After timeout (in seconds), item will be placed back onto queue.
-        /// You must delete the message from the queue to ensure it does not go back onto the queue.
-        /// If not set, value from POST is used.
-        /// Default is 60 seconds.
-        /// Minimum is 30 seconds.
-        /// Maximum is 86,400 seconds (24 hours).
-        /// </param>
+        /// <param name="reservationOptions"></param>
         /// <remarks>
-        /// http://dev.iron.io/mq/reference/api/#get_messages_from_a_queue
-        /// https://github.com/iron-io/iron_mq_ruby#get-messages-from-a-queue
+        /// http://dev.iron.io/mq/3/reference/api/#reserve-messages
         /// </remarks>
-        public MessageCollection Get(int? n = null, TimeSpan? timeout = null)
+        public IIronTask<MessageCollection> Reserve(MessageReservationOptions reservationOptions = null)
         {
-            int? seconds = null;
-            if (timeout.HasValue)
+            var payload = ReservationUtil.BuildReservationFields(reservationOptions);
+
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                seconds = timeout.Value.Seconds;
-            }
-            return Get(n, seconds);
-        }
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/reservations"
+            };
 
-        /// <summary>
-        /// This call gets/reserves messages from the queue.
-        /// The messages will not be deleted, but will be reserved until the timeout expires.
-        /// If the timeout expires before the messages are deleted, the messages will be placed back onto the queue.
-        /// As a result, be sure to delete the messages after you’re done with them.
-        /// </summary>
-        /// <param name="n">
-        /// The maximum number of messages to get.
-        /// Default is 1.
-        /// Maximum is 100.
-        /// </param>
-        /// <param name="timeout">
-        /// After timeout (in seconds), item will be placed back onto queue.
-        /// You must delete the message from the queue to ensure it does not go back onto the queue.
-        /// If not set, value from POST is used.
-        /// Default is 60 seconds.
-        /// Minimum is 30 seconds.
-        /// Maximum is 86,400 seconds (24 hours).
-        /// </param>
-        /// <remarks>
-        /// http://dev.iron.io/mq/reference/api/#get_messages_from_a_queue
-        /// https://github.com/iron-io/iron_mq_ruby#get-messages-from-a-queue
-        /// </remarks>
-        public MessageCollection Get(int? n = null, int? timeout = null, int? wait = null)
-        {
-            var query = new NameValueCollection();
+            builder.SetJsonContent(payload);
 
-            var payload = new Dictionary<string, object>();
-            if (n.HasValue)
-            {
-                payload.Add("n", n);
-            }
-            if (timeout.HasValue)
-            {
-                payload.Add("timeout", timeout);
-            }
-
-            if (wait.HasValue)
-            {
-                query.Add("wait", Convert.ToString(wait));
-            }
-
-            RestResponse<MessageCollection> result = _restClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload, query);
-
-            if (result.CanReadResult())
-            {
-                return LinkMessageCollection(result);
-            }
-
-            throw new RestResponseException("Unable to read MessageCollection response", result.ResponseMessage);
-        }
-
-        /// <summary>
-        /// This call gets/reserves messages from the queue.
-        /// The messages will not be deleted, but will be reserved until the timeout expires.
-        /// If the timeout expires before the messages are deleted, the messages will be placed back onto the queue.
-        /// As a result, be sure to delete the messages after you’re done with them.
-        /// </summary>
-        /// <param name="n">
-        /// The maximum number of messages to get.
-        /// Default is 1.
-        /// Maximum is 100.
-        /// </param>
-        /// <param name="timeout">
-        /// After timeout (in seconds), item will be placed back onto queue.
-        /// You must delete the message from the queue to ensure it does not go back onto the queue.
-        /// If not set, value from POST is used.
-        /// Default is 60 seconds.
-        /// Minimum is 30 seconds.
-        /// Maximum is 86,400 seconds (24 hours).
-        /// </param>
-        /// <remarks>
-        /// http://dev.iron.io/mq/reference/api/#get_messages_from_a_queue
-        /// https://github.com/iron-io/iron_mq_ruby#get-messages-from-a-queue
-        /// </remarks>
-        public MessageCollection Get(int? n = null, int? timeout = null)
-        {
-            return Get(n, timeout, null);
+            return new IronTaskThatReturnsMessageCollection(builder, this);
         }
 
         /// <summary>
@@ -381,9 +361,16 @@ namespace IronSharp.IronMQ
         /// If the timeout expires before the message is deleted, this message will be placed back onto the queue.
         /// As a result, be sure to delete this message after you’re done with it.
         /// </summary>
-        public QueueMessage Next(TimeSpan timeout)
+        /// <param name="timeout">
+        /// After timeout (in seconds), item will be placed back onto queue. You must delete the message from the queue to ensure it does not go back onto the queue. If
+        /// not set, value from queue is used. Default is 60 seconds, minimum is 30 seconds, and maximum is 86,400 seconds (24 hours).
+        /// </param>
+        public IIronTask<QueueMessage> ReserveNext(IronTimespan timeout)
         {
-            return Next(timeout.Seconds);
+            return ReserveNext(new ReservationOptions
+            {
+                Timeout = timeout
+            });
         }
 
         /// <summary>
@@ -392,37 +379,20 @@ namespace IronSharp.IronMQ
         /// If the timeout expires before the message is deleted, this message will be placed back onto the queue.
         /// As a result, be sure to delete this message after you’re done with it.
         /// </summary>
-        public QueueMessage Next(int? timeout = null)
+        /// <param name="reservationOptions"></param>
+        public IIronTask<QueueMessage> ReserveNext(ReservationOptions reservationOptions = null)
         {
-            return Get(1, timeout).Messages.FirstOrDefault();
-        }
+            var payload = ReservationUtil.BuildReservationFields(reservationOptions);
 
-        public QueueMessage Reserve()
-        {
-            return Get(1, 0).Messages.FirstOrDefault();
-        }
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/reservations"
+            };
 
-        public MessageCollection Reserve(int? n = null, int? timeout = null, int? wait = null)
-        {
-            return Get(n, timeout, wait);
-        }
+            builder.SetJsonContent(payload);
 
-        public MessageCollection Reserve(int? n, TimeSpan? timeout)
-        {
-            return Get(n, timeout);
-        }
-
-        /// <summary>
-        /// This call gets/reserves the next messages from the queue.
-        /// This message will not be deleted, but will be reserved until the timeout expires.
-        /// If the timeout expires before the message is deleted, this message will be placed back onto the queue.
-        /// As a result, be sure to delete this message after you’re done with it.
-        /// </summary>
-        /// <param name="wait">Time in seconds to wait for a message to become available. 
-        /// This enables long polling. Default is 0 (does not wait), maximum is 30.</param>
-        public QueueMessage Next(int? timeout, int? wait)
-        {
-            return Get(1, timeout, wait).Messages.FirstOrDefault();
+            return new IronTaskThatReturnsQueueMessage(builder, this);
         }
 
         /// <summary>
@@ -430,70 +400,76 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="n"> The maximum number of messages to peek. Default is 1. Maximum is 100. </param>
         /// <remarks>
-        /// http://dev.iron.io/mq/reference/api/#peek_messages_on_a_queue
+        /// http://dev.iron.io/mq/3/reference/api/#peek-messages
         /// </remarks>
-        public MessageCollection Peek(int? n = null)
+        [SuppressMessage("Design", "CC0021:You should use nameof instead of program element name string", Justification = "Key values must match API parameter names")]
+        public IIronTask<MessageCollection> Peek(int? n = null)
         {
-            var query = new NameValueCollection();
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = $"{QueuePath}/messages"
+            };
 
             if (n.HasValue)
             {
-                query.Add("n", Convert.ToString(n));
+                builder.Query.Add("n", n.Value.WithRange(1, 100));
             }
 
-            RestResponse<MessageCollection> result = _restClient.Get<MessageCollection>(_client.Config, string.Format("{0}/messages", EndPoint), query);
-
-
-            if (result.CanReadResult())
-            {
-                return LinkMessageCollection(result);
-            }
-
-            throw new RestResponseException("Unable to read MessageCollection response", result.ResponseMessage);
+            return new IronTaskThatReturnsMessageCollection(builder, this);
         }
 
         /// <summary>
         /// Returns the next messages on the queue, but it does not reserve it.
         /// </summary>
         /// <returns> </returns>
-        public QueueMessage PeekNext()
+        public IIronTask<QueueMessage> PeekNext()
         {
-            return Peek(1).Messages.FirstOrDefault();
-        }
-
-        public string Post(QueueMessage message)
-        {
-            MessageIdCollection result = Post(new MessageCollection(message));
-
-            if (result.Success)
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
             {
-                return result.Ids.FirstOrDefault();
-            }
+                HttpMethod = HttpMethod.Get,
+                Path = $"{QueuePath}/messages"
+            };
 
-            throw new IronSharpException("Failed to queue message");
+            builder.Query.Add("n", 1);
+
+            return new IronTaskThatReturnsQueueMessage(builder, this);
         }
 
-        public string Post(object message, MessageOptions options = null)
+        public IIronTask<string> Post(QueueMessage message)
+        {
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/messages"
+            };
+
+            builder.SetJsonContent(new MessageCollection(message));
+
+            return new IronTaskThatReturnsMessageId(builder);
+        }
+
+        public IIronTask<string> Post(object message, MessageOptions options = null)
         {
             return Post(new QueueMessage(ValueSerializer.Generate(message), options));
         }
 
-        public string Post(string message, MessageOptions options = null)
+        public IIronTask<string> Post(string message, MessageOptions options = null)
         {
             return Post(new QueueMessage(message, options));
         }
 
-        public MessageIdCollection Post(IEnumerable<object> messages, MessageOptions options = null)
+        public IIronTask<MessageIdCollection> Post(IEnumerable<object> messages, MessageOptions options = null)
         {
             return Post(messages.Select(ValueSerializer.Generate), options);
         }
 
-        public MessageIdCollection Post(IEnumerable<string> messages, MessageOptions options = null)
+        public IIronTask<MessageIdCollection> Post(IEnumerable<string> messages, MessageOptions options = null)
         {
             return Post(new MessageCollection(messages, options));
         }
 
-        public MessageIdCollection Post(IEnumerable<QueueMessage> messages)
+        public IIronTask<MessageIdCollection> Post(IEnumerable<QueueMessage> messages)
         {
             return Post(new MessageCollection(messages));
         }
@@ -504,9 +480,17 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#add_messages_to_a_queue
         /// </remarks>
-        public MessageIdCollection Post(MessageCollection messageCollection)
+        public IIronTask<MessageIdCollection> Post(MessageCollection messageCollection)
         {
-            return _restClient.Post<MessageIdCollection>(_client.Config, string.Format("{0}/messages", EndPoint), messageCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/messages"
+            };
+
+            builder.SetJsonContent(messageCollection);
+
+            return new IronTaskThatReturnsJson<MessageIdCollection>(builder);
         }
 
         /// <summary>
@@ -514,19 +498,9 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="message"> The the next message from the queue </param>
         /// <param name="timeout"> The message timeout </param>
-        public bool Read(out QueueMessage message, TimeSpan timeout)
+        public bool Read(out QueueMessage message, IronTimespan timeout = default(IronTimespan))
         {
-            return Read(out message, timeout.Seconds);
-        }
-
-        /// <summary>
-        /// Returns <c> true </c> if the next message is not null. (useful for looping constructs)
-        /// </summary>
-        /// <param name="message"> The the next message from the queue </param>
-        /// <param name="timeout"> The message timeout </param>
-        public bool Read(out QueueMessage message, int? timeout = null)
-        {
-            message = Next(timeout);
+            message = ReserveNext(timeout).Send();
             return message != null;
         }
 
@@ -534,6 +508,7 @@ namespace IronSharp.IronMQ
         /// Releasing a reserved message unreserves the message and puts it back on the queue as if the message had timed out.
         /// </summary>
         /// <param name="messageId"> </param>
+        /// <param name="reservationId"></param>
         /// <param name="delay">
         /// The item will not be available on the queue until this many seconds have passed.
         /// Default is 0 seconds.
@@ -542,7 +517,7 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#release_a_message_on_a_queue
         /// </remarks>
-        public bool Release(string messageId, string reservationId, TimeSpan delay)
+        public IIronTask<bool> Release(string messageId, string reservationId, TimeSpan delay)
         {
             return Release(messageId, reservationId, delay.Seconds);
         }
@@ -551,6 +526,7 @@ namespace IronSharp.IronMQ
         /// Releasing a reserved message unreserves the message and puts it back on the queue as if the message had timed out.
         /// </summary>
         /// <param name="messageId"> </param>
+        /// <param name="reservationId"></param>
         /// <param name="delay">
         /// The item will not be available on the queue until this many seconds have passed.
         /// Default is 0 seconds.
@@ -559,23 +535,64 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#release_a_message_on_a_queue
         /// </remarks>
-        public bool Release(string messageId, string reservationId, int? delay = null)
+        public IIronTask<bool> Release(string messageId, string reservationId, int? delay = null)
         {
-            var payload = new MessageOptions {Delay = delay, ReservationId = reservationId};
-            return _restClient.Post<ResponseMsg>(_client.Config, string.Format("{0}/messages/{1}/release", EndPoint, messageId), payload).HasExpectedMessage("Released");
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/messages/{messageId}/release"
+            };
+
+            builder.SetJsonContent(new MessageOptions
+            {
+                Delay = delay,
+                ReservationId = reservationId
+            });
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Released");
         }
 
         /// <summary>
         /// Touching a reserved message extends its timeout by the duration specified when the message was created, which is 60 seconds by default.
         /// </summary>
         /// <param name="messageId"> </param>
+        /// <param name="reservationId"></param>
+        /// <param name="timeout"></param>
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#touch_a_message_on_a_queue
         /// </remarks>
-        public MessageOptions Touch(string messageId, string reservationId, int? timeout = null)
+        public IIronTask<MessageOptions> Touch(string messageId, string reservationId, IronTimespan timeout = new IronTimespan())
         {
-            var payload = new MessageOptions { ReservationId = reservationId, Timeout = timeout};            
-            return _restClient.Post<MessageOptions>(_client.Config, string.Format("{0}/messages/{1}/touch", EndPoint, messageId), payload);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/messages/{messageId}/touch"
+            };
+
+            builder.SetJsonContent(new MessageOptions
+            {
+                ReservationId = reservationId,
+                Timeout = timeout.GetSeconds()
+            });
+
+            return new IronTaskThatReturnsJson<MessageOptions>(builder);
+        }
+
+        internal IIronTask<MessageOptions> Touch(QueueMessage message)
+        {
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/messages/{message.Id}/touch"
+            };
+
+            builder.SetJsonContent(new MessageOptions
+            {
+                ReservationId = message.ReservationId,
+                Timeout = message.Timeout
+            });
+
+            return new IronTaskThatTouchesMessage(builder, message);
         }
 
         /// <summary>
@@ -584,24 +601,18 @@ namespace IronSharp.IronMQ
         /// <param name="token">(optional) The token to use for the building the request uri if different than the Token specified in the config.</param>
         public Uri WebhookUri(string token = null)
         {
-            IRestClientRequest request = new RestClientRequest
+            var endpointConfig = _client.EndpointConfig;
+
+            var webhookAuth = endpointConfig.TokenContainer.GetWebHookToken(token);
+
+            var builder = new IronTaskRequestBuilder(endpointConfig)
             {
-                EndPoint = string.Format("{0}/webhook", EndPoint),
-                AuthTokenLocation = AuthTokenLocation.Querystring
+                HttpMethod = HttpMethod.Get,
+                Path = $"{QueuePath}/webhook",
+                AuthToken = webhookAuth
             };
-            return _restClient.BuildRequestUri(_client.Config, request, token);
-        }
 
-        private MessageCollection LinkMessageCollection(RestResponse<MessageCollection> response)
-        {
-            MessageCollection messageCollection = response.Result;
-
-            foreach (QueueMessage msg in messageCollection.Messages)
-            {
-                msg.Client = this;
-            }
-
-            return messageCollection;
+            return builder.Build().RequestUri;
         }
 
         #endregion
@@ -615,9 +626,17 @@ namespace IronSharp.IronMQ
         /// http://dev.iron.io/mq/reference/api/#add_alerts_to_a_queue
         /// http://dev.iron.io/mq/reference/queue_alerts/
         /// </remarks>
-        public QueueInfo AddAlerts(AlertCollection alertCollection)
+        public IIronTask<QueueInfo> AddAlerts(AlertCollection alertCollection)
         {
-            return _restClient.Post<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/alerts"
+            };
+
+            builder.SetJsonContent(alertCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         /// <summary>
@@ -627,9 +646,17 @@ namespace IronSharp.IronMQ
         /// http://dev.iron.io/mq/reference/api/#update_alerts_to_a_queue
         /// http://dev.iron.io/mq/reference/queue_alerts/
         /// </remarks>
-        public QueueInfo UpdateAlerts(AlertCollection alertCollection)
+        public IIronTask<QueueInfo> UpdateAlerts(AlertCollection alertCollection)
         {
-            return _restClient.Put<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), alertCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Put,
+                Path = $"{QueuePath}/alerts"
+            };
+
+            builder.SetJsonContent(alertCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         /// <summary>
@@ -640,26 +667,33 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#remove_alert_from_a_queue_by_id
         /// </remarks>
-        public bool DeleteAlert(Alert alert)
+        public IIronTask<bool> DeleteAlert(Alert alert)
         {
-            if (alert == null)
-                return false;
-            return DeleteAlert(alert.Id);
+            return DeleteAlert(alert?.Id);
         }
 
         /// <summary>
         /// Removes an alert specified by id from the queue.
         /// See http://dev.iron.io/mq/reference/queue_alerts/ for more information.
         /// </summary>
-        /// <param name="alert"> Id of alert to delete. </param>
+        /// <param name="alertId"> Id of alert to delete. </param>
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#remove_alert_from_a_queue_by_id
         /// </remarks>
-        public bool DeleteAlert(string alertId)
+        public IIronTask<bool> DeleteAlert(string alertId)
         {
-            if (String.IsNullOrEmpty(alertId))
-                return false;
-            return _restClient.Delete<ResponseMsg>(_client.Config, string.Format("{0}/alerts/{1}", EndPoint, alertId)).HasExpectedMessage("Deleted");
+            if (string.IsNullOrEmpty(alertId))
+            {
+                return new NoOpIronTaskResult<bool>(false);
+            }
+
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/alerts/{alertId}"
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Deleted");
         }
 
         /// <summary>
@@ -668,9 +702,17 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#remove_alerts_from_a_queue
         /// </remarks>
-        public QueueInfo RemoveAlerts(AlertCollection alertCollection)
+        public IIronTask<QueueInfo> RemoveAlerts(AlertCollection alertCollection)
         {
-            return _restClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/alerts", EndPoint), payload: alertCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/alerts"
+            };
+
+            builder.SetJsonContent(alertCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         #endregion
@@ -684,22 +726,37 @@ namespace IronSharp.IronMQ
         /// http://dev.iron.io/mq/reference/api/#add_subscribers_to_a_queue
         /// http://dev.iron.io/mq/reference/push_queues/
         /// </remarks>
-        public QueueInfo AddSubscribers(SubscriberCollection subscriberCollection)
+        public IIronTask<QueueInfo> AddSubscribers(SubscriberCollection subscriberCollection)
         {
-            return _restClient.Post<QueueInfo>(_client.Config, string.Format("{0}/subscribers", EndPoint), subscriberCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{QueuePath}/subscribers"
+            };
+
+            builder.SetJsonContent(subscriberCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         /// <summary>
-        /// You can retrieve the push status for a particular message which will let you know which subscribers have received the message, which have failed, how many times it’s tried to be
+        /// You can retrieve the push status for a particular message which will let you know which subscribers have received the message, which have failed, how many times it’s tried to
+        /// be
         /// delivered and the status code returned from the endpoint.
         /// </summary>
         /// <param name="messageId"> The message ID </param>
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#get_push_status_for_a_message
         /// </remarks>
-        public SubscriberCollection PushStatus(string messageId)
+        public IIronTask<SubscriberCollection> PushStatus(string messageId)
         {
-            return _restClient.Get<SubscriberCollection>(_client.Config, string.Format("{0}/messages/{1}/subscribers", EndPoint, messageId));
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = $"{QueuePath}/messages/{messageId}/subscribers"
+            };
+
+            return new IronTaskThatReturnsJson<SubscriberCollection>(builder);
         }
 
         /// <summary>
@@ -708,9 +765,17 @@ namespace IronSharp.IronMQ
         /// <remarks>
         /// http://dev.iron.io/mq/reference/api/#remove_subscribers_from_a_queue
         /// </remarks>
-        public QueueInfo RemoveSubscribers(SubscriberCollection subscriberCollection)
+        public IIronTask<QueueInfo> RemoveSubscribers(SubscriberCollection subscriberCollection)
         {
-            return _restClient.Delete<QueueInfo>(_client.Config, string.Format("{0}/subscribers", EndPoint), payload: subscriberCollection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Delete,
+                Path = $"{QueuePath}/subscribers"
+            };
+
+            builder.SetJsonContent(subscriberCollection);
+
+            return new IronTaskThatReturnsJson<QueueInfo>(builder);
         }
 
         #endregion

@@ -7,10 +7,11 @@
     <ProjectGuid>{2603E861-09AB-482E-BF28-41D8B0B1B20B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.IronCache</RootNamespace>
-    <AssemblyName>IronSharp.IronCache</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>IronIO.IronCache</RootNamespace>
+    <AssemblyName>IronIO.IronCache</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,24 +40,28 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheClient.cs" />
-    <Compile Include="CacheIncrementResult.cs" />
-    <Compile Include="CacheInfo.cs" />
-    <Compile Include="CacheItem.cs" />
-    <Compile Include="CacheItemOptions.cs" />
+    <Compile Include="Types\CacheIncrementResult.cs" />
+    <Compile Include="Types\CacheInfo.cs" />
+    <Compile Include="Types\CacheItem.cs" />
+    <Compile Include="Constants\CacheItemOptions.cs" />
     <Compile Include="IronCacheRestClient.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="IronCacheCloudHosts.cs" />
+    <Compile Include="Constants\IronCacheCloudHosts.cs" />
+    <Compile Include="Tasks\IronTaskThatGetsOrSetsCacheItem.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsCacheItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -66,8 +71,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="IronSharp.IronCache.nuspec" />
+    <None Include="pack.bat" />
     <None Include="packages.config" />
+    <None Include="push.bat" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

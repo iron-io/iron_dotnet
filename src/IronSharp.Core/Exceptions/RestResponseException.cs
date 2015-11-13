@@ -2,9 +2,9 @@
 using System.IO;
 using System.Net.Http;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
-    public class RestResponseException : IronSharpException
+    public class RestResponseException : IronIOException
     {
         public RestResponseException(string message, HttpResponseMessage response)
             : base(message + AppendDebugInfo(response))
@@ -49,7 +49,7 @@ namespace IronSharp.Core
                     catch (Exception e)
                     {
                         sw.WriteLine("Unable to read response content. " + e.Message);
-                    }                    
+                    }
                 }
 
                 return sw.ToString();

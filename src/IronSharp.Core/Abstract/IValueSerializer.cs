@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public interface IValueSerializer
     {

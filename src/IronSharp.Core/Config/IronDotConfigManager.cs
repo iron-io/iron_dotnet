@@ -4,22 +4,25 @@ using System.IO;
 using System.Reflection;
 using System.Web.Hosting;
 using Common.Logging;
+using IronIO.Core.Extensions;
 using Newtonsoft.Json;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     /// <summary>
     /// http://dev.iron.io/cache/reference/configuration/
     /// </summary>
     public static class IronDotConfigManager
     {
+        private static ILog ConfigLogger => LogManager.GetLogger("iron.io-config");
+
         public static string GetEnvironmentKey(IronProduct product, string key)
         {
-            if (key == null) throw new ArgumentNullException("key");
+            if (key == null) throw new ArgumentNullException(nameof(key));
 
             string productName = GetProductName(product);
 
-            return string.Format("{0}_{1}", productName, key).ToUpper();
+            return $"{productName}_{key}".ToUpper();
         }
 
         public static T GetEnvironmentValue<T>(IronProduct product, string key, EnvironmentVariableTarget target = EnvironmentVariableTarget.Process)
@@ -104,9 +107,9 @@ namespace IronSharp.Core
             targetConfig.Token     = string.IsNullOrEmpty(overrideConfig.Token)     ? targetConfig.Token  : overrideConfig.Token;
             targetConfig.Host      = string.IsNullOrEmpty(overrideConfig.Host)      ? targetConfig.Host   : overrideConfig.Host;
             targetConfig.Scheme    = string.IsNullOrEmpty(overrideConfig.Scheme)    ? targetConfig.Scheme : overrideConfig.Scheme;
-            targetConfig.ApiVersion = overrideConfig.ApiVersion == default(int) ? targetConfig.ApiVersion : overrideConfig.ApiVersion;
+            targetConfig.ApiVersion = overrideConfig.ApiVersion.HasValue ? overrideConfig.ApiVersion : targetConfig.ApiVersion;
             targetConfig.Port = overrideConfig.Port.HasValue ? overrideConfig.Port : targetConfig.Port;
-            targetConfig.Keystone = overrideConfig.Keystone == null ? targetConfig.Keystone : overrideConfig.Keystone;
+            targetConfig.Keystone = overrideConfig.Keystone ?? targetConfig.Keystone;
         }
 
         private static string _appDirectory;
@@ -120,8 +123,8 @@ namespace IronSharp.Core
         {
             if (string.IsNullOrEmpty(_appDirectory))
             {
-                _appDirectory = HostingEnvironment.IsHosted ? 
-                    HostingEnvironment.MapPath("~/") : 
+                _appDirectory = HostingEnvironment.IsHosted ?
+                    HostingEnvironment.MapPath("~/") :
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
             }
             return _appDirectory;
@@ -151,7 +154,7 @@ namespace IronSharp.Core
                     productName = "iron_cache";
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("product");
+                    throw new ArgumentOutOfRangeException(nameof(product));
             }
             return productName;
         }
@@ -203,7 +206,7 @@ namespace IronSharp.Core
             }
             catch (IOException ex)
             {
-                LogManager.GetCurrentClassLogger().Error(ex);
+                ConfigLogger.Error(ex);
             }
             return new JsonDotConfigModel();
         }

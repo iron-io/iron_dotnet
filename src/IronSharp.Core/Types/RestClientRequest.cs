@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Net.Http;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class RestClientRequest : IRestClientRequest
     {

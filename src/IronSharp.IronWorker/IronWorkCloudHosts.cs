@@ -1,4 +1,4 @@
-﻿namespace IronSharp.IronWorker
+﻿namespace IronIO.IronWorker
 {
     public static class IronWorkCloudHosts
     {

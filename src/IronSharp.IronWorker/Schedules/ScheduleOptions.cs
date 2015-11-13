@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class ScheduleOptions : PriorityOption
     {

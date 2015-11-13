@@ -7,10 +7,11 @@
     <ProjectGuid>{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.IronWorker</RootNamespace>
-    <AssemblyName>IronSharp.IronWorker</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>IronIO.IronWorker</RootNamespace>
+    <AssemblyName>IronIO.IronWorker</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,8 +40,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -62,32 +63,35 @@
     <Compile Include="Schedules\ScheduleClient.cs" />
     <Compile Include="Schedules\ScheduleIdCollection.cs" />
     <Compile Include="Schedules\ScheduleOptions.cs" />
-    <Compile Include="PriorityOption.cs" />
+    <Compile Include="Schedules\PriorityOption.cs" />
     <Compile Include="Schedules\ScheduleOptionsBuilder.cs" />
     <Compile Include="Schedules\SchedulePayload.cs" />
     <Compile Include="Schedules\SchedulePayloadCollection.cs" />
     <Compile Include="Schedules\TimeUnit.cs" />
-    <Compile Include="Tasks\TaskInfoCollection.cs" />
-    <Compile Include="Tasks\TaskClient.cs" />
-    <Compile Include="Tasks\TaskId.cs" />
-    <Compile Include="Tasks\TaskIdCollection.cs" />
-    <Compile Include="Tasks\TaskListFilter.cs" />
-    <Compile Include="Tasks\TaskOptions.cs" />
-    <Compile Include="Tasks\TaskPayload.cs" />
-    <Compile Include="Tasks\TaskPayloadCollection.cs" />
-    <Compile Include="TaskPriority.cs" />
-    <Compile Include="Tasks\TaskProgress.cs" />
+    <Compile Include="WorkerTasks\TaskInfoCollection.cs" />
+    <Compile Include="WorkerTasks\TaskClient.cs" />
+    <Compile Include="WorkerTasks\TaskId.cs" />
+    <Compile Include="WorkerTasks\TaskIdCollection.cs" />
+    <Compile Include="WorkerTasks\TaskListFilter.cs" />
+    <Compile Include="WorkerTasks\TaskOptions.cs" />
+    <Compile Include="WorkerTasks\TaskPayload.cs" />
+    <Compile Include="WorkerTasks\TaskPayloadCollection.cs" />
+    <Compile Include="Constants\TaskPriority.cs" />
+    <Compile Include="WorkerTasks\TaskProgress.cs" />
     <Compile Include="Schedules\ScheduleInfoCollection.cs" />
     <Compile Include="Schedules\ScheduleInfo.cs" />
-    <Compile Include="TaskStates.cs" />
-    <Compile Include="Tasks\TaskWebhookResponse.cs" />
-    <Compile Include="Tasks\TaskInfo.cs" />
+    <Compile Include="Constants\TaskStates.cs" />
+    <Compile Include="WorkerTasks\TaskWebhookResponse.cs" />
+    <Compile Include="WorkerTasks\TaskInfo.cs" />
     <Compile Include="Code\WorkerOptions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="IronSharp.IronWorker.csproj.DotSettings" />
     <None Include="IronSharp.IronWorker.nuspec" />
+    <None Include="pack.bat" />
     <None Include="packages.config" />
+    <None Include="push.bat" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IronSharp.Core\IronSharp.Core.csproj">

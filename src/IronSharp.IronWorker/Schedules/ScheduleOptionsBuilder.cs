@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class ScheduleOptionsBuilder : ScheduleOptions
     {

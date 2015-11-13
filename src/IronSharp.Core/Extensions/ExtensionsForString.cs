@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace IronSharp.Core
+namespace IronIO.Core.Extensions
 {
     public static class ExtensionsForString
     {
@@ -214,11 +214,10 @@ namespace IronSharp.Core
 
         public static string ToString<T>(this T? nullableValue, string format, IFormatProvider formatProvider = null, string nullDisplayValue = "") where T : struct, IFormattable
         {
-            return nullableValue.HasValue ? nullableValue.Value.ToString(format, formatProvider) : nullDisplayValue;
+            return nullableValue?.ToString(format, formatProvider) ?? nullDisplayValue;
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
-            Justification = "We want to make this user friendly and return the default value on all failures")]
+        [SuppressMessage("Design", "CC0004:Catch block cannot be empty", Justification = "We want to make this user friendly and return the default value on all failures")]
         public static TValue As<TValue>(this string value, TValue defaultValue = default(TValue))
         {
             try
@@ -235,9 +234,7 @@ namespace IronSharp.Core
                     return (TValue) converter.ConvertTo(value, typeof (TValue));
                 }
             }
-                // ReSharper disable EmptyGeneralCatchClause
             catch
-                // ReSharper restore EmptyGeneralCatchClause
             {
                 // eat all exceptions and return the defaultValue, assumption is that its always a parse/format exception
             }

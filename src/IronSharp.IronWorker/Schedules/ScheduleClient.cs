@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using IronSharp.Core;
+using System.Net.Http;
+using IronIO.Core;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class ScheduleClient
     {
         private readonly IronWorkerRestClient _client;
-        private readonly RestClient _restClient = new RestClient(); 
 
         public ScheduleClient(IronWorkerRestClient client)
         {
-            if (client == null) throw new ArgumentNullException("client");
+            if (client == null) throw new ArgumentNullException(nameof(client));
             Contract.EndContractBlock();
 
             _client = client;
@@ -19,37 +19,53 @@ namespace IronSharp.IronWorker
 
         public string EndPoint
         {
-            get { return string.Format("{0}/schedules", _client.EndPoint); }
+            get { return $"{_client.EndPoint}/schedules"; }
         }
 
-        public IValueSerializer ValueSerializer
+        public IValueSerializer ValueSerializer => _client.EndpointConfig.Config.SharpConfig.ValueSerializer;
+
+        public IIronTask<bool> Cancel(string scheduleId)
         {
-            get { return _client.Config.SharpConfig.ValueSerializer; }
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = $"{ScheduleEndPoint(scheduleId)}/cancel"
+            };
+
+            return new IronTaskThatReturnsAnExpectedResult(builder, "Cancelled");
         }
 
-        public bool Cancel(string scheduleId)
-        {
-            return _restClient.Post<ResponseMsg>(_client.Config, ScheduleEndPoint(scheduleId) + "/cancel").HasExpectedMessage("Cancelled");
-        }
-
-        public ScheduleIdCollection Create(string codeName, object payload, ScheduleOptions options)
+        public IIronTask<ScheduleIdCollection> Create(string codeName, object payload, ScheduleOptions options)
         {
             return Create(codeName, ValueSerializer.Generate(payload), options);
         }
 
-        public ScheduleIdCollection Create(string codeName, string payload, ScheduleOptions options)
+        public IIronTask<ScheduleIdCollection> Create(string codeName, string payload, ScheduleOptions options)
         {
             return Create(new SchedulePayloadCollection(codeName, payload, options));
         }
 
-        public ScheduleIdCollection Create(SchedulePayloadCollection collection)
+        public IIronTask<ScheduleIdCollection> Create(SchedulePayloadCollection collection)
         {
-            return _restClient.Post<ScheduleIdCollection>(_client.Config, EndPoint, collection);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Post,
+                Path = EndPoint,
+                HttpContent = new JsonContent(collection)
+            };
+
+            return new IronTaskThatReturnsJson<ScheduleIdCollection>(builder);
         }
 
-        public ScheduleInfo Get(string scheduleId)
+        public IIronTask<ScheduleInfo> Get(string scheduleId)
         {
-            return _restClient.Get<ScheduleInfo>(_client.Config, ScheduleEndPoint(scheduleId));
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = ScheduleEndPoint(scheduleId)
+            };
+
+            return new IronTaskThatReturnsJson<ScheduleInfo>(builder);
         }
 
         /// <summary>
@@ -59,14 +75,25 @@ namespace IronSharp.IronWorker
         /// <remarks>
         /// http://dev.iron.io/worker/reference/api/#list_scheduled_tasks
         /// </remarks>
-        public ScheduleInfoCollection List(PagingFilter filter = null)
+        public IIronTask<ScheduleInfoCollection> List(PagingFilter filter = null)
         {
-            return _restClient.Get<ScheduleInfoCollection>(_client.Config, EndPoint, filter);
+            var builder = new IronTaskRequestBuilder(_client.EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = EndPoint
+            };
+
+            if (filter != null)
+            {
+                builder.Query.Add(filter);
+            }
+
+            return new IronTaskThatReturnsJson<ScheduleInfoCollection>(builder);
         }
 
         public string ScheduleEndPoint(string scheduleId)
         {
-            return string.Format("{0}/{1}", EndPoint, scheduleId);
+            return $"{EndPoint}/{scheduleId}";
         }
     }
 }
