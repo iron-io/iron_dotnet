@@ -473,24 +473,24 @@ namespace IronSharp.IronMQ
             throw new IronSharpException("Failed to queue message");
         }
 
-        public string Post(object message, MessageOptions options = null)
+        public string Post(object message, int? delay = null)
         {
-            return Post(new QueueMessage(ValueSerializer.Generate(message), options));
+            return Post(new QueueMessage(ValueSerializer.Generate(message), delay));
         }
 
-        public string Post(string message, MessageOptions options = null)
+        public string Post(string message, int? delay = null)
         {
-            return Post(new QueueMessage(message, options));
+            return Post(new QueueMessage(message, delay));
         }
 
-        public MessageIdCollection Post(IEnumerable<object> messages, MessageOptions options = null)
+        public MessageIdCollection Post(IEnumerable<object> messages, int? delay = null)
         {
-            return Post(messages.Select(ValueSerializer.Generate), options);
+            return Post(messages.Select(ValueSerializer.Generate), delay);
         }
 
-        public MessageIdCollection Post(IEnumerable<string> messages, MessageOptions options = null)
+        public MessageIdCollection Post(IEnumerable<string> messages, int? delay = null)
         {
-            return Post(new MessageCollection(messages, options));
+            return Post(new MessageCollection(messages, delay));
         }
 
         public MessageIdCollection Post(IEnumerable<QueueMessage> messages)

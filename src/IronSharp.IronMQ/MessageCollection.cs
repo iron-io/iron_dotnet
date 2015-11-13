@@ -22,16 +22,16 @@ namespace IronSharp.IronMQ
             Messages.AddRange(messages);
         }
 
-        public MessageCollection(string message, MessageOptions options = null)
+        public MessageCollection(string message, int? delay = null)
         {
-            Messages.Add(new QueueMessage(message, options));
+            Messages.Add(new QueueMessage(message, delay));
         }
 
-        public MessageCollection(IEnumerable<string> messages, MessageOptions options = null)
+        public MessageCollection(IEnumerable<string> messages, int? delay = null)
         {
             foreach (string message in messages)
             {
-                Messages.Add(new QueueMessage(message, options));
+                Messages.Add(new QueueMessage(message, delay));
             }
         }
 

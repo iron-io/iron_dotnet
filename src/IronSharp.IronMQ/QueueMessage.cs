@@ -5,16 +5,11 @@ namespace IronSharp.IronMQ
 {
     public class QueueMessage : MessageOptions
     {
-        public QueueMessage(string body, MessageOptions options = null)
+        public QueueMessage(string body, int? delay = null)
             : this()
         {
             Body = body;
-
-            if (options == null) return;
-
-            Delay = options.Delay;
-            ExpiresIn = options.ExpiresIn;
-            Timeout = options.Timeout;
+            Delay = delay;
         }
 
         protected QueueMessage()
