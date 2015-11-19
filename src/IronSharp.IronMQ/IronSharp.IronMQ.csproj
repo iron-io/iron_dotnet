@@ -7,10 +7,11 @@
     <ProjectGuid>{D891A220-AA6F-4D0C-B012-B25875787BA0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.IronMQ</RootNamespace>
-    <AssemblyName>IronSharp.IronMQ</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>IronIO.IronMQ</RootNamespace>
+    <AssemblyName>IronIO.IronMQ</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,32 +52,40 @@
     <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Alert.cs" />
-    <Compile Include="AlertCollection.cs" />
-    <Compile Include="AlertType.cs" />
-    <Compile Include="AlertDirection.cs" />
+    <Compile Include="QueuesFilter.cs" />
+    <Compile Include="ReservationUtil.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsMessageCollection.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsMessageId.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsQueueInfo.cs" />
+    <Compile Include="Tasks\IronTaskThatTouchesMessage.cs" />
+    <Compile Include="Types\Alert.cs" />
+    <Compile Include="Types\AlertCollection.cs" />
+    <Compile Include="Constants\AlertType.cs" />
+    <Compile Include="Constants\AlertDirection.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="IronMqCloudHosts.cs" />
+    <Compile Include="Constants\IronMqCloudHosts.cs" />
     <Compile Include="IronMqRestClient.cs" />
-    <Compile Include="MessageCollection.cs" />
-    <Compile Include="MessageIdCollection.cs" />
-    <Compile Include="MessageContainer.cs" />
-    <Compile Include="PushInfo.cs" />
-    <Compile Include="QueueContainer.cs" />
-    <Compile Include="ReservedMessageIdCollection.cs" />
-    <Compile Include="MessageIdContainer.cs" />
-    <Compile Include="MessageOptions.cs" />
-    <Compile Include="MqPagingFilter.cs" />
+    <Compile Include="Tasks\IronTaskThatReturnsQueueMessage.cs" />
+    <Compile Include="Types\MessageCollection.cs" />
+    <Compile Include="Types\MessageIdCollection.cs" />
+    <Compile Include="Types\MessageContainer.cs" />
+    <Compile Include="Types\MessageReservationOptions.cs" />
+    <Compile Include="Types\PushInfo.cs" />
+    <Compile Include="Types\QueueContainer.cs" />
+    <Compile Include="Types\ReservationOptions.cs" />
+    <Compile Include="Types\ReservedMessageIdCollection.cs" />
+    <Compile Include="Types\MessageIdContainer.cs" />
+    <Compile Include="Types\MessageOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PushStatus.cs" />
-    <Compile Include="PushType.cs" />
+    <Compile Include="Types\PushStatus.cs" />
+    <Compile Include="Constants\PushType.cs" />
     <Compile Include="QueueClient.cs" />
-    <Compile Include="QueuesInfo.cs" />
-    <Compile Include="QueueInfo.cs" />
-    <Compile Include="QueueMessage.cs" />
-    <Compile Include="QueueMessageContext.cs" />
-    <Compile Include="Subscriber.cs" />
-    <Compile Include="SubscriberCollection.cs" />
+    <Compile Include="Types\QueuesInfo.cs" />
+    <Compile Include="Types\QueueInfo.cs" />
+    <Compile Include="Types\QueueMessage.cs" />
+    <Compile Include="Types\QueueMessageContext.cs" />
+    <Compile Include="Types\Subscriber.cs" />
+    <Compile Include="Types\SubscriberCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IronSharp.Core\IronSharp.Core.csproj">
@@ -85,6 +94,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="IronSharp.IronMQ.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>

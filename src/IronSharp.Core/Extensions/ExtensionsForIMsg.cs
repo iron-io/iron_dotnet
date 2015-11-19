@@ -1,4 +1,4 @@
-﻿namespace IronSharp.Core
+﻿namespace IronIO.Core.Extensions
 {
     public static class ExtensionsForIMsg
     {

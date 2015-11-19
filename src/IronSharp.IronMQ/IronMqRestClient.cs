@@ -1,59 +1,43 @@
-﻿using System.Collections.Generic;
+﻿using System.Net.Http;
 using System.Threading;
-using IronSharp.Core;
-using IronSharp.Core.Attributes;
-using System;
+using IronIO.Core;
+using IronIO.Core.Attributes;
+using IronIO.Core.Extensions;
 
-namespace IronSharp.IronMQ
+namespace IronIO.IronMQ
 {
     public class IronMqRestClient
     {
-        private readonly IronClientConfig _config;
-        private MqRestClient _restClient;
-        public ITokenContainer TokenContainer { get; set; }
-
         internal IronMqRestClient(IronClientConfig config)
         {
-            _config = LazyInitializer.EnsureInitialized(ref config);
-             
-            if (_config.Keystone != null)
+            LazyInitializer.EnsureInitialized(ref config);
+
+            if (string.IsNullOrEmpty(config.Host))
             {
-                if (_config.KeystoneKeysExist())
+                config.Host = IronMqCloudHosts.DEFAULT;
+            }
+
+            config.ApiVersion = config.ApiVersion.GetValueOrDefault(3);
+
+            ITokenContainer tokenContainer = null;
+
+            if (config.Keystone != null)
+            {
+                if (config.KeystoneKeysExist())
                 {
-                    TokenContainer = new KeystoneContainer(_config.Keystone);
+                    tokenContainer = KeystoneContainer.GetOrCreateInstance(config.Keystone);
                 }
                 else
                 {
-                    throw new IronSharpException("Keystone keys missing");
+                    throw new IronIOException("Keystone keys missing");
                 }
-            } 
-            else 
-            {
-                TokenContainer = new IronTokenContainer(_config.Token);
-            }    
-                
-            _restClient = new MqRestClient(TokenContainer);
-            
-            if (string.IsNullOrEmpty(Config.Host))
-            {
-                Config.Host = IronMqCloudHosts.DEFAULT;
             }
 
-            if (config.ApiVersion == default (int))
-            {
-                config.ApiVersion = 3;
-            }
+            EndpointConfig = new IronTaskEndpointConfig(config, tokenContainer);
         }
 
-        public IronClientConfig Config
-        {
-            get { return _config; }
-        }
-
-        public string EndPoint
-        {
-            get { return "/projects/{Project ID}/queues"; }
-        }
+        public string EndPoint => "/projects/{Project ID}/queues";
+        public IIronTaskEndpointConfig EndpointConfig { get; }
 
         public QueueClient<T> Queue<T>()
         {
@@ -73,10 +57,40 @@ namespace IronSharp.IronMQ
         /// </summary>
         /// <param name="filter"> </param>
         /// <returns> </returns>
-        public IEnumerable<QueueInfo> Queues(MqPagingFilter filter = null)
+        public IIronTask<QueuesInfo> Queues(QueuesFilter filter = null)
         {
-            var queuesInfo = _restClient.Get<QueuesInfo>(_config, EndPoint, filter).Result;
-            return queuesInfo == null ? null : queuesInfo.Queues;
+            var builder = new IronTaskRequestBuilder(EndpointConfig)
+            {
+                HttpMethod = HttpMethod.Get,
+                Path = EndPoint
+            };
+
+            SetQueueFilters(filter, builder);
+
+            return new IronTaskThatReturnsJson<QueuesInfo>(builder);
+        }
+
+        private static void SetQueueFilters(QueuesFilter filter, IronTaskRequestBuilder builder)
+        {
+            if (filter == null)
+            {
+                return;
+            }
+
+            if (filter.PerPage.HasValue)
+            {
+                builder.Query.Add("per_page", filter.PerPage);
+            }
+
+            if (!string.IsNullOrEmpty(filter.Previous))
+            {
+                builder.Query.Add("previous", filter.Previous);
+            }
+
+            if (!string.IsNullOrEmpty(filter.Prefix))
+            {
+                builder.Query.Add("prefix", filter.Prefix);
+            }
         }
     }
 }

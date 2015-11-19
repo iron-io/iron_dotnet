@@ -2,7 +2,7 @@
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class IronClientConfig : IIronSharpConfig, IInspectable
     {
@@ -18,7 +18,7 @@ namespace IronSharp.Core
         public string Token { get; set; }
 
         [JsonProperty("api_version")]
-        public int ApiVersion { get; set; }
+        public int? ApiVersion { get; set; }
 
         [JsonProperty("port")]
         public int? Port { get; set; }

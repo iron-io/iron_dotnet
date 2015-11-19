@@ -1,6 +1,6 @@
-﻿using IronSharp.Core;
+﻿using IronIO.Core;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     /// <summary>
     /// http://dev.iron.io/worker/reference/api/#list_code_packages

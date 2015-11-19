@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using Newtonsoft.Json;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public class PagingFilter : IPagingFilter
     {

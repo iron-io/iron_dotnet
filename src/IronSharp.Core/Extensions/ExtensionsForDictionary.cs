@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 
-namespace IronSharp.Core
+namespace IronIO.Core.Extensions
 {
     public static class ExtensionsForDictionary
     {
+        public static void Add(this NameValueCollection collection, string key, object value)
+        {
+            Contract.Requires(collection != null);
+            collection.Add(key, Convert.ToString(value));
+        }
+
         public static void AddValues(this IDictionary<string, object> dictionary, object value)
         {
             if (value == null)

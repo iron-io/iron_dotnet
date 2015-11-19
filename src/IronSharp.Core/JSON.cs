@@ -2,7 +2,7 @@
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace IronSharp.Core
+namespace IronIO.Core
 {
     public static class JSON
     {

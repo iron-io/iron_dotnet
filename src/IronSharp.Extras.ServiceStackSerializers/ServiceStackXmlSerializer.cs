@@ -1,5 +1,5 @@
 ﻿using System;
-using IronSharp.Core;
+using IronIO.Core;
 using ServiceStack.Text;
 
 namespace IronSharp.Extras.ServiceStackSerializers

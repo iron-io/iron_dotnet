@@ -2,7 +2,7 @@
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace IronSharp.IronWorker
+namespace IronIO.IronWorker
 {
     public class CodeInfoCollection
     {
