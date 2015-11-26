@@ -36,11 +36,19 @@ Also you need to pass authorization data to the client. There are several ways t
 
 3\. Create an IronMQ client object:
 
+You can specify host settings in iron.json and initialize a client without parameters:
+
 ```C#
 var iromMq = IronSharp.IronMQ.Client.New();
 ```
 
-You can specify host settings in iron.json or explicitly in code, for example:
+...or explicitly in code, for example:
+
+```C#
+var iromMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "XXXXXXX", Token = "YYYYYYY", Host = "mq-v3-aws-us-east-1.iron.io"});
+```
+
+It's also possible to set any other instance of IronMQ:
 
 ```C#
 var iromMq = IronSharp.IronMQ.Client.New(new IronClientConfig { ProjectId = "XXXXXXX", Token = "YYYYYYY", Host = "localhost", Scheme = "http", Port = 8080});
