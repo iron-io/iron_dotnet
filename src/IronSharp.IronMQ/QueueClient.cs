@@ -193,6 +193,12 @@ namespace IronSharp.IronMQ
         /// <returns> </returns>
         public QueueInfo Update(QueueInfo updates)
         {
+            QueueContainer response = _restClient.Patch<QueueContainer>(_client.Config, EndPoint, new QueueContainer(updates));
+            return response.Queue;
+        }
+
+        public QueueInfo Create(QueueInfo updates)
+        {
             QueueContainer response = _restClient.Put<QueueContainer>(_client.Config, EndPoint, new QueueContainer(updates));
             return response.Queue;
         }
