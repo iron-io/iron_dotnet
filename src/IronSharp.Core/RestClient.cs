@@ -119,6 +119,25 @@ namespace IronSharp.Core
             return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
         }
 
+        public RestResponse<T> Patch<T>(IronClientConfig config, string endPoint, object payload, NameValueCollection query = null) where T : class
+        {
+            var requestBuilder = new HttpRequestMessageBuilder(config, this, new RestClientRequest
+            {
+                EndPoint = endPoint,
+                Query = query,
+                Method = new HttpMethod("PATCH")
+            });
+
+            IronSharpConfig sharpConfig = config.SharpConfig;
+
+            if (payload != null)
+            {
+                requestBuilder.Payload = payload;
+            }
+
+            return new RestResponse<T>(AttemptRequest(sharpConfig, requestBuilder));
+        }
+
         private HttpResponseMessage AttemptRequest(IronSharpConfig sharpConfig, HttpRequestMessageBuilder requestBuilder, int attempt = 0)
         {
             var request = requestBuilder.Build();
