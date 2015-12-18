@@ -205,10 +205,12 @@ queue.Delete();
 
 ```C#
 var id1 = queue.Post("message");
-// To control parameters like delay, pass `MessageOptions` instance.
+// To control parameters like delay, push_headers, pass `MessageOptions` instance.
+var headers = new Dictionary<string, string> {{"my_header1", "value1"}, {"my_header2", "value2"}};
 var id2 = queue.Post("message", new MessageOptions {Delay = 20});
+var id3 = queue.Post("message", new MessageOptions {PushHeaders = headers});
 // or construct your own message
-var id3 = q.Post(new QueueMessage("message", new MessageOptions{Delay = 20}));
+var id4 = queue.Post(new QueueMessage("message", new MessageOptions{Delay = 20}));
 ```
 
 **Multiple messages:**
@@ -232,6 +234,7 @@ queue.Post(new object[] {1, 2, 3}, new MessageOptions{Delay = 20});
 
 * `Delay`: The item will not be available on the queue until this many seconds have passed.
 Default is 0 seconds. Maximum is 604,800 seconds (7 days).
+* `PushHeaders`: If the item is sent to a push queue, these headers will be passed to subscribers.
 
 --
 
