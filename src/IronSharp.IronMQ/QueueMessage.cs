@@ -15,6 +15,7 @@ namespace IronSharp.IronMQ
             Delay = options.Delay;
             ExpiresIn = options.ExpiresIn;
             Timeout = options.Timeout;
+            PushHeaders = options.PushHeaders;
         }
 
         protected QueueMessage()

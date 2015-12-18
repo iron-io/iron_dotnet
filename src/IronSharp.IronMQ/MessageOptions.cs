@@ -1,4 +1,5 @@
-﻿using IronSharp.Core;
+﻿using System.Collections.Generic;
+using IronSharp.Core;
 using Newtonsoft.Json;
 
 namespace IronSharp.IronMQ
@@ -29,6 +30,12 @@ namespace IronSharp.IronMQ
         /// </summary>
         [JsonProperty("timeout", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? Timeout { get; set; }
+
+        /// <summary>
+        /// When message is sent to a push queue these headers will be passed to subscribers
+        /// </summary>
+        [JsonProperty("push_headers", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Dictionary<string, string> PushHeaders { get; set; }
         
         /// <summary>
         /// When message is reserved this property stores actual reservation_id. This id can be used
