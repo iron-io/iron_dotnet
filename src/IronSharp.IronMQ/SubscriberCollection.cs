@@ -14,13 +14,12 @@ namespace IronSharp.IronMQ
         {
         }
 
-        public SubscriberCollection(string name, string url)
+        public SubscriberCollection(string name, string url) : this(name, url, null)
         {
-            Subscribers.Add(new Subscriber(name,url));
-        }        
+        }
 
-        public SubscriberCollection(string name, Uri uri) : this(name, uri.ToString())
-        {            
+        public SubscriberCollection(string name, Uri uri) : this(name, uri.ToString(), null)
+        {
         }
 
         public SubscriberCollection(string name, string url, Dictionary<string, string> headers)
@@ -28,7 +27,7 @@ namespace IronSharp.IronMQ
             Subscribers.Add(new Subscriber(name, url, headers));
         }
 
-        public SubscriberCollection(string name, Uri uri, Dictionary<string,string> headers )
+        public SubscriberCollection(string name, Uri uri, Dictionary<string,string> headers)
             : this(name, uri.ToString(), headers)
         {
         }

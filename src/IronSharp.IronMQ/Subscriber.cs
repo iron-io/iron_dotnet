@@ -11,10 +11,8 @@ namespace IronSharp.IronMQ
         {
         }
 
-        public Subscriber(string name, string url)
+        public Subscriber(string name, string url) : this(name, url, null)
         {
-            Name = name;
-            Url = url;
         }
 
         public Subscriber(string name, string url, Dictionary<string,string> headers )
@@ -47,7 +45,7 @@ namespace IronSharp.IronMQ
 
         [JsonProperty("headers", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public Dictionary<string, string> Headers;
-            
+
         [JsonIgnore]
         public HttpStatusCode StatusCode
         {
