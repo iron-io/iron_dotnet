@@ -44,7 +44,7 @@ namespace IronSharp.IronMQ
         public string ErrorQueue { get; set; }
 
         [JsonProperty("headers", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public Dictionary<string, string> Headers;
+        public Dictionary<string, string> Headers { get; set; }
 
         [JsonIgnore]
         public HttpStatusCode StatusCode
