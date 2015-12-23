@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json;
 
@@ -6,7 +7,7 @@ namespace IronSharp.IronMQ
 {
     public class Subscriber
     {
-        public Subscriber() : this(null,null)
+        public Subscriber() : this(null,null,null)
         {
         }
 
@@ -14,6 +15,13 @@ namespace IronSharp.IronMQ
         {
             Name = name;
             Url = url;
+        }
+
+        public Subscriber(string name, string url, Dictionary<string,string> headers )
+        {
+            Name = name;
+            Url = url;
+            Headers = headers;
         }
 
         [JsonProperty("name", DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -37,10 +45,13 @@ namespace IronSharp.IronMQ
         [JsonProperty("error_queue", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string ErrorQueue { get; set; }
 
+        [JsonProperty("headers", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public Dictionary<string, string> Headers;
+            
         [JsonIgnore]
         public HttpStatusCode StatusCode
         {
             get { return (HttpStatusCode) Code.GetValueOrDefault(200); }
-        }        
+        }
     }
 }
