@@ -326,13 +326,12 @@ namespace IronSharp.IronMQ
         /// </remarks>
         public MessageCollection Get(int? n = null, int? timeout = null, int? wait = null)
         {
-            var query = new NameValueCollection();
-
             var payload = new Dictionary<string, object>();
             if (n.HasValue)
             {
                 payload.Add("n", n);
             }
+
             if (timeout.HasValue)
             {
                 payload.Add("timeout", timeout);
@@ -340,10 +339,10 @@ namespace IronSharp.IronMQ
 
             if (wait.HasValue)
             {
-                query.Add("wait", Convert.ToString(wait));
+                payload.Add("wait", wait);
             }
 
-            RestResponse<MessageCollection> result = _restClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload, query);
+            RestResponse<MessageCollection> result = _restClient.Post<MessageCollection>(_client.Config, string.Format("{0}/reservations", EndPoint), payload);
 
             if (result.CanReadResult())
             {
