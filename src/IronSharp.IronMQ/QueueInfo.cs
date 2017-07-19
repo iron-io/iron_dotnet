@@ -73,6 +73,9 @@ namespace IronSharp.IronMQ
         [JsonProperty("message_expiration", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int? MessageExpiration { get; set; }
 
+        [JsonProperty("dead_letter", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public QueueDeadletterInfo QueueDeadletterInfo { get; set; }
+
         [JsonIgnore]
         public List<Alert> Alerts
         {
