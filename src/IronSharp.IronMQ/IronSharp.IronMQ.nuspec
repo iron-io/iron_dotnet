@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Iron.IronMQ</id>
-    <version>3.0.12</version>
+    <version>3.0.13</version>
     <title>IronMQ</title>
     <authors>Jeremy Bell</authors>
     <owners>Iron.io</owners>

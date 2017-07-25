@@ -63,6 +63,7 @@
     <Compile Include="MessageContainer.cs" />
     <Compile Include="PushInfo.cs" />
     <Compile Include="QueueContainer.cs" />
+    <Compile Include="QueueDeadletterInfo.cs" />
     <Compile Include="ReservedMessageIdCollection.cs" />
     <Compile Include="MessageIdContainer.cs" />
     <Compile Include="MessageOptions.cs" />
