@@ -1,120 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1A6CC922-40A5-440A-868D-757FCDB08622}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.Core</RootNamespace>
-    <AssemblyName>IronSharp.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Jeremy Bell</Authors>
+    <Copyright>Iron.io</Copyright>
+    <PackageLicenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/iron-io/iron_dotnet</PackageProjectUrl>
+    <PackageIconUrl>https://raw.github.com/iron-io/iron_dotnet/master/images/net-iron-core.png</PackageIconUrl>
+    <Description>Core configuration and other common features for IronSharp.  Iron.io is a cloud application services provider that gives you immediate access to high-scale message queues, async processing, and caching.</Description>
+    <PackageReleaseNotes>Converted to NET Standard 2.0</PackageReleaseNotes>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
+    <VersionPrefix>3.0.11</VersionPrefix>
+    <VersionSuffix>localhost</VersionSuffix>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|AnyCPU'">
-    <OutputPath>bin\Publish\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IncludeSource>true</IncludeSource>
+    <IncludeSymbols>true</IncludeSymbols>    
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
+    <PackageReference Include="Common.Logging" Version="3.4.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Abstract\IRequestHelpersContainer.cs" />
-    <Compile Include="Abstract\ITokenContainer.cs" />
-    <Compile Include="Attributes\QueueNameAttribute.cs" />
-    <Compile Include="Config\KeystoneClientConfig.cs" />
-    <Compile Include="Constants\AuthHeaderLocation.cs" />
-    <Compile Include="DateTimeHelpers.cs" />
-    <Compile Include="DefaultValueSerializer.cs" />
-    <Compile Include="ExponentialBackoff.cs" />
-    <Compile Include="Extensions\ExtensionsForDictionary.cs" />
-    <Compile Include="Extensions\ExtensionsForIInspectable.cs" />
-    <Compile Include="Extensions\ExtensionsForIMsg.cs" />
-    <Compile Include="Extensions\ExtensionsForString.cs" />
-    <Compile Include="Abstract\IIdCollection.cs" />
-    <Compile Include="Abstract\IInspectable.cs" />
-    <Compile Include="Abstract\IIronSharpConfig.cs" />
-    <Compile Include="Abstract\IMsg.cs" />
-    <Compile Include="Abstract\IPagingFilter.cs" />
-    <Compile Include="Abstract\IRestClientRequest.cs" />
-    <Compile Include="Config\IronClientConfig.cs" />
-    <Compile Include="Config\IronDotConfigManager.cs" />
-    <Compile Include="Constants\IronProduct.cs" />
-    <Compile Include="Config\IronSharpConfig.cs" />
-    <Compile Include="Exceptions\IronSharpException.cs" />
-    <Compile Include="Abstract\IValueSerializer.cs" />
-    <Compile Include="JsonContent.cs" />
-    <Compile Include="JSON.cs" />
-    <Compile Include="Exceptions\MaximumRetryAttemptsExceededException.cs" />
-    <Compile Include="MqRestClient.cs" />
-    <Compile Include="Types\HttpRequestMessageBuilder.cs" />
-    <Compile Include="Types\IronTokenContainer.cs" />
-    <Compile Include="Types\Keystone.cs" />
-    <Compile Include="Types\KeystoneContainer.cs" />
-    <Compile Include="Types\PagingFilter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Config\HttpClientOptions.cs" />
-    <Compile Include="Types\ResponseMsg.cs" />
-    <Compile Include="RestClient.cs" />
-    <Compile Include="Types\RestClientRequest.cs" />
-    <Compile Include="Types\RestResponse.cs" />
-    <Compile Include="Exceptions\RestResponseException.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Content\iron.json" />
-    <None Include="Content\web.config.transform">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="IronSharp.Core.csproj.DotSettings" />
-    <None Include="IronSharp.Core.nuspec" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -63,12 +63,13 @@ namespace IronSharp.Core
 
         public ResponseMsg Msg()
         {
-            return Content.ReadAsAsync<ResponseMsg>().Result;
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseMsg>(Content.ReadAsStringAsync().Result);
         }
 
-        public Task<T> ReadResultAsync()
+        public async Task<T> ReadResultAsync()
         {
-            return Content.ReadAsAsync<T>();
+            var text = await Content.ReadAsStringAsync();
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(text);
         }
 
         private void SetResult()

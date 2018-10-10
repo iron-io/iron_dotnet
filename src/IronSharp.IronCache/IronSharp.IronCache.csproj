@@ -1,80 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2603E861-09AB-482E-BF28-41D8B0B1B20B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.IronCache</RootNamespace>
-    <AssemblyName>IronSharp.IronCache</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Jeremy Bell</Authors>
+    <Copyright>Iron.io</Copyright>
+    <PackageLicenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/iron-io/iron_dotnet</PackageProjectUrl>
+    <PackageIconUrl>https://raw.github.com/iron-io/iron_dotnet/master/images/net-iron-c.png</PackageIconUrl>
+    <PackageReleaseNotes>Converted to NET Standard 2.0</PackageReleaseNotes>
+    <Description>IronCache is an elastic and durable key/value store that’s perfect for applications
+that need to share state, pass data, and coordinate activity between processes and
+devices. Reduce database load by making use of a high-performance middle tier for 
+asynchronous processing and communication.</Description>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
+    <PackageTags>iron.io,cache</PackageTags>
+    <VersionPrefix>1.0.3</VersionPrefix>
+    <VersionSuffix>localhost</VersionSuffix>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|AnyCPU'">
-    <OutputPath>bin\Publish\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IncludeSource>true</IncludeSource>
+    <IncludeSymbols>true</IncludeSymbols>    
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <ProjectReference Include="..\IronSharp.Core\IronSharp.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CacheClient.cs" />
-    <Compile Include="CacheIncrementResult.cs" />
-    <Compile Include="CacheInfo.cs" />
-    <Compile Include="CacheItem.cs" />
-    <Compile Include="CacheItemOptions.cs" />
-    <Compile Include="IronCacheRestClient.cs" />
-    <Compile Include="Client.cs" />
-    <Compile Include="IronCacheCloudHosts.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\IronSharp.Core\IronSharp.Core.csproj">
-      <Project>{1a6cc922-40a5-440a-868d-757fcdb08622}</Project>
-      <Name>IronSharp.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="IronSharp.IronCache.nuspec" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

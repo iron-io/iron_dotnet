@@ -15,7 +15,7 @@ namespace Demo.IronSharpConsole
     {
         private static void Main(string[] args)
         {
-            LogManager.Adapter = new ConsoleOutLoggerFactoryAdapter();
+            LogManager.Adapter = new DebugLoggerFactoryAdapter();
 
             // =========================================================
             // Iron.io MQ
