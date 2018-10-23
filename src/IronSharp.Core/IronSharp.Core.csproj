@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Iron.Core</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Jeremy Bell</Authors>
     <Copyright>Iron.io</Copyright>

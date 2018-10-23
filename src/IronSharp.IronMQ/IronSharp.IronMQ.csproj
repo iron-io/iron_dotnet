@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Iron.IronMQ</PackageId>
     <Authors>Jeremy Bell</Authors>
     <Copyright>Iron.io</Copyright>
     <PackageLicenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</PackageLicenseUrl>
