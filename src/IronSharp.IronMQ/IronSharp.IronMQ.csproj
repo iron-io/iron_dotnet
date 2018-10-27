@@ -1,100 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D891A220-AA6F-4D0C-B012-B25875787BA0}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronSharp.IronMQ</RootNamespace>
-    <AssemblyName>IronSharp.IronMQ</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Iron.IronMQ</PackageId>
+    <Authors>Jeremy Bell</Authors>
+    <Copyright>Iron.io</Copyright>
+    <PackageLicenseUrl>https://raw.github.com/iron-io/iron_dotnet/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/iron-io/iron_dotnet</PackageProjectUrl>
+    <PackageIconUrl>https://raw.github.com/iron-io/iron_dotnet/master/images/net-iron-mq.png</PackageIconUrl>
+    <PackageReleaseNotes>Converted to NET Standard 2.0</PackageReleaseNotes>
+    <Description>An easy-to-use highly available message queuing service. Built for distributed
+        cloud applications with critical messaging needs. Provides on-demand message
+        queuing with HTTPS transport, one-time FIFO delivery, message persistence,
+        and cloud-optimized performance.</Description>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
+    <PackageTags>iron.io,message queue</PackageTags>
+    <VersionPrefix>3.0.15</VersionPrefix>
+    <VersionSuffix>localhost</VersionSuffix>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Publish|AnyCPU'">
-    <OutputPath>bin\Publish\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <IncludeSource>true</IncludeSource>
+    <IncludeSymbols>true</IncludeSymbols>    
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
+    <ProjectReference Include="..\IronSharp.Core\IronSharp.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(SolutionDir)/SolutionInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Alert.cs" />
-    <Compile Include="AlertCollection.cs" />
-    <Compile Include="AlertType.cs" />
-    <Compile Include="AlertDirection.cs" />
-    <Compile Include="Client.cs" />
-    <Compile Include="IronMqCloudHosts.cs" />
-    <Compile Include="IronMqRestClient.cs" />
-    <Compile Include="MessageCollection.cs" />
-    <Compile Include="MessageIdCollection.cs" />
-    <Compile Include="MessageContainer.cs" />
-    <Compile Include="PushInfo.cs" />
-    <Compile Include="QueueContainer.cs" />
-    <Compile Include="QueueDeadletterInfo.cs" />
-    <Compile Include="ReservedMessageIdCollection.cs" />
-    <Compile Include="MessageIdContainer.cs" />
-    <Compile Include="MessageOptions.cs" />
-    <Compile Include="MqPagingFilter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PushStatus.cs" />
-    <Compile Include="PushType.cs" />
-    <Compile Include="QueueClient.cs" />
-    <Compile Include="QueuesInfo.cs" />
-    <Compile Include="QueueInfo.cs" />
-    <Compile Include="QueueMessage.cs" />
-    <Compile Include="QueueMessageContext.cs" />
-    <Compile Include="Subscriber.cs" />
-    <Compile Include="SubscriberCollection.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\IronSharp.Core\IronSharp.Core.csproj">
-      <Project>{1a6cc922-40a5-440a-868d-757fcdb08622}</Project>
-      <Name>IronSharp.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="IronSharp.IronMQ.nuspec" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

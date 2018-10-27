@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Web.Hosting;
 using Common.Logging;
 using Newtonsoft.Json;
 
@@ -120,9 +118,7 @@ namespace IronSharp.Core
         {
             if (string.IsNullOrEmpty(_appDirectory))
             {
-                _appDirectory = HostingEnvironment.IsHosted ? 
-                    HostingEnvironment.MapPath("~/") : 
-                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+                _appDirectory = Directory.GetCurrentDirectory();
             }
             return _appDirectory;
         }

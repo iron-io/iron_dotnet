@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharp.Core", "IronSharp.Core\IronSharp.Core.csproj", "{1A6CC922-40A5-440A-868D-757FCDB08622}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IronSharp.Core", "IronSharp.Core\IronSharp.Core.csproj", "{1A6CC922-40A5-440A-868D-757FCDB08622}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharp.IronMQ", "IronSharp.IronMQ\IronSharp.IronMQ.csproj", "{D891A220-AA6F-4D0C-B012-B25875787BA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IronSharp.IronMQ", "IronSharp.IronMQ\IronSharp.IronMQ.csproj", "{D891A220-AA6F-4D0C-B012-B25875787BA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharp.IronWorker", "IronSharp.IronWorker\IronSharp.IronWorker.csproj", "{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IronSharp.IronWorker", "IronSharp.IronWorker\IronSharp.IronWorker.csproj", "{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharp.IronCache", "IronSharp.IronCache\IronSharp.IronCache.csproj", "{2603E861-09AB-482E-BF28-41D8B0B1B20B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IronSharp.IronCache", "IronSharp.IronCache\IronSharp.IronCache.csproj", "{2603E861-09AB-482E-BF28-41D8B0B1B20B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharp.Extras.ServiceStackSerializers", "IronSharp.Extras.ServiceStackSerializers\IronSharp.Extras.ServiceStackSerializers.csproj", "{51A944C8-8A3D-4AB6-A475-6B2C204CD823}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IronSharp.Extras.ServiceStackSerializers", "IronSharp.Extras.ServiceStackSerializers\IronSharp.Extras.ServiceStackSerializers.csproj", "{51A944C8-8A3D-4AB6-A475-6B2C204CD823}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.IronSharp", "Demo.IronSharp\Demo.IronSharp.csproj", "{4EFB32B2-4CD3-4604-9ADC-458A4FC4C50B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.IronSharp", "Demo.IronSharp\Demo.IronSharp.csproj", "{4EFB32B2-4CD3-4604-9ADC-458A4FC4C50B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{01B8724C-95A0-4B03-AE87-1BAAAA3AA2F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extras", "Extras", "{C8778C67-3748-47F8-AEAB-B33D8E6B9D55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronSharp.Extras.ProtoBufSerializers", "IronSharp.Extras.ProtoBufSerializers\IronSharp.Extras.ProtoBufSerializers.csproj", "{40DF09EE-FD18-4BCA-9A61-898044477F7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IronSharp.Extras.ProtoBufSerializers", "IronSharp.Extras.ProtoBufSerializers\IronSharp.Extras.ProtoBufSerializers.csproj", "{40DF09EE-FD18-4BCA-9A61-898044477F7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,26 +30,26 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1A6CC922-40A5-440A-868D-757FCDB08622}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1A6CC922-40A5-440A-868D-757FCDB08622}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A6CC922-40A5-440A-868D-757FCDB08622}.Publish|Any CPU.ActiveCfg = Publish|Any CPU
-		{1A6CC922-40A5-440A-868D-757FCDB08622}.Publish|Any CPU.Build.0 = Publish|Any CPU
+		{1A6CC922-40A5-440A-868D-757FCDB08622}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{1A6CC922-40A5-440A-868D-757FCDB08622}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{1A6CC922-40A5-440A-868D-757FCDB08622}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A6CC922-40A5-440A-868D-757FCDB08622}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Publish|Any CPU.ActiveCfg = Publish|Any CPU
-		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Publish|Any CPU.Build.0 = Publish|Any CPU
+		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D891A220-AA6F-4D0C-B012-B25875787BA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Publish|Any CPU.ActiveCfg = Publish|Any CPU
-		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Publish|Any CPU.Build.0 = Publish|Any CPU
+		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FA5BF5D-C543-404E-89EC-C3BFF90ACF6B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Publish|Any CPU.ActiveCfg = Publish|Any CPU
-		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Publish|Any CPU.Build.0 = Publish|Any CPU
+		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Publish|Any CPU.ActiveCfg = Release|Any CPU
+		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2603E861-09AB-482E-BF28-41D8B0B1B20B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51A944C8-8A3D-4AB6-A475-6B2C204CD823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -76,7 +76,10 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{51A944C8-8A3D-4AB6-A475-6B2C204CD823} = {C8778C67-3748-47F8-AEAB-B33D8E6B9D55}
-		{40DF09EE-FD18-4BCA-9A61-898044477F7E} = {C8778C67-3748-47F8-AEAB-B33D8E6B9D55}
 		{4EFB32B2-4CD3-4604-9ADC-458A4FC4C50B} = {01B8724C-95A0-4B03-AE87-1BAAAA3AA2F1}
+		{40DF09EE-FD18-4BCA-9A61-898044477F7E} = {C8778C67-3748-47F8-AEAB-B33D8E6B9D55}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CBCED825-611E-4C21-AAB9-1F8F51C954F9}
 	EndGlobalSection
 EndGlobal
